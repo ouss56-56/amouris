@@ -1,0 +1,70 @@
+{
+  "common": {
+    "search": "Recherche",
+    "cart": "Panier",
+    "account": "Compte",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "language": "Langue",
+    "currency": "DZD",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue."
+  },
+  "nav": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "perfumes": "Parfums",
+    "flacons": "Flacons",
+    "brands": "Marques de luxe",
+    "collections": "Collections",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "home": {
+    "hero_cta": "Découvrir la collection",
+    "best_sellers": "Meilleures ventes",
+    "new_arrivals": "Nouveautés",
+    "categories": "Catégories",
+    "view_all": "Voir tout"
+  },
+  "product": {
+    "add_to_cart": "Ajouter au panier",
+    "out_of_stock": "Rupture de stock",
+    "price_per_gram": "Prix par gramme",
+    "quantity": "Quantité",
+    "grams": "grammes",
+    "min_order": "Commande min.",
+    "description": "Description",
+    "details": "Détails",
+    "brand": "Marque",
+    "related": "Produits similaires",
+    "size": "Taille",
+    "color": "Couleur",
+    "shape": "Forme"
+  },
+  "cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est vide",
+    "subtotal": "Sous-total",
+    "checkout": "Commander",
+    "continue_shopping": "Continuer les achats"
+  },
+  "checkout": {
+    "title": "Commander",
+    "guest_checkout": "Commander en tant qu'invité",
+    "login_checkout": "Se connecter",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "phone": "Numéro de téléphone",
+    "wilaya": "Wilaya",
+    "payment_method": "Méthode de paiement",
+    "cash_on_delivery": "Paiement à la livraison",
+    "order_summary": "Résumé de la commande",
+    "confirm_order": "Confirmer la commande",
+    "success": "Votre commande a été reçue avec succès !"
+  }
+}

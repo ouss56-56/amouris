@@ -1,0 +1,70 @@
+{
+  "common": {
+    "search": "بحث",
+    "cart": "عربة التسوق",
+    "account": "الحساب",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "language": "اللغة",
+    "currency": "دج",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما."
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "shop": "المتجر",
+    "perfumes": "العطور الزيتية",
+    "flacons": "القوارير",
+    "brands": "العلامات الفاخرة",
+    "collections": "المجموعات",
+    "about": "عن أموريس",
+    "contact": "اتصل بنا"
+  },
+  "home": {
+    "hero_cta": "اكتشف المجموعة",
+    "best_sellers": "الأكثر مبيعاً",
+    "new_arrivals": "وصل حديثاً",
+    "categories": "الأصناف",
+    "view_all": "عرض الكل"
+  },
+  "product": {
+    "add_to_cart": "أضف إلى السلة",
+    "out_of_stock": "نفذت الكمية",
+    "price_per_gram": "السعر للغرام",
+    "quantity": "الكمية",
+    "grams": "غرام",
+    "min_order": "الحد الأدنى للطلب",
+    "description": "الوصف",
+    "details": "التفاصيل",
+    "brand": "العلامة",
+    "related": "منتجات ذات صلة",
+    "size": "الحجم",
+    "color": "اللون",
+    "shape": "الشكل"
+  },
+  "cart": {
+    "title": "عربة التسوق",
+    "empty": "عربة التسوق فارغة",
+    "subtotal": "المجموع الفرعي",
+    "checkout": "إتمام الطلب",
+    "continue_shopping": "متابعة التسوق"
+  },
+  "checkout": {
+    "title": "إتمام الطلب",
+    "guest_checkout": "متابعة كزائر",
+    "login_checkout": "تسجيل الدخول",
+    "first_name": "الاسم",
+    "last_name": "اللقب",
+    "phone": "رقم الهاتف",
+    "wilaya": "الولاية",
+    "payment_method": "طريقة الدفع",
+    "cash_on_delivery": "الدفع عند الاستلام",
+    "order_summary": "ملخص الطلب",
+    "confirm_order": "تأكيد الطلب",
+    "success": "تم استلام طلبك بنجاح!"
+  }
+}
