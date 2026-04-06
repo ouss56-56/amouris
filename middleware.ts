@@ -6,9 +6,18 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  // For Phase 1 (Mock Data), we skip complex middleware checks to prevent build crashes.
+  // We only initialize the client if we absolutely need to (which we don't for Phase 1).
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -27,14 +36,7 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake can make it very hard to debug
-  // why your multi-factor authentication is not working.
-
-  // For Phase 1, we bypass middleware checks to allow mock-data UI to function.
-  return supabaseResponse;
-
-
+  // Still bypass logic for Phase 1
   return supabaseResponse;
 }
 
