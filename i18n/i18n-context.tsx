@@ -60,18 +60,27 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     return current as string;
   };
 
+  const defaultDir = language === 'ar' ? 'rtl' : 'ltr';
+
+  const contextValue = {
+    language,
+    t,
+    setLanguage,
+    dir: defaultDir as 'rtl' | 'ltr'
+  };
+
   if (!mounted) {
-    // Prevent hydration mismatch by rendering default (fr/ltr) but hidden
-    return <div style={{ visibility: 'hidden' }}>{children}</div>;
+    // Render with default context during SSR to prevent useI18n from throwing, 
+    // but keep it hidden to prevent flash of wrong language.
+    return (
+      <I18nContext.Provider value={contextValue}>
+        <div style={{ visibility: 'hidden' }}>{children}</div>
+      </I18nContext.Provider>
+    );
   }
 
   return (
-    <I18nContext.Provider value={{
-      language,
-      t,
-      setLanguage,
-      dir: language === 'ar' ? 'rtl' : 'ltr'
-    }}>
+    <I18nContext.Provider value={contextValue}>
       {children}
     </I18nContext.Provider>
   );

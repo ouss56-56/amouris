@@ -1,4 +1,4 @@
-import { Category, Brand, Collection, Tag, Product, Customer, Order, Invoice } from './types';
+import { Category, Brand, Collection, Tag, Product, Customer, Order } from './types';
 
 export const categories: Category[] = [
   { id: 'c1', nameAR: 'عود', nameFR: 'Oud' },
@@ -176,8 +176,21 @@ export const orders: Order[] = [
     orderNumber: 'AM-100001',
     customerId: 'cust1',
     items: [
-      { productId: 'p1', quantity: 250, unitPrice: 15 }, // 250g
-      { productId: 'f1', variantId: 'v1', quantity: 50, unitPrice: 150 } // 50 flacons
+      { 
+        productId: 'p1', 
+        quantity: 250, 
+        unitPrice: 15,
+        productNameAR: 'أمير العود الأصلي',
+        productNameFR: 'Amir Al Oudh Original',
+      }, // 250g
+      { 
+        productId: 'f1', 
+        variantId: 'v1', 
+        quantity: 50, 
+        unitPrice: 150,
+        productNameAR: 'قارورة كريستال مربعة',
+        productNameFR: 'Flacon Cristal Carré',
+      } // 50 flacons
     ],
     total: 3750 + 7500, // 11250
     status: 'delivered',
@@ -191,7 +204,13 @@ export const orders: Order[] = [
     orderNumber: 'AM-100002',
     customerId: 'cust2',
     items: [
-      { productId: 'p4', quantity: 500, unitPrice: 20 },
+      { 
+        productId: 'p4', 
+        quantity: 500, 
+        unitPrice: 20,
+        productNameAR: 'طهارة بيضاء',
+        productNameFR: 'Tahara Blanc',
+      },
     ],
     total: 10000,
     status: 'pending',

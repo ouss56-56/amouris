@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-import { Order, OrderStatus, PaymentStatus } from '@/lib/types';
+import { Order, OrderStatus, PaymentStatus, OrderItem } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 
 export async function createOrder(orderData: {
@@ -13,7 +13,7 @@ export async function createOrder(orderData: {
     phoneNumber: string;
     wilaya: string;
   };
-  items: any[];
+  items: (OrderItem & { type: 'perfume' | 'flacon' })[];
   total: number;
   notes?: string;
 }) {
@@ -239,16 +239,32 @@ export async function updatePayment(id: string, amountPaid: number) {
   revalidatePath('/admin/orders');
 }
 
-function mapDbOrderToFrontend(dbOrder: any): Order {
+function mapDbOrderToFrontend(dbOrder: {
+  id: string;
+  order_number: string;
+  customer_id: string | null;
+  guest_phone?: string;
+  guest_first_name?: string;
+  guest_last_name?: string;
+  guest_wilaya?: string;
+  order_items?: any[];
+  total_amount: number | string;
+  order_status: string;
+  payment_status: string;
+  amount_paid: number | string;
+  created_at: string;
+  updated_at: string;
+  admin_notes?: string;
+}): Order {
   return {
     id: dbOrder.id,
     orderNumber: dbOrder.order_number,
     customerId: dbOrder.customer_id || 'guest',
     guestInfo: dbOrder.guest_phone ? {
-      firstName: dbOrder.guest_first_name,
-      lastName: dbOrder.guest_last_name,
+      firstName: dbOrder.guest_first_name || '',
+      lastName: dbOrder.guest_last_name || '',
       phoneNumber: dbOrder.guest_phone,
-      wilaya: dbOrder.guest_wilaya,
+      wilaya: dbOrder.guest_wilaya || '',
     } : undefined,
     items: (dbOrder.order_items || []).map((item: any) => ({
       productId: item.product_id,
