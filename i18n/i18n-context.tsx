@@ -51,7 +51,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     
     let current = translations;
     for (const key of keys) {
-      if (current[key] === undefined) {
+      if (!current || current[key] === undefined) {
         console.warn(`Translation missing for key: ${path} in ${language}`);
         return path;
       }
@@ -60,24 +60,14 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     return current as string;
   };
 
-  const defaultDir = language === 'ar' ? 'rtl' : 'ltr';
+  const currentDir = language === 'ar' ? 'rtl' : 'ltr';
 
   const contextValue = {
     language,
     t,
     setLanguage,
-    dir: defaultDir as 'rtl' | 'ltr'
+    dir: currentDir as 'rtl' | 'ltr'
   };
-
-  if (!mounted) {
-    // Render with default context during SSR to prevent useI18n from throwing, 
-    // but keep it hidden to prevent flash of wrong language.
-    return (
-      <I18nContext.Provider value={contextValue}>
-        <div style={{ visibility: 'hidden' }}>{children}</div>
-      </I18nContext.Provider>
-    );
-  }
 
   return (
     <I18nContext.Provider value={contextValue}>
@@ -85,6 +75,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     </I18nContext.Provider>
   );
 }
+
 
 export function useI18n() {
   const context = useContext(I18nContext);

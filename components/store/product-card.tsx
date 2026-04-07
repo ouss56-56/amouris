@@ -31,22 +31,24 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
+      transition={{ delay: index * 0.05 }}
+      className="h-full"
     >
-      <Link href={`/product/${product.id}`} className="group block relative bg-white border border-neutral-100 hover:border-emerald-200 hover:shadow-2xl transition-all duration-500 rounded-none overflow-hidden h-full">
+      <Link href={`/product/${product.id}`} className="group block relative bg-white border border-neutral-100 hover:border-emerald-200 hover:shadow-xl transition-all duration-300 rounded-none overflow-hidden h-full flex flex-col">
         {/* Image Container */}
         <div className="relative aspect-[4/5] bg-neutral-50 overflow-hidden">
           <Image 
             src={product.images[0] || 'https://images.unsplash.com/photo-1594035910387-fea477262dc0?q=80&w=800'} 
             alt={name} 
             fill 
-            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
           
           {/* Tag badge */}
           {tagName && (
-            <div className="absolute top-4 left-4 z-10">
-              <span className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 font-bold shadow-sm ${
+            <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+              <span className={`text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.2em] px-2 py-1 md:px-3 md:py-1.5 font-bold shadow-sm ${
                 tag?.id === 't1' ? 'bg-emerald-800 text-white' : 
                 tag?.id === 't2' ? 'bg-amber-400 text-emerald-950' : 
                 'bg-rose-900 text-white'
@@ -56,37 +58,35 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             </div>
           )}
 
-          {/* Hover overlay */}
-          <div className="absolute inset-0 bg-emerald-950/0 group-hover:bg-emerald-950/20 transition-colors duration-500" />
+          {/* Hover overlay - Subtle */}
+          <div className="absolute inset-0 bg-emerald-950/0 group-hover:bg-emerald-950/5 transition-colors duration-300" />
           
-          <div className="absolute bottom-6 left-0 right-0 flex justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
-            <span className="bg-white text-emerald-950 text-xs uppercase tracking-[0.2em] px-8 py-3 font-bold shadow-xl border border-emerald-50">
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center opacity-0 translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-300 hidden md:flex">
+            <span className="bg-white text-emerald-950 text-[10px] uppercase tracking-[0.2em] px-6 py-2.5 font-bold shadow-lg border border-emerald-50">
               {t('common.view_details')}
             </span>
           </div>
         </div>
 
         {/* Info */}
-        <div className="p-6 text-start">
-          <p className="text-[10px] text-amber-600 uppercase tracking-[0.3em] mb-2 font-bold">
-            {isPerfume ? (language === 'ar' ? 'عطر زيتي' : 'Huile de Parfum') : (language === 'ar' ? 'قارورة فاخرة' : 'Flaccon de Luxe')}
-          </p>
-          <h3 className="font-serif text-xl text-emerald-950 mb-3 line-clamp-1 group-hover:text-emerald-700 transition-colors">
-            {name}
-          </h3>
-          <div className="flex items-center justify-between pt-4 border-t border-neutral-50">
-            <p className="text-emerald-900 font-bold text-lg">
+        <div className="p-3 md:p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <p className="text-[9px] md:text-[10px] text-amber-600 uppercase tracking-[0.2em] md:tracking-[0.3em] mb-1 md:mb-2 font-bold opacity-80">
+              {isPerfume ? (language === 'ar' ? 'عطر زيتي' : 'Huile de Parfum') : (language === 'ar' ? 'قارورة فاخرة' : 'Flacon de Luxe')}
+            </p>
+            <h3 className="font-serif text-base md:text-xl text-emerald-950 mb-2 line-clamp-2 md:line-clamp-1 group-hover:text-emerald-700 transition-colors uppercase tracking-tight md:tracking-normal leading-tight">
+              {name}
+            </h3>
+          </div>
+          
+          <div className="pt-3 border-t border-neutral-50 flex flex-col">
+            <p className="text-emerald-900 font-bold text-sm md:text-lg">
               {isPerfume ? `${displayPrice.toLocaleString()} DZD/g` : `Dès ${displayPrice.toLocaleString()} DZD`}
             </p>
-            {!isPerfume && product.variants && (
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest">{product.variants.length} {language === 'ar' ? 'أنواع' : 'Variantes'}</p>
-            )}
-            {isPerfume && (
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest">Min. 100g</p>
-            )}
           </div>
         </div>
       </Link>
     </motion.div>
   );
 }
+
