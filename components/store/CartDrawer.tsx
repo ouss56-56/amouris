@@ -6,7 +6,6 @@ import { useCartStore } from '@/store/cart-store'
 import { useI18n } from '@/i18n/i18n-context'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 
 export default function CartDrawer({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const { items, removeItem, updateQuantity, cartTotal } = useCartStore()
@@ -41,7 +40,7 @@ export default function CartDrawer({ open, onOpenChange }: { open: boolean, onOp
                   <ShoppingBag size={24} className="text-emerald-700" />
                 </div>
                 <h3 className="font-serif text-xl text-gray-800 mb-2">Votre panier est vide</h3>
-                <p className="text-gray-500 text-sm mb-6">Découvrez nos parfums et flacons d'exception</p>
+                <p className="text-gray-500 text-sm mb-6">Découvrez nos parfums et flacons d&apos;exception</p>
                 <button 
                   onClick={() => onOpenChange(false)}
                   className="bg-emerald-800 text-white px-8 py-3 text-sm font-medium hover:bg-emerald-700 transition-colors uppercase tracking-wider"

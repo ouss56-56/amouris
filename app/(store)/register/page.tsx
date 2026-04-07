@@ -49,9 +49,9 @@ export default function RegisterPage() {
 
       toast.success(language === 'ar' ? 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول' : 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
       router.push('/login');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Registration error:', error);
-      toast.error(language === 'ar' ? 'فشل إنشاء الحساب' : 'Échec de la création du compte: ' + error.message);
+      toast.error(language === 'ar' ? 'فشل إنشاء الحساب' : 'Échec de la création du compte: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsLoading(false);
     }

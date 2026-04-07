@@ -1,6 +1,5 @@
 import { getOrderById } from '@/lib/actions/orders';
 import CheckoutSuccessClient from './CheckoutSuccessClient';
-import { notFound } from 'next/navigation';
 
 export default async function CheckoutSuccessPage({ searchParams }: { searchParams: { id?: string } }) {
   const orderId = searchParams.id;

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Minus, Plus, ShoppingBag } from 'lucide-react';
-import { Product, FlaconVariant, Brand, Category } from '@/lib/types';
+import { Product, FlaconVariant, Brand, Category, PerfumeProduct } from '@/lib/types';
 
 interface ProductClientProps {
   product: Product;
@@ -32,7 +32,7 @@ export default function ProductClient({ product, brand, category }: ProductClien
 
   const handleAddToCart = () => {
     if (product.type === 'perfume') {
-      const stock = (product as any).stockInGrams || 0;
+      const stock = (product as PerfumeProduct).stockInGrams || 0;
       if (grams > stock) {
         toast.error(language === 'ar' ? 'الكمية المطلوبة تتجاوز المخزون' : 'La quantité demandée dépasse le stock');
         return;
@@ -73,7 +73,7 @@ export default function ProductClient({ product, brand, category }: ProductClien
     ? grams * product.pricePerGram
     : (selectedVariant?.price || 0) * quantity;
 
-  const isPerfumeOutOfStock = product.type === 'perfume' && ((product as any).stockInGrams || 0) <= 0;
+  const isPerfumeOutOfStock = product.type === 'perfume' && ((product as PerfumeProduct).stockInGrams || 0) <= 0;
   const isVariantOutOfStock = product.type === 'flacon' && (selectedVariant?.stock || 0) <= 0;
   const isCurrentlyUnavailable = isPerfumeOutOfStock || isVariantOutOfStock;
 
@@ -138,9 +138,8 @@ export default function ProductClient({ product, brand, category }: ProductClien
             {product.type === 'perfume' ? (
               <div className="space-y-4">
                 <label className="font-bold text-sm uppercase tracking-wider flex justify-between">
-                  <span>{t('product.quantity')} ({t('product.grams')})</span>
                   <span className="text-emerald-800 font-medium">
-                    {((product as any).stockInGrams || 0).toLocaleString()}g {language === 'ar' ? 'متوفر' : 'dispo.'}
+                    {((product as PerfumeProduct).stockInGrams || 0).toLocaleString()}g {language === 'ar' ? 'متوفر' : 'dispo.'}
                   </span>
                 </label>
                 <div className="flex items-center gap-4">
@@ -156,7 +155,7 @@ export default function ProductClient({ product, brand, category }: ProductClien
                     <Input 
                       type="number" 
                       value={grams} 
-                      onChange={(e) => setGrams(Math.max(100, Math.min((product as any).stockInGrams || 100, parseInt(e.target.value) || 100)))}
+                      onChange={(e) => setGrams(Math.max(100, Math.min((product as PerfumeProduct).stockInGrams || 100, parseInt(e.target.value) || 100)))}
                       className="w-24 h-14 border-0 text-center font-bold focus-visible:ring-0 text-lg rounded-none"
                       min={100}
                       disabled={isPerfumeOutOfStock}
@@ -164,8 +163,8 @@ export default function ProductClient({ product, brand, category }: ProductClien
                     <Button 
                       variant="ghost" 
                       className="h-14 w-14 rounded-none hover:bg-emerald-50 text-emerald-900"
-                      onClick={() => setGrams(Math.min((product as any).stockInGrams || 100, grams + 50))}
-                      disabled={isPerfumeOutOfStock || grams >= ((product as any).stockInGrams || 0)}
+                      onClick={() => setGrams(Math.min((product as PerfumeProduct).stockInGrams || 100, grams + 50))}
+                      disabled={isPerfumeOutOfStock || grams >= ((product as PerfumeProduct).stockInGrams || 0)}
                     >
                       <Plus className="h-5 w-5" />
                     </Button>

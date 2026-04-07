@@ -4,7 +4,7 @@ import { useI18n } from '@/i18n/i18n-context';
 import { motion } from 'framer-motion';
 
 export default function AboutPage() {
-  const { t, language } = useI18n();
+  const { language } = useI18n();
 
   return (
     <div className="min-h-screen bg-white">

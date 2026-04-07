@@ -9,7 +9,13 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 interface AdminInvoicesClientProps {
-  initialInvoices: any[];
+  initialInvoices: {
+    id: string;
+    invoice_number: string;
+    created_at: string;
+    order_id: string;
+    pdf_url: string;
+  }[];
 }
 
 export default function AdminInvoicesClient({ initialInvoices }: AdminInvoicesClientProps) {

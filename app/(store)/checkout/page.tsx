@@ -72,9 +72,9 @@ export default function CheckoutPage() {
         toast.success(language === 'ar' ? 'تم تقديم طلبك بنجاح' : 'Votre commande a été passée avec succès');
         router.push(`/checkout/success?id=${order.id}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Order submission error:', error);
-      toast.error(language === 'ar' ? 'فشل تقديم الطلب' : 'Échec de la commande: ' + (error?.message || 'Unknown error'));
+      toast.error(language === 'ar' ? 'فشل تقديم الطلب' : 'Échec de la commande: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsSubmitting(false);
     }

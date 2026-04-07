@@ -40,9 +40,9 @@ export default function SettingsClient({ user }: SettingsClientProps) {
         commune: formData.commune,
       });
       toast.success(language === 'ar' ? 'تم تحديث الإعدادات بنجاح' : 'Paramètres mis à jour avec succès');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Update profile error:', error);
-      toast.error(language === 'ar' ? 'فشل التحديث' : 'Échec de la mise à jour: ' + error.message);
+      toast.error(language === 'ar' ? 'فشل التحديث' : 'Échec de la mise à jour: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsLoading(false);
     }

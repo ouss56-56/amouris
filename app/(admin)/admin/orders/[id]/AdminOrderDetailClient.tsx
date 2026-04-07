@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useI18n } from '@/i18n/i18n-context';
-import { Order, Customer } from '@/lib/types';
+import { Order, Customer, OrderStatus, PaymentStatus } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { generateInvoice } from '@/lib/actions/invoices';
 interface AdminOrderDetailClientProps {
   order: Order;
   customer?: Customer;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   invoice?: any;
 }
 
@@ -33,7 +34,7 @@ export default function AdminOrderDetailClient({ order, customer, invoice: initi
       setInvoice(newInvoice);
       toast.success(language === 'ar' ? 'تم إنشاء الفاتورة' : 'Facture générée');
     } catch (error: any) {
-      toast.error('Invoice Error: ' + error.message);
+      toast.error('Invoice Error: ' + (error.message || 'Unknown error'));
     } finally {
       setIsGenerating(false);
     }
@@ -44,7 +45,7 @@ export default function AdminOrderDetailClient({ order, customer, invoice: initi
     try {
       // TODO: Call updateOrder server action
       toast.success(language === 'ar' ? 'تم تحديث الطلب' : 'Commande mise à jour');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Error updating order');
     } finally {
       setIsUpdating(false);
@@ -132,7 +133,7 @@ export default function AdminOrderDetailClient({ order, customer, invoice: initi
              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                    <label className="text-sm font-medium">{language === 'ar' ? 'حالة الطلب' : 'Statut de commande'}</label>
-                   <Select value={status} onValueChange={(v: any) => setStatus(v)}>
+                   <Select value={status} onValueChange={(v: OrderStatus) => setStatus(v)}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -148,7 +149,7 @@ export default function AdminOrderDetailClient({ order, customer, invoice: initi
                 </div>
                 <div className="space-y-2">
                    <label className="text-sm font-medium">{language === 'ar' ? 'حالة الدفع' : 'Statut de paiement'}</label>
-                   <Select value={paymentStatus} onValueChange={(v: any) => setPaymentStatus(v)}>
+                   <Select value={paymentStatus} onValueChange={(v: PaymentStatus) => setPaymentStatus(v)}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>

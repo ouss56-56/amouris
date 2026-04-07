@@ -6,7 +6,7 @@ import { Order, Customer } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Eye, FileText, Download, Printer } from 'lucide-react';
+import { Search, Eye, Download, Printer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -151,7 +151,7 @@ export default function AdminOrdersClient({ orders, customers }: AdminOrdersClie
                       <p className="font-semibold text-foreground">{customerName}</p>
                       <p className="text-xs text-muted-foreground font-medium uppercase">{customerWilaya}</p>
                     </td>
-                    <td className="px-6 py-4 font-medium">{(order as any).itemsCount || order.items?.length || 0} art.</td>
+                    <td className="px-6 py-4 font-medium">{(order as Order & { itemsCount?: number }).itemsCount || order.items?.length || 0} art.</td>
                     <td className="px-6 py-4 font-bold text-foreground">
                       {order.total.toLocaleString()} <span className="text-[10px] text-muted-foreground uppercase">{t('common.currency')}</span>
                     </td>

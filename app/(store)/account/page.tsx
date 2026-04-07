@@ -2,7 +2,6 @@
 
 import { useI18n } from '@/i18n/i18n-context';
 import { customers, orders } from '@/lib/mock-data';
-import { motion } from 'framer-motion';
 import { Package, User, MapPin, ShoppingBag, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

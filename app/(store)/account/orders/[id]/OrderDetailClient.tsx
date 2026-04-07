@@ -8,6 +8,7 @@ import { ArrowLeft, FileText, CheckCircle2 } from 'lucide-react';
 
 interface OrderDetailClientProps {
   order: Order;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   invoice?: any;
 }
 

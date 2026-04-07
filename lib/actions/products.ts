@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-import { Product, ProductType } from '@/lib/types';
+import { Product, ProductType, PerfumeProduct, FlaconProduct } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { mapDbProductToFrontend } from '@/lib/supabase/utils';
 
@@ -135,8 +135,8 @@ export async function createProduct(product: Partial<Product>) {
       collection_id: product.collectionId,
       images: product.images,
       status: product.status || 'active',
-      price_per_gram: product.type === 'perfume' ? (product as any).pricePerGram : null,
-      stock_grams: product.type === 'perfume' ? (product as any).stockInGrams : null,
+      price_per_gram: product.type === 'perfume' ? (product as PerfumeProduct).pricePerGram : null,
+      stock_grams: product.type === 'perfume' ? (product as PerfumeProduct).stockInGrams : null,
       slug: (product.nameFR || '').toLowerCase().replace(/ /g, '-'),
     }])
     .select()
@@ -145,8 +145,8 @@ export async function createProduct(product: Partial<Product>) {
   if (prodError) throw new Error(prodError.message);
 
   // 2. Insert variants if flacon
-  if (product.type === 'flacon' && (product as any).variants) {
-    const variants = (product as any).variants.map((v: any) => ({
+  if (product.type === 'flacon' && (product as FlaconProduct).variants) {
+    const variants = (product as FlaconProduct).variants.map((v) => ({
       product_id: newProd.id,
       size_ml: parseInt(v.size.replace('ml', '')),
       color: v.color,
@@ -188,8 +188,8 @@ export async function updateProduct(id: string, product: Partial<Product>) {
       collection_id: product.collectionId,
       images: product.images,
       status: product.status,
-      price_per_gram: product.type === 'perfume' ? (product as any).pricePerGram : null,
-      stock_grams: product.type === 'perfume' ? (product as any).stockInGrams : null,
+      price_per_gram: product.type === 'perfume' ? (product as PerfumeProduct).pricePerGram : null,
+      stock_grams: product.type === 'perfume' ? (product as PerfumeProduct).stockInGrams : null,
     })
     .eq('id', id)
     .select()
@@ -198,9 +198,9 @@ export async function updateProduct(id: string, product: Partial<Product>) {
   if (prodError) throw new Error(prodError.message);
 
   // 2. Update variants (Simple way: delete and re-insert)
-  if (product.type === 'flacon' && (product as any).variants) {
+  if (product.type === 'flacon' && (product as FlaconProduct).variants) {
     await supabase.from('flacon_variants').delete().eq('product_id', id);
-    const variants = (product as any).variants.map((v: any) => ({
+    const variants = (product as FlaconProduct).variants.map((v) => ({
       product_id: id,
       size_ml: parseInt(v.size.replace('ml', '')),
       color: v.color,

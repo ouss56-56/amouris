@@ -3,16 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
-import { Product, Category, Brand, Collection, Tag, ProductType, FlaconVariant } from '@/lib/types';
+import { Product, Category, Brand, Collection, Tag, FlaconVariant, PerfumeProduct, FlaconProduct } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Plus, X, Upload, Save, Trash2 } from 'lucide-react';
+import { Plus, Save, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createProduct, updateProduct } from '@/lib/actions/products';
 
@@ -52,13 +51,13 @@ export default function ProductFormClient({
 
   // Specific fields for perfumes
   const [perfumeData, setPerfumeData] = useState({
-    pricePerGram: (initialProduct as any)?.pricePerGram || 0,
-    stockInGrams: (initialProduct as any)?.stockInGrams || 0,
+    pricePerGram: (initialProduct as PerfumeProduct)?.pricePerGram || 0,
+    stockInGrams: (initialProduct as PerfumeProduct)?.stockInGrams || 0,
   });
 
   // Specific fields for flacons
   const [variants, setVariants] = useState<Partial<FlaconVariant>[]>(
-    (initialProduct as any)?.variants || []
+    (initialProduct as FlaconProduct)?.variants || []
   );
 
   const handleAddVariant = () => {
@@ -88,8 +87,8 @@ export default function ProductFormClient({
       }
       router.push('/admin/products');
       router.refresh();
-    } catch (error: any) {
-      toast.error('Error: ' + error.message);
+    } catch (error) {
+      toast.error('Error: ' + ((error as { message?: string })?.message || 'Unknown error'));
     } finally {
       setIsLoading(false);
     }
@@ -327,7 +326,7 @@ export default function ProductFormClient({
           <Card>
             <CardHeader><CardTitle>{language === 'ar' ? 'الحالة' : 'Statut'}</CardTitle></CardHeader>
             <CardContent>
-               <Select value={formData.status} onValueChange={(v: any) => setFormData({ ...formData, status: v })}>
+               <Select value={formData.status} onValueChange={(v: 'active' | 'draft') => setFormData({ ...formData, status: v })}>
                  <SelectTrigger><SelectValue /></SelectTrigger>
                  <SelectContent>
                    <SelectItem value="active">Active</SelectItem>

@@ -20,7 +20,7 @@ export async function getHomepageTags() {
   }
 
   // 2. Map to frontend types
-  return (tags || []).map((t: any) => ({
+  return (tags || []).map((t: { id: string; name_ar: string; name_fr: string; show_on_homepage: boolean }) => ({
     id: t.id,
     nameAR: t.name_ar,
     nameFR: t.name_fr,
@@ -73,6 +73,7 @@ export async function getProductsByTag(tagId: string, limit = 8) {
     return [];
   }
 
-  return (data || []).map((item: any) => mapDbProductToFrontend(item.product));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data || []).map((item: { product: any }) => mapDbProductToFrontend(item.product));
 }
 

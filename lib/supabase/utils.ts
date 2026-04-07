@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Product, ProductType } from "@/lib/types";
 
 interface DbTag {

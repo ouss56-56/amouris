@@ -5,10 +5,9 @@ import { useI18n } from '@/i18n/i18n-context';
 import { Customer, Order } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, MoreVertical, Lock, Trash2, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Search, MoreVertical, Trash2, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { updateProfile } from '@/lib/actions/customers';
 import { toast } from 'sonner';
 
 interface AdminCustomersClientProps {
@@ -26,12 +25,12 @@ export default function AdminCustomersClient({ customers, orders }: AdminCustome
     (c.shopName && c.shopName.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleToggleFreeze = async (customer: Customer) => {
+  const handleToggleFreeze = async (_customer: Customer) => {
     try {
       // In a real app, we'd have a specific toggle action, but we can reuse updateProfile logic or create a new one
       // For now, let's assume we'll add a specific action if needed, or just toast for now.
       toast.info(language === 'ar' ? 'جاري التحديث...' : 'Mise à jour...');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Error updating customer');
     }
   };

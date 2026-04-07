@@ -16,7 +16,7 @@ interface AdminAnalyticsClientProps {
 const COLORS = ['#0A6B4B', '#C9A84C', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6'];
 
 export default function AdminAnalyticsClient({ revenueStats, wilayaStats, topProducts }: AdminAnalyticsClientProps) {
-  const { language, t } = useI18n();
+  const { language } = useI18n();
 
   return (
     <div className="space-y-6">
@@ -40,7 +40,8 @@ export default function AdminAnalyticsClient({ revenueStats, wilayaStats, topPro
                 <YAxis axisLine={false} tickLine={false} tickFormatter={(v) => `${v / 1000}k`} />
                 <RechartsTooltip 
                   cursor={{fill: '#f3f4f6'}} 
-                  formatter={(v: any) => [`${v.toLocaleString()} DZD`, 'Revenu']}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(v: any) => [`${v?.toLocaleString() ?? 0} DZD`, 'Revenu']}
                 />
                 <Bar dataKey="value" fill="#0A6B4B" radius={[4, 4, 0, 0]} />
               </BarChart>

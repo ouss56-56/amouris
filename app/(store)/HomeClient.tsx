@@ -10,6 +10,7 @@ import { ChevronRight } from 'lucide-react';
 interface HomeClientProps {
   categories: Category[];
   brands: Brand[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   announcements: any[];
   tagSections: {
     id: string;
@@ -79,7 +80,7 @@ export default function HomeClient({ categories, brands, tagSections }: HomeClie
               {language === 'ar' ? (
                 <>اكتشف<br /><span className="text-amber-400 font-normal italic">جوهر</span><br />الفخامة</>
               ) : (
-                <>Découvrez<br /><span className="text-amber-400 font-normal italic">l'Essence</span><br />du Luxe</>
+                <>Découvrez<br /><span className="text-amber-400 font-normal italic">l&apos;Essence</span><br />du Luxe</>
               )}
             </motion.h1>
             <motion.p 

@@ -5,7 +5,7 @@ import { ShopContent } from '@/components/store/shop-content';
 
 export default async function ShopPage() {
   const [products, categories, brands] = await Promise.all([
-    getProducts({ status: 'active' } as any),
+    getProducts({ status: 'active' }),
     getCategories(),
     getBrands()
   ]);

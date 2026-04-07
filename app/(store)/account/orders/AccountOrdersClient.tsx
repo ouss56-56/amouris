@@ -29,6 +29,7 @@ export default function AccountOrdersClient({ orders: initialOrders, customerId 
           table: 'orders',
           filter: `customer_id=eq.${customerId}`
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (payload: any) => {
           if (payload.eventType === 'UPDATE') {
             setOrders(prev => prev.map(o => o.id === payload.new.id ? { 
@@ -112,7 +113,7 @@ export default function AccountOrdersClient({ orders: initialOrders, customerId 
 }
 
 function getStatusBadgeLabel(status: string, lang: 'ar' | 'fr') {
-  const labels: any = {
+  const labels: Record<string, { ar: string; fr: string }> = {
     pending: { ar: 'قيد الانتظار', fr: 'En attente' },
     confirmed: { ar: 'مؤكد', fr: 'Confirmé' },
     preparing: { ar: 'قيد التحضير', fr: 'En préparation' },

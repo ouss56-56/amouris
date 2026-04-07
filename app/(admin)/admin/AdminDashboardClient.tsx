@@ -30,16 +30,18 @@ export default function AdminDashboardClient({ orders: initialOrders, customers 
           schema: 'public',
           table: 'orders'
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (payload: any) => {
           if (payload.eventType === 'INSERT') {
             // New order - refresh list (simplified)
             window.location.reload(); 
           } else if (payload.eventType === 'UPDATE') {
-            setOrders(prev => prev.map(o => o.id === payload.new.id ? { 
+            const { id, order_status, payment_status, amount_paid } = payload.new;
+            setOrders(prev => prev.map(o => o.id === id ? { 
               ...o, 
-              status: payload.new.order_status,
-              paymentStatus: payload.new.payment_status,
-              amountPaid: Number(payload.new.amount_paid),
+              status: order_status as any, 
+              paymentStatus: payment_status as any,
+              amountPaid: Number(amount_paid),
             } : o));
           }
         }
