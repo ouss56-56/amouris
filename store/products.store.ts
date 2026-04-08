@@ -1,9 +1,10 @@
 'use client'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createClient } from '@/lib/supabase/client'
 
 export interface FlaconVariant {
   id: string
+  product_id?: string
   size_ml: number
   color: string
   color_name: string
@@ -35,82 +36,152 @@ export interface Product {
 
 interface ProductsStore {
   products: Product[]
-  _seeded: boolean
-  seed: (data: Product[]) => void
-  addProduct: (p: Omit<Product, 'id' | 'created_at'>) => Product
-  updateProduct: (id: string, updates: Partial<Product>) => void
-  deleteProduct: (id: string) => void
-  getBySlug: (slug: string) => Product | undefined
-  getActiveByTag: (tagId: string) => Product[]
-  getActiveByType: (type: 'perfume' | 'flacon') => Product[]
-  updateStockGrams: (id: string, delta: number) => void
-  updateVariantStock: (productId: string, variantId: string, delta: number) => void
+  isLoading: boolean
+  error: string | null
+  fetchProducts: () => Promise<void>
+  addProduct: (p: any) => Promise<Product>
+  updateProduct: (id: string, updates: any) => Promise<void>
+  deleteProduct: (id: string) => Promise<void>
+  updateStockGrams: (id: string, delta: number) => Promise<void>
+  updateVariantStock: (productId: string, variantId: string, delta: number) => Promise<void>
 }
 
-export const useProductsStore = create<ProductsStore>()(
-  persist(
-    (set, get) => ({
-      products: [],
-      _seeded: false,
+const supabase = createClient()
 
-      seed: (data) => {
-        if (!get()._seeded) set({ products: data, _seeded: true })
-      },
+export const useProductsStore = create<ProductsStore>((set, get) => ({
+  products: [],
+  isLoading: false,
+  error: null,
 
-      addProduct: (data) => {
-        const slug = data.name_fr
-          .toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-]/g, '')
-          + '-' + Date.now()
-        const p: Product = {
-          ...data,
-          id: `p_${Date.now()}`,
-          slug: data.slug || slug,
-          created_at: new Date().toISOString(),
-        }
-        set(s => ({ products: [...s.products, p] }))
-        return p
-      },
+  fetchProducts: async () => {
+    set({ isLoading: true })
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, flacon_variants(*), product_tags(tag_id)')
+      .order('created_at', { ascending: false })
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+    } else {
+      const mapped = data.map((p: any) => ({
+        ...p,
+        tag_ids: p.product_tags?.map((t: any) => t.tag_id) || [],
+        variants: p.flacon_variants || []
+      }))
+      set({ products: mapped, isLoading: false })
+    }
+  },
 
-      updateProduct: (id, updates) =>
-        set(s => ({ products: s.products.map(p => p.id === id ? { ...p, ...updates } : p) })),
+  addProduct: async (data) => {
+    set({ isLoading: true })
+    const { tag_ids, variants, ...rest } = data
+    
+    // 1. Insert product
+    const { data: product, error } = await supabase
+      .from('products')
+      .insert([rest])
+      .select()
+      .single()
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
 
-      deleteProduct: (id) =>
-        set(s => ({ products: s.products.filter(p => p.id !== id) })),
+    // 2. Insert tags
+    if (tag_ids?.length) {
+      const tagInserts = tag_ids.map((tid: string) => ({ product_id: product.id, tag_id: tid }))
+      await supabase.from('product_tags').insert(tagInserts)
+    }
 
-      getBySlug: (slug) => get().products.find(p => p.slug === slug),
+    // 3. Insert variants
+    if (variants?.length) {
+      const variantInserts = variants.map((v: any) => ({ ...v, product_id: product.id }))
+      await supabase.from('flacon_variants').insert(variantInserts)
+    }
 
-      getActiveByTag: (tagId) =>
-        get().products.filter(p => p.status === 'active' && p.tag_ids.includes(tagId)),
+    const { data: fullProduct } = await supabase
+      .from('products')
+      .select('*, flacon_variants(*), product_tags(tag_id)')
+      .eq('id', product.id)
+      .single()
 
-      getActiveByType: (type) =>
-        get().products.filter(p => p.status === 'active' && p.product_type === type),
+    const mapped = {
+      ...fullProduct,
+      tag_ids: fullProduct.product_tags?.map((t: any) => t.tag_id) || [],
+      variants: fullProduct.flacon_variants || []
+    }
 
-      updateStockGrams: (id, delta) =>
-        set(s => ({
-          products: s.products.map(p =>
-            p.id === id ? { ...p, stock_grams: Math.max(0, (p.stock_grams || 0) + delta) } : p
-          ),
-        })),
+    set(s => ({ products: [mapped, ...s.products], isLoading: false }))
+    return mapped
+  },
 
-      updateVariantStock: (productId, variantId, delta) =>
-        set(s => ({
-          products: s.products.map(p =>
-            p.id === productId
-              ? {
-                  ...p,
-                  variants: p.variants?.map(v =>
-                    v.id === variantId
-                      ? { ...v, stock_units: Math.max(0, v.stock_units + delta) }
-                      : v
-                  ),
-                }
-              : p
-          ),
-        })),
-    }),
-    { name: 'amouris_products' }
-  )
-)
+  updateProduct: async (id, updates) => {
+    set({ isLoading: true })
+    const { tag_ids, variants, ...rest } = updates
+
+    // 1. Update basic info
+    const { error } = await supabase
+      .from('products')
+      .update(rest)
+      .eq('id', id)
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+
+    // 2. Update tags (simplistic: delete and re-insert)
+    if (tag_ids !== undefined) {
+      await supabase.from('product_tags').delete().eq('product_id', id)
+      if (tag_ids.length) {
+        const tagInserts = tag_ids.map((tid: string) => ({ product_id: id, tag_id: tid }))
+        await supabase.from('product_tags').insert(tagInserts)
+      }
+    }
+
+    // 3. Update variants (simplistic: delete and re-insert)
+    if (variants !== undefined) {
+      await supabase.from('flacon_variants').delete().eq('product_id', id)
+      if (variants.length) {
+        const variantInserts = variants.map((v: any) => {
+          const { id: _, ...vData} = v
+          return { ...vData, product_id: id }
+        })
+        await supabase.from('flacon_variants').insert(variantInserts)
+      }
+    }
+
+    await get().fetchProducts()
+    set({ isLoading: false })
+  },
+
+  deleteProduct: async (id) => {
+    set({ isLoading: true })
+    const { error } = await supabase.from('products').delete().eq('id', id)
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({ products: s.products.filter(p => p.id !== id), isLoading: false }))
+  },
+
+  updateStockGrams: async (id, delta) => {
+    const p = get().products.find(x => x.id === id)
+    if (!p) return
+    const newVal = Math.max(0, (p.stock_grams || 0) + delta)
+    await get().updateProduct(id, { stock_grams: newVal })
+  },
+
+  updateVariantStock: async (productId, variantId, delta) => {
+    const p = get().products.find(x => x.id === productId)
+    if (!p) return
+    const v = p.variants?.find(x => x.id === variantId)
+    if (!v) return
+    const newVal = Math.max(0, v.stock_units + delta)
+    
+    // We update the specific variant in the DB
+    await supabase.from('flacon_variants').update({ stock_units: newVal }).eq('id', variantId)
+    await get().fetchProducts()
+  }
+}))

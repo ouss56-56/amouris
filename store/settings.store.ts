@@ -1,50 +1,48 @@
 'use client'
+
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-interface Settings {
-  storeNameFr: string
-  storeNameAr: string
-  sloganFr: string
-  sloganAr: string
-  contactEmail: string
-  contactPhone: string
+export interface StoreSettings {
+  storeNameFR: string
+  storeNameAR: string
+  sloganFR: string
+  sloganAR: string
+  email: string
+  phone: string
   address: string
   wilaya: string
-  instagramUrl: string
-  facebookUrl: string
-  freeShippingThreshold: number
-  lowStockThresholdGrams: number
-  lowStockThresholdUnits: number
+  instagram: string
+  facebook: string
+  freeDeliveryThreshold: number
+  alertStockPerfume: number
+  alertStockFlacon: number
   minOrderAmount: number
 }
 
-interface SettingsStore extends Settings {
-  updateSettings: (partial: Partial<Settings>) => void
-}
-
-const DEFAULT_SETTINGS: Settings = {
-  storeNameFr: "Amouris Parfums",
-  storeNameAr: "أموريس للعطور",
-  sloganFr: "L'essence du luxe — Huiles et flacons d'exception",
-  sloganAr: "جوهر الفخامة — زيوت وقوارير استثنائية",
-  contactEmail: "contact@amouris-parfums.com",
-  contactPhone: "+213 550 00 00 00",
-  address: "Quartier El Yasmine, Alger",
-  wilaya: "Alger",
-  instagramUrl: "",
-  facebookUrl: "",
-  freeShippingThreshold: 50000,
-  lowStockThresholdGrams: 500,
-  lowStockThresholdUnits: 10,
-  minOrderAmount: 0 // Prompt didn't specify, but good to have
+interface SettingsStore extends StoreSettings {
+  updateSettings: (updates: Partial<StoreSettings>) => void
 }
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
-      ...DEFAULT_SETTINGS,
-      updateSettings: (partial) => set((state) => ({ ...state, ...partial })),
+      storeNameFR: "Amouris Parfums",
+      storeNameAR: "أموريس للعطور",
+      sloganFR: "L'essence du luxe — Huiles et flacons d'exception",
+      sloganAR: "جوهر الفخامة — زيوت وقوارير استثنائية",
+      email: "contact@amouris-parfums.com",
+      phone: "+213 550 00 00 00",
+      address: "Quartier El Yasmine, Alger",
+      wilaya: "Alger",
+      instagram: "",
+      facebook: "",
+      freeDeliveryThreshold: 50000,
+      alertStockPerfume: 500,
+      alertStockFlacon: 10,
+      minOrderAmount: 0,
+      
+      updateSettings: (updates) => set((state) => ({ ...state, ...updates })),
     }),
     {
       name: 'amouris_settings',

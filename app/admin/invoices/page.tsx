@@ -1,135 +1,173 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { getAllInvoices } from '@/lib/actions/invoices'
-import { FileText, Search, Download, ExternalLink } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
+import { useState, useMemo } from 'react';
+import { useOrdersStore, Order } from '@/store/orders.store';
+import { FileText, Search, Download, Printer, Eye } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function AdminInvoicesPage() {
-  const [invoices, setInvoices] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const { orders } = useOrdersStore();
+  const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true)
-      try {
-        const inv = await getAllInvoices()
-        setInvoices(inv)
-      } catch (error) {
-        console.error('Failed to load admin invoices:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+  const filtered = useMemo(() => {
+    return orders.filter(o => {
+      const name = o.guest_first_name ? `${o.guest_first_name} ${o.guest_last_name}` : 'Client Enregistré';
+      const s = search.toLowerCase();
+      return o.order_number.toLowerCase().includes(s) || name.toLowerCase().includes(s);
+    });
+  }, [orders, search]);
 
-  const filtered = invoices.filter(i => {
-    const orderNum = i.orders?.order_number?.toLowerCase() || ''
-    const invNum = i.invoice_number?.toLowerCase() || ''
-    const s = search.toLowerCase()
-    return orderNum.includes(s) || invNum.includes(s)
-  })
+  const generatePDF = (order: Order) => {
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(10, 61, 46); // Emerald 950
+    doc.text('AMOURIS PARFUMS', 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(150, 150, 150);
+    doc.text('FACTURE OFFICIELLE', 14, 28);
+    doc.text(`N° Facture: INV-${order.order_number.split('-')[1]}`, 140, 28);
+    doc.text(`Date: ${new Date(order.created_at).toLocaleDateString()}`, 140, 33);
+
+    // Client Info
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.text('DESTINATAIRE:', 14, 50);
+    doc.setFontSize(10);
+    const name = order.guest_first_name ? `${order.guest_first_name} ${order.guest_last_name}` : `Client ID: ${order.customer_id}`;
+    doc.text(name, 14, 57);
+    doc.text(`Tél: ${order.guest_phone || 'N/A'}`, 14, 62);
+    doc.text(`Wilaya: ${order.guest_wilaya || 'N/A'}`, 14, 67);
+
+    // Items Table
+    autoTable(doc, {
+      startY: 80,
+      head: [['Produit', 'Détails', 'Prix Unitaire', 'Total']],
+      body: order.items.map(item => [
+        item.product_name_fr,
+        item.quantity_grams ? `${item.quantity_grams}g` : `${item.quantity_units} unités`,
+        `${item.unit_price} DZD`,
+        `${item.total_price} DZD`
+      ]),
+      headStyles: { fillColor: [10, 61, 46], textColor: [255, 255, 255] },
+      margin: { top: 80 }
+    });
+
+    // Total
+    const finalY = (doc as any).lastAutoTable.finalY + 10;
+    doc.setFontSize(14);
+    doc.setTextColor(201, 168, 76); // Gold #C9A84C
+    doc.text(`TOTAL À PAYER: ${order.total_amount.toLocaleString()} DZD`, 120, finalY + 10);
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Merci pour votre commande chez Amouris.', 14, finalY + 30);
+    doc.text('Cette facture est générée électroniquement.', 14, finalY + 35);
+
+    doc.save(`Facture_Amouris_${order.order_number}.pdf`);
+  };
 
   return (
-    <div className="space-y-8 p-4 md:p-0">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-12">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div>
-            <h1 className="text-3xl font-bold font-serif text-emerald-950 flex items-center gap-3">
-              <FileText size={32} />
-              Factures
-            </h1>
-            <p className="text-emerald-950/40 text-sm mt-1">Historique des factures générées pour vos commandes</p>
+           <h1 className="font-serif text-4xl text-emerald-950 mb-2">Comptabilité</h1>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">Gestion des factures & Pièces comptables</p>
         </div>
-      </div>
+      </header>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-900/20" />
-          <input
-            type="text"
-            placeholder="Rechercher par Numéro de Facture ou Commande..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-14 pr-6 py-4 bg-white border border-emerald-50 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-emerald-900/5 transition-all shadow-sm"
-          />
+      <section className="flex flex-col md:flex-row gap-6">
+        <div className="relative flex-1 group">
+           <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-950/20 group-focus-within:text-[#C9A84C] transition-colors" />
+           <input 
+             type="text"
+             placeholder="Rechercher par N° de Commande ou Nom Client..."
+             value={search}
+             onChange={e => setSearch(e.target.value)}
+             className="w-full h-16 pl-16 pr-8 bg-white border border-emerald-950/5 rounded-2xl outline-none focus:border-[#C9A84C] shadow-sm font-medium text-emerald-950 transition-all"
+           />
         </div>
-      </div>
+      </section>
 
-      {isLoading ? (
-        <div className="py-20 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-900 mx-auto"></div>
+      <div className="bg-white rounded-[3rem] border border-emerald-950/5 shadow-2xl shadow-emerald-950/5 overflow-hidden">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-emerald-950/5 bg-neutral-50/50">
+                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">N° Facture</th>
+                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Commande Liée</th>
+                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Client</th>
+                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Montant Total</th>
+                <th className="px-10 py-6 text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-emerald-950/5">
+              <AnimatePresence mode="popLayout">
+                {filtered.map((order) => {
+                  const name = order.guest_first_name ? `${order.guest_first_name} ${order.guest_last_name}` : `Client #${order.customer_id?.slice(0, 5)}`;
+                  const invoiceNumber = `INV-${order.order_number.split('-')[1]}`;
+                  return (
+                    <motion.tr 
+                      layout
+                      key={order.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="group hover:bg-neutral-50/50 transition-colors"
+                    >
+                      <td className="px-10 py-8">
+                        <div>
+                          <p className="font-mono font-bold text-emerald-950">{invoiceNumber}</p>
+                          <p className="text-[9px] font-black tracking-widest text-emerald-950/20 uppercase mt-1">
+                            {new Date(order.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-10 py-8">
+                        <span className="text-xs font-black text-amber-600 uppercase tracking-widest">{order.order_number}</span>
+                      </td>
+                      <td className="px-10 py-8">
+                        <div>
+                          <p className="text-sm font-bold text-emerald-950">{name}</p>
+                          <p className="text-[10px] text-emerald-950/40 font-medium">{order.guest_wilaya || '—'}</p>
+                        </div>
+                      </td>
+                      <td className="px-10 py-8">
+                        <p className="font-serif text-xl text-emerald-950">{order.total_amount.toLocaleString()} <span className="text-xs font-normal">DZD</span></p>
+                      </td>
+                      <td className="px-10 py-8 text-right">
+                         <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => generatePDF(order)}
+                              className="w-12 h-12 rounded-xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/40 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm"
+                              title="Télécharger la facture"
+                            >
+                               <Download size={16} />
+                            </button>
+                         </div>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
+              </AnimatePresence>
+            </tbody>
+          </table>
         </div>
-      ) : (
-        <div className="bg-white rounded-[2.5rem] border border-emerald-50 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-              <table className="w-full text-left">
-              <thead>
-                  <tr className="bg-emerald-50/30">
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">Facture</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">Commande liée</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">Client</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">Montant</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40 text-right">Actions</th>
-                  </tr>
-              </thead>
-              <tbody className="divide-y divide-emerald-50">
-                  <AnimatePresence mode="popLayout">
-                  {filtered.map(invoice => {
-                    const order = invoice.orders
-                    const clientName = order?.profiles 
-                        ? `${order.profiles.first_name} ${order.profiles.last_name}` 
-                        : (order?.guest_first_name ? `${order.guest_first_name} ${order.guest_last_name}` : 'Inconnu')
-                    
-                    return (
-                      <motion.tr 
-                          layout
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          key={invoice.id} 
-                          className="hover:bg-emerald-50/20 transition-all group"
-                      >
-                      <td className="px-8 py-6 font-bold text-emerald-950 font-mono tracking-tight">
-                         {invoice.invoice_number}
-                         <div className="text-[10px] text-emerald-900/40 font-sans mt-0.5">{new Date(invoice.created_at).toLocaleDateString('fr-FR')}</div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <Link href={`/admin/orders/${invoice.order_id}`} className="inline-flex items-center gap-1 font-black text-amber-600 hover:text-amber-700 hover:underline text-sm uppercase tracking-widest transition-all">
-                            {order?.order_number || 'AM-XXXXX'} <ExternalLink size={14} />
-                        </Link>
-                      </td>
-                      <td className="px-8 py-6 font-medium text-emerald-900/80">
-                         {clientName}
-                      </td>
-                      <td className="px-8 py-6 font-black text-emerald-950">
-                         {order?.total_amount ? order.total_amount.toLocaleString() : '0'} <span className="text-[10px] text-emerald-900/40">DZD</span>
-                      </td>
-                      <td className="px-8 py-6">
-                          <div className="flex justify-end gap-3">
-                          <a href={invoice.pdf_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center text-emerald-900/40 hover:text-white hover:bg-emerald-900 rounded-xl transition-all shadow-sm">
-                              <Download size={16} />
-                          </a>
-                          </div>
-                      </td>
-                      </motion.tr>
-                  )})}
-                  </AnimatePresence>
-              </tbody>
-              </table>
+
+        {filtered.length === 0 && (
+          <div className="py-32 text-center">
+             <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-100">
+                <FileText size={32} />
+             </div>
+             <p className="font-serif text-2xl text-emerald-950/20 italic">Aucune facture disponible.</p>
           </div>
-          {filtered.length === 0 && (
-            <div className="p-24 text-center">
-                <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FileText size={32} className="text-emerald-950/10" />
-                </div>
-                <p className="text-emerald-950/20 font-serif text-xl">Aucune facture trouvée</p>
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </div>
-  )
+  );
 }

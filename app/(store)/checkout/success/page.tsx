@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders.store';
+import { useCustomerAuthStore } from '@/store/customer-auth.store';
 import { useI18n } from '@/i18n/i18n-context';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Package, Truck, Phone } from 'lucide-react';
@@ -10,12 +11,13 @@ import { Suspense } from 'react';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get('id');
+  const orderNumber = searchParams.get('order');
   const { orders } = useOrdersStore();
+  const { isAuthenticated } = useCustomerAuthStore();
   const { language } = useI18n();
   const isAr = language === 'ar';
 
-  const order = orders.find(o => o.id === orderId);
+  const order = orders.find(o => o.order_number === orderNumber);
 
   if (!order) {
     return (
@@ -93,13 +95,23 @@ function SuccessContent() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-12 border-t border-emerald-950/5">
-               <Link 
-                 href="/account/orders" 
-                 className="flex-1 h-16 bg-[#0a3d2e] text-white rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-xl shadow-emerald-900/10 gap-3 group"
-               >
-                 {isAr ? 'تتبع الطلبية' : 'Suivre ma commande'}
-                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-               </Link>
+               {isAuthenticated ? (
+                 <Link 
+                   href={`/account/orders/${order.id}`}
+                   className="flex-1 h-16 bg-[#0a3d2e] text-white rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-xl shadow-emerald-900/10 gap-3 group"
+                 >
+                   {isAr ? 'عرض طلبيتي' : 'Voir ma commande'}
+                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                 </Link>
+               ) : (
+                 <Link 
+                   href="/register" 
+                   className="flex-1 h-16 bg-[#0a3d2e] text-white rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-xl shadow-emerald-900/10 gap-3 group px-4 text-center leading-relaxed"
+                 >
+                   {isAr ? 'إنشاء حساب لتتبع طلبياتك' : 'Créer un compte pour suivre'}
+                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
+                 </Link>
+               )}
                <Link 
                  href="/shop" 
                  className="flex-1 h-16 bg-white border border-emerald-950/5 text-emerald-950 rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-50 transition-all font-bold"

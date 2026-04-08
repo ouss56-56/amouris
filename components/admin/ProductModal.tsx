@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { useProductsStore, FlaconVariant, Product } from '@/store/products.store';
 import { useCategoriesStore } from '@/store/categories.store';
 import { useBrandsStore } from '@/store/brands.store';
 import { useTagsStore } from '@/store/tags.store';
-import { Upload, X, Plus, Trash2, Loader2, Sparkles, Box, Droplets } from 'lucide-react';
+import { useCollectionsStore } from '@/store/collections.store';
+import { Upload, X, Plus, Trash2, Loader2, Sparkles, Box, Droplets, Image as ImageIcon, Eye, EyeOff } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface ProductModalProps {
   product?: Product | null;
@@ -15,14 +16,19 @@ interface ProductModalProps {
   onClose: () => void;
 }
 
+const supabase = createClient();
+
 export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const { addProduct, updateProduct } = useProductsStore();
   const categories = useCategoriesStore(s => s.categories);
   const brands = useBrandsStore(s => s.brands);
+  const collections = useCollectionsStore(s => s.collections);
   const tags = useTagsStore(s => s.tags);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [type, setType] = useState<'perfume' | 'flacon'>('perfume');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<Partial<Product>>({
     name_fr: '',
@@ -31,12 +37,13 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     description_ar: '',
     category_id: '',
     brand_id: '',
+    collection_id: '',
     tag_ids: [],
     images: [],
     status: 'active',
   });
 
-  // Specific fields
+  const [slug, setSlug] = useState('');
   const [pricePerGram, setPricePerGram] = useState<number>(0);
   const [stockGrams, setStockGrams] = useState<number>(0);
   const [variants, setVariants] = useState<FlaconVariant[]>([]);
@@ -44,6 +51,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   useEffect(() => {
     if (product) {
       setType(product.product_type);
+      setSlug(product.slug);
       setFormData({
         name_fr: product.name_fr,
         name_ar: product.name_ar,
@@ -51,6 +59,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
         description_ar: product.description_ar,
         category_id: product.category_id,
         brand_id: product.brand_id,
+        collection_id: product.collection_id || '',
         tag_ids: product.tag_ids || [],
         images: product.images || [],
         status: product.status || 'active',
@@ -63,6 +72,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
       }
     } else {
       setType('perfume');
+      setSlug('');
       setFormData({
         name_fr: '',
         name_ar: '',
@@ -70,6 +80,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
         description_ar: '',
         category_id: categories[0]?.id || '',
         brand_id: '',
+        collection_id: '',
         tag_ids: [],
         images: [],
         status: 'active',
@@ -79,6 +90,51 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
       setVariants([]);
     }
   }, [product, isOpen, categories]);
+
+  // Auto-slug generation
+  useEffect(() => {
+    if (!product && formData.name_fr) {
+      const generated = formData.name_fr
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+      setSlug(generated);
+    }
+  }, [formData.name_fr, product]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    const newImages = [...(formData.images || [])];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (error) {
+        console.error('Error uploading image:', error);
+        continue;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      newImages.push(publicUrl);
+    }
+
+    setFormData({ ...formData, images: newImages });
+    setIsUploading(false);
+  };
 
   const handleAddVariant = () => {
     setVariants([...variants, {
@@ -116,14 +172,15 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     try {
       const data: any = {
         ...formData,
+        slug,
         product_type: type,
         ...(type === 'perfume' ? { price_per_gram: pricePerGram, stock_grams: stockGrams } : { variants })
       };
 
       if (product) {
-        updateProduct(product.id, data);
+        await updateProduct(product.id, data);
       } else {
-        addProduct(data);
+        await addProduct(data);
       }
       onClose();
     } catch (err) {
@@ -165,17 +222,97 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
               </button>
            </div>
 
+           <div className="flex gap-4 p-2 bg-neutral-100 rounded-2xl w-fit">
+              <button 
+                type="button" 
+                onClick={() => setFormData({ ...formData, status: 'active' })}
+                className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${formData.status === 'active' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+              >
+                <Eye size={12} /> Actif
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setFormData({ ...formData, status: 'draft' })}
+                className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${formData.status === 'draft' ? 'bg-amber-600 text-white shadow-md' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+              >
+                <EyeOff size={12} /> Brouillon
+              </button>
+           </div>
+
            {/* Core Info */}
            <section className="space-y-8">
+              {/* Image Management */}
+              <div className="space-y-4">
+                 <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Gestion des Visuels</label>
+                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {formData.images?.map((img, idx) => (
+                       <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-emerald-950/5 group/img">
+                          <img src={img} className="w-full h-full object-cover" alt={`Product ${idx}`} />
+                          <button 
+                             type="button"
+                             onClick={() => setFormData({ ...formData, images: formData.images?.filter((_, i) => i !== idx) })}
+                             className="absolute top-2 right-2 w-8 h-8 bg-rose-500 text-white rounded-lg flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
+                          >
+                             <X size={14} />
+                          </button>
+                       </div>
+                    ))}
+                    
+                    <input 
+                      type="file" 
+                      multiple 
+                      accept="image/*" 
+                      className="hidden" 
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                    />
+
+                    <button 
+                      type="button"
+                      disabled={isUploading}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square rounded-2xl border-2 border-dashed border-emerald-950/10 flex flex-col items-center justify-center gap-3 bg-neutral-50/50 hover:bg-neutral-50 transition-colors relative overflow-hidden"
+                    >
+                       {isUploading ? <Loader2 className="animate-spin text-emerald-950/20" size={20} /> : <Upload size={20} className="text-emerald-950/20" />}
+                       <span className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">
+                         {isUploading ? 'Téléchargement...' : 'Ajouter'}
+                       </span>
+                    </button>
+
+                    <button 
+                       type="button"
+                       onClick={() => {
+                         const mockImages = [
+                           'https://images.unsplash.com/photo-1541602288-50720526017a?q=80&w=1000&auto=format&fit=crop',
+                           'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1000&auto=format&fit=crop',
+                           'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop',
+                           'https://images.unsplash.com/photo-1563170351-be82bc888bb4?q=80&w=1000&auto=format&fit=crop'
+                         ];
+                         const randomImg = mockImages[Math.floor(Math.random() * mockImages.length)];
+                         setFormData({ ...formData, images: [...(formData.images || []), randomImg] });
+                       }}
+                       className="aspect-square rounded-2xl border border-[#C9A84C]/20 flex flex-col items-center justify-center gap-2 bg-amber-50/30 hover:bg-amber-50 transition-colors group"
+                    >
+                       <Sparkles size={20} className="text-[#C9A84C] group-hover:scale-110 transition-transform" />
+                       <span className="text-[8px] font-black uppercase tracking-widest text-[#C9A84C]">Simulation AI</span>
+                    </button>
+                 </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Nom Français</label>
                     <input required value={formData.name_fr} onChange={e => setFormData({ ...formData, name_fr: e.target.value })} className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-medium text-emerald-950 transition-colors" />
                  </div>
-                 <div className="space-y-3">
+                  <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Nom Arabe</label>
                     <input required value={formData.name_ar} onChange={e => setFormData({ ...formData, name_ar: e.target.value })} dir="rtl" className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-medium text-emerald-950 transition-colors font-arabic" />
                  </div>
+              </div>
+
+              <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Slug (URL)</label>
+                  <input value={slug} onChange={e => setSlug(e.target.value)} className="w-full h-12 px-6 rounded-2xl bg-neutral-100 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-mono text-xs text-emerald-950/50 transition-colors" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -200,11 +337,18 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                        {categories.map(c => <option key={c.id} value={c.id}>{c.name_fr}</option>)}
                     </select>
                  </div>
-                 <div className="space-y-4">
+                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Maison / Marque</label>
                     <select value={formData.brand_id || ''} onChange={e => setFormData({ ...formData, brand_id: e.target.value })} className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none text-sm font-bold text-emerald-950">
-                       <option value="">Sélectionner une marque</option>
+                       <option value="">Sélectionner une marque (Optionnel)</option>
                        {brands.map(b => <option key={b.id} value={b.id}>{b.name_fr}</option>)}
+                    </select>
+                 </div>
+                 <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Collection</label>
+                    <select value={formData.collection_id || ''} onChange={e => setFormData({ ...formData, collection_id: e.target.value })} className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none text-sm font-bold text-emerald-950">
+                       <option value="">Sélectionner une collection (Optionnel)</option>
+                       {collections.map(c => <option key={c.id} value={c.id}>{c.name_fr}</option>)}
                     </select>
                  </div>
               </div>

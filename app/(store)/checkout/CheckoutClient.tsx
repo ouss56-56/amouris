@@ -22,12 +22,10 @@ export default function CheckoutClient() {
   const totalAmount = getTotal();
 
   const [formData, setFormData] = useState({
-    firstName: customer?.firstName || '',
-    lastName: customer?.lastName || '',
-    phone: customer?.phoneNumber || '',
-    wilaya: customer?.wilaya || '',
-    commune: customer?.commune || '',
-    notes: ''
+    firstName: '',
+    lastName: '',
+    phone: '',
+    wilaya: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,37 +37,50 @@ export default function CheckoutClient() {
   }, [items, router, isSubmitting]);
 
   const handleConfirm = async () => {
-    if (!formData.firstName || !formData.lastName || !formData.phone || !formData.wilaya) {
+    // Validation for guest
+    if (!isAuthenticated && (!formData.firstName || !formData.lastName || !formData.phone || !formData.wilaya)) {
       alert(isAr ? 'يرجى ملء جميع الحقول الضرورية' : 'Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+    // Validation for authenticated user
+    if (isAuthenticated && (!customer?.firstName || !customer?.lastName || !customer?.phoneNumber || !customer?.wilaya)) {
+      alert(isAr ? 'يرجى استكمال معلومات ملفك الشخصي قبل الطلب' : 'Veuillez compléter votre profil avant de commander.');
       return;
     }
 
     setIsSubmitting(true);
 
-    const orderItems: OrderItem[] = items.map(i => ({
-      product_id: i.product_id,
-      flacon_variant_id: i.flacon_variant_id || null,
-      product_name_fr: i.name_fr,
-      product_name_ar: i.name_ar,
-      quantity_grams: i.quantity_grams || null,
-      quantity_units: i.quantity_units || null,
-      unit_price: i.unit_price,
-      total_price: i.total_price
-    }));
+    try {
+      const orderItems: OrderItem[] = items.map(i => ({
+        product_id: i.product_id,
+        flacon_variant_id: i.flacon_variant_id || null,
+        product_name_fr: i.name_fr,
+        product_name_ar: i.name_ar,
+        quantity_grams: i.quantity_grams || null,
+        quantity_units: i.quantity_units || null,
+        unit_price: i.unit_price,
+        total_price: i.total_price
+      }));
 
-    const order = createOrder({
-      customer_id: isAuthenticated ? customer!.id : null,
-      guest_first_name: !isAuthenticated ? formData.firstName : undefined,
-      guest_last_name: !isAuthenticated ? formData.lastName : undefined,
-      guest_phone: !isAuthenticated ? formData.phone : undefined,
-      guest_wilaya: !isAuthenticated ? formData.wilaya : undefined,
-      items: orderItems,
-      total_amount: totalAmount,
-      order_status: 'pending'
-    });
+      const order = await createOrder({
+        customer_id: isAuthenticated ? customer!.id : null,
+        guest_first_name: !isAuthenticated ? formData.firstName : undefined,
+        guest_last_name: !isAuthenticated ? formData.lastName : undefined,
+        guest_phone: !isAuthenticated ? formData.phone : undefined,
+        guest_wilaya: !isAuthenticated ? formData.wilaya : undefined,
+        items: orderItems,
+        total_amount: totalAmount,
+        order_status: 'pending'
+      });
 
-    clear();
-    router.push(`/checkout/success?id=${order.id}`);
+      clear();
+      router.push(`/checkout/success?order=${order.order_number}`);
+    } catch (err) {
+      console.error('Order creation failed:', err);
+      alert(isAr ? 'فشل إنشاء الطلب. يرجى المحاولة مرة أخرى.' : 'Échec de la création de la commande. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0 && !isSubmitting) return null;
@@ -102,58 +113,67 @@ export default function CheckoutClient() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم الشخصي' : 'Prénom'}</label>
-                  <input 
-                    type="text"
-                    value={formData.firstName}
-                    onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                  />
+              {isAuthenticated ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-50 p-6 rounded-2xl border border-emerald-950/5">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الاسم الشخصي' : 'Prénom'}</p>
+                      <p className="font-medium text-emerald-950">{customer?.firstName}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الاسم العائلي' : 'Nom'}</p>
+                      <p className="font-medium text-emerald-950">{customer?.lastName}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'رقم الهاتف' : 'Numéro de téléphone'}</p>
+                      <p className="font-medium text-emerald-950">{customer?.phoneNumber}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الولاية' : 'Wilaya'}</p>
+                      <p className="font-medium text-emerald-950">{customer?.wilaya}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <Link href="/account/settings" className="text-xs font-bold text-[#C9A84C] hover:text-emerald-950 transition-colors uppercase tracking-widest">
+                      {isAr ? 'تعديل في ملفي الشخصي' : 'Modifier dans mon profil'}
+                    </Link>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم العائلي' : 'Nom'}</label>
-                  <input 
-                    type="text"
-                    value={formData.lastName}
-                    onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                  />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم الشخصي' : 'Prénom'}</label>
+                    <input 
+                      type="text"
+                      value={formData.firstName}
+                      onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                      className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم العائلي' : 'Nom'}</label>
+                    <input 
+                      type="text"
+                      value={formData.lastName}
+                      onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                      className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                    />
+                  </div>
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'رقم الهاتف' : 'Numéro de téléphone'}</label>
+                    <input 
+                      type="tel"
+                      value={formData.phone}
+                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                    />
+                  </div>
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الولاية' : 'Wilaya'}</label>
+                    <WilayaSelector value={formData.wilaya} onValueChange={val => setFormData({ ...formData, wilaya: val })} />
+                  </div>
                 </div>
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'رقم الهاتف' : 'Numéro de téléphone'}</label>
-                  <input 
-                    type="tel"
-                    value={formData.phone}
-                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الولاية' : 'Wilaya'}</label>
-                  <WilayaSelector value={formData.wilaya} onValueChange={val => setFormData({ ...formData, wilaya: val })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'البلدية' : 'Commune'}</label>
-                  <input 
-                    type="text"
-                    value={formData.commune}
-                    onChange={e => setFormData({ ...formData, commune: e.target.value })}
-                    className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'ملاحظات' : 'Notes ou instructions'}</label>
-                   <textarea 
-                      rows={3}
-                      value={formData.notes}
-                      onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                      className="w-full p-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950 resize-none"
-                      placeholder={isAr ? 'أي معلومات إضافية للتوصيل...' : 'Ex: Sonner à la boutique, livraison après 14h...'}
-                   />
-                </div>
-              </div>
+              )}
             </section>
 
             <div className="flex items-start gap-4 p-8 bg-amber-50 rounded-3xl border border-amber-200/50">

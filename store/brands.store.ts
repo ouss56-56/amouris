@@ -1,6 +1,6 @@
 'use client'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createClient } from '@/lib/supabase/client'
 
 export interface Brand {
   id: string
@@ -12,23 +12,84 @@ export interface Brand {
 
 interface BrandsStore {
   brands: Brand[]
-  _seeded: boolean
-  seed: (data: Brand[]) => void
-  add: (b: Omit<Brand, 'id'>) => void
-  update: (id: string, updates: Partial<Brand>) => void
-  remove: (id: string) => void
+  isLoading: boolean
+  error: string | null
+  fetchBrands: () => Promise<void>
+  addBrand: (b: Omit<Brand, 'id'>) => Promise<void>
+  updateBrand: (id: string, updates: Partial<Brand>) => Promise<void>
+  deleteBrand: (id: string) => Promise<void>
+  
+  // Aliases for compatibility
+  add: (b: Omit<Brand, 'id'>) => Promise<void>
+  update: (id: string, updates: Partial<Brand>) => Promise<void>
+  remove: (id: string) => Promise<void>
 }
 
-export const useBrandsStore = create<BrandsStore>()(
-  persist(
-    (set, get) => ({
-      brands: [],
-      _seeded: false,
-      seed: (data) => { if (!get()._seeded) set({ brands: data, _seeded: true }) },
-      add: (b) => set(s => ({ brands: [...s.brands, { ...b, id: `br_${Date.now()}` }] })),
-      update: (id, u) => set(s => ({ brands: s.brands.map(b => b.id === id ? { ...b, ...u } : b) })),
-      remove: (id) => set(s => ({ brands: s.brands.filter(b => b.id !== id) })),
-    }),
-    { name: 'amouris_brands' }
-  )
-)
+const supabase = createClient()
+
+export const useBrandsStore = create<BrandsStore>((set, get) => ({
+  brands: [],
+  isLoading: false,
+  error: null,
+
+  fetchBrands: async () => {
+    set({ isLoading: true })
+    const { data, error } = await supabase
+      .from('brands')
+      .select('*')
+      .order('name')
+    
+    if (error) set({ error: error.message, isLoading: false })
+    else set({ brands: data || [], isLoading: false })
+  },
+
+  addBrand: async (brand) => {
+    set({ isLoading: true })
+    const { data, error } = await supabase
+      .from('brands')
+      .insert([brand])
+      .select()
+      .single()
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({ brands: [...s.brands, data], isLoading: false }))
+  },
+
+  updateBrand: async (id, updates) => {
+    set({ isLoading: true })
+    const { error } = await supabase
+      .from('brands')
+      .update(updates)
+      .eq('id', id)
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({
+      brands: s.brands.map(b => b.id === id ? { ...b, ...updates } : b),
+      isLoading: false
+    }))
+  },
+
+  deleteBrand: async (id) => {
+    set({ isLoading: true })
+    const { error } = await supabase
+      .from('brands')
+      .delete()
+      .eq('id', id)
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({ brands: s.brands.filter(b => b.id !== id), isLoading: false }))
+  },
+
+  add: (b) => get().addBrand(b),
+  update: (id, u) => get().updateBrand(id, u),
+  remove: (id) => get().deleteBrand(id),
+}))

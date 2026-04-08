@@ -2,143 +2,206 @@
 
 import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
-import { Order } from '@/lib/types';
+import { Order } from '@/store/orders.store';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, FileText, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle2, ChevronRight, Package, Receipt, CreditCard } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface OrderDetailClientProps {
   order: Order;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  invoice?: any;
 }
 
-export default function OrderDetailClient({ order, invoice }: OrderDetailClientProps) {
-  const { t, language } = useI18n();
+export default function OrderDetailClient({ order }: OrderDetailClientProps) {
+  const { language } = useI18n();
+  const isAr = language === 'ar';
 
   const statuses = ['pending', 'confirmed', 'preparing', 'shipped', 'delivered'];
-  const currentStatusIndex = statuses.indexOf(order.status);
+  const currentStatusIndex = statuses.indexOf(order.order_status);
 
-  const statusLabels: Record<string, string> = {
-    'pending': language === 'ar' ? 'قيد الانتظار' : 'En attente',
-    'confirmed': language === 'ar' ? 'مؤكد' : 'Confirmé',
-    'preparing': language === 'ar' ? 'قيد التحضير' : 'En préparation',
-    'shipped': language === 'ar' ? 'تم الشحن' : 'Expédié',
-    'delivered': language === 'ar' ? 'تم التوصيل' : 'Livré',
-    'cancelled': language === 'ar' ? 'ملغى' : 'Annulé',
+  const statusLabels: Record<string, { ar: string; fr: string }> = {
+    'pending': { ar: 'قيد الانتظار', fr: 'En attente' },
+    'confirmed': { ar: 'مؤكد', fr: 'Confirmé' },
+    'preparing': { ar: 'قيد التحضير', fr: 'En préparation' },
+    'shipped': { ar: 'تم الشحن', fr: 'Expédié' },
+    'delivered': { ar: 'تم التوصيل', fr: 'Livré' },
+    'cancelled': { ar: 'ملغى', fr: 'Annulé' },
   };
 
+  const remaining = order.total_amount - (order.amount_paid || 0);
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-8">
-        <Link href="/account/orders">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5 rtl:rotate-180" />
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-heading font-bold">
-          {language === 'ar' ? 'تفاصيل الطلب' : 'Détails de la commande'} #{order.orderNumber}
-        </h1>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 space-y-6">
-          {/* Status Stepper */}
-          <div className="bg-card border rounded-xl p-6">
-             <h2 className="text-xl font-bold mb-6">{language === 'ar' ? 'حالة الطلب' : 'Statut de la commande'}</h2>
-             
-             {order.status === 'cancelled' ? (
-               <div className="p-4 bg-destructive/10 text-destructive rounded-md font-bold text-center">
-                 {statusLabels['cancelled']}
-               </div>
-             ) : (
-               <div className="relative flex justify-between">
-                 <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2 bg-muted rounded-full overflow-hidden" style={{ zIndex: 0 }}>
-                   <div 
-                     className="h-full bg-primary transition-all duration-500" 
-                     style={{ width: `${(Math.max(0, currentStatusIndex) / (statuses.length - 1)) * 100}%` }}
-                   />
-                 </div>
-                 
-                 {statuses.map((status, index) => {
-                   const isCompleted = index <= currentStatusIndex;
-                   const isCurrent = index === currentStatusIndex;
-                   return (
-                     <div key={status} className="relative z-10 flex flex-col items-center gap-2">
-                       <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
-                         isCompleted ? 'bg-primary border-primary text-primary-foreground' : 'bg-card border-muted text-muted-foreground'
-                       }`}>
-                         {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span>{index + 1}</span>}
-                       </div>
-                       <span className={`text-xs md:text-sm font-medium hidden sm:block ${isCurrent ? 'text-primary' : isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>
-                         {statusLabels[status]}
-                       </span>
-                     </div>
-                   );
-                 })}
-               </div>
-             )}
-          </div>
-
-          {/* Items */}
-          <div className="bg-card border rounded-xl overflow-hidden text-sm">
-             <div className="p-4 border-b bg-secondary/30">
-                <h2 className="text-lg font-bold">{language === 'ar' ? 'المنتجات' : 'Produits'}</h2>
-             </div>
-             <div>
-               {order.items.map((item, idx) => (
-                 <div key={idx} className="flex justify-between items-center p-4 border-b last:border-0 hover:bg-muted/30">
-                   <div>
-                     <div className="font-semibold">{language === 'ar' ? item.productNameAR : item.productNameFR}</div>
-                     <div className="text-muted-foreground text-xs">{item.quantity} x {item.unitPrice} {t('common.currency')}</div>
-                   </div>
-                   <div className="font-bold">{item.quantity * item.unitPrice} {t('common.currency')}</div>
-                 </div>
-               ))}
-             </div>
+    <div className="space-y-12">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-6">
+          <Link href="/account/orders">
+            <button className="w-12 h-12 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950 hover:bg-emerald-50 transition-colors">
+              <ArrowLeft className="w-5 h-5 rtl:rotate-180" />
+            </button>
+          </Link>
+          <div>
+            <h1 className="font-serif text-3xl md:text-4xl text-emerald-950">
+              {isAr ? 'تفاصيل الطلب' : 'Détails de la commande'}
+            </h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C9A84C]">
+              {order.order_number}
+            </p>
           </div>
         </div>
 
-        <div className="space-y-6">
-          {/* Order Summary */}
-          <div className="bg-card border rounded-xl p-6 relative">
-             <h2 className="text-xl font-bold mb-4">{t('checkout.order_summary')}</h2>
-             <div className="space-y-3 mb-4 text-sm">
-                <div className="flex justify-between">
-                   <span className="text-muted-foreground">{t('cart.subtotal')}</span>
-                   <span>{order.total - 800} {t('common.currency')}</span>
+        {order.invoice_url && (
+          <Button 
+            variant="outline" 
+            className="rounded-2xl border-emerald-950/10 text-emerald-900 hover:bg-[#0a3d2e] hover:text-white uppercase tracking-widest text-[10px] font-black px-8 py-6 h-auto"
+            onClick={() => window.open(order.invoice_url!, '_blank')}
+          >
+            <FileText className="w-4 h-4 mr-3 rtl:ml-3 rtl:mr-0" />
+            {isAr ? 'تحميل الفاتورة' : 'Télécharger la facture'}
+          </Button>
+        )}
+      </div>
+
+      {/* Timeline */}
+      <section className="bg-white p-8 md:p-12 rounded-[3rem] border border-emerald-950/5 shadow-sm">
+        <h2 className="font-serif text-2xl text-emerald-950 mb-12">
+          {isAr ? 'تتبع الطلب' : 'Suivi de commande'}
+        </h2>
+        
+        {order.order_status === 'cancelled' ? (
+          <div className="p-8 bg-rose-50 border border-rose-100 rounded-3xl text-rose-600 font-bold text-center flex items-center justify-center gap-4">
+            <AlertCircle />
+            {isAr ? 'تم إلغاء هذا الطلب' : 'Cette commande a été annulée'}
+          </div>
+        ) : (
+          <div className="relative">
+            {/* Desktop Timeline */}
+            <div className="hidden md:flex justify-between relative">
+              <div className="absolute top-5 left-0 right-0 h-[2px] bg-neutral-100" />
+              <div 
+                className="absolute top-5 left-0 h-[2px] bg-emerald-500 transition-all duration-1000" 
+                style={{ width: `${(Math.max(0, currentStatusIndex) / (statuses.length - 1)) * 100}%` }}
+              />
+              
+              {statuses.map((status, index) => {
+                const isCompleted = index <= currentStatusIndex;
+                const isCurrent = index === currentStatusIndex;
+                return (
+                  <div key={status} className="relative z-10 flex flex-col items-center gap-4 flex-1">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500 ${
+                      isCompleted ? 'bg-emerald-500 border-emerald-100 text-white' : 'bg-white border-neutral-50 text-neutral-200'
+                    }`}>
+                      {isCompleted ? <CheckCircle2 size={20} /> : <div className="w-2 h-2 bg-current rounded-full" />}
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest text-center ${
+                      isCurrent ? 'text-emerald-600' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-300'
+                    }`}>
+                      {isAr ? statusLabels[status].ar : statusLabels[status].fr}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile Timeline */}
+            <div className="md:hidden space-y-8 relative before:absolute before:left-4 before:top-4 before:bottom-4 before:w-[2px] before:bg-neutral-100 rtl:before:left-auto rtl:before:right-4">
+              {statuses.map((status, index) => {
+                const isCompleted = index <= currentStatusIndex;
+                const isCurrent = index === currentStatusIndex;
+                return (
+                  <div key={status} className="flex gap-6 items-start relative z-10">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 shrink-0 transition-all ${
+                      isCompleted ? 'bg-emerald-500 border-zinc-50 text-white' : 'bg-white border-neutral-50 text-neutral-200'
+                    }`}>
+                      {isCompleted ? <CheckCircle2 size={14} /> : <div className="w-1.5 h-1.5 bg-current rounded-full" />}
+                    </div>
+                    <div>
+                      <span className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${
+                        isCurrent ? 'text-emerald-600' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-300'
+                      }`}>
+                        {isAr ? statusLabels[status].ar : statusLabels[status].fr}
+                      </span>
+                      {isCurrent && (
+                        <p className="text-xs text-emerald-950/40">
+                          {isAr ? 'طلبك قيد المعالجة حالياً' : 'Votre commande est en cours'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Items List */}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-white rounded-[3rem] border border-emerald-950/5 overflow-hidden shadow-sm">
+            <div className="p-8 border-b border-emerald-950/5 bg-neutral-50/30 flex items-center gap-4">
+              <Package className="text-emerald-950/20" />
+              <h3 className="font-serif text-xl text-emerald-950">{isAr ? 'المنتجات المطلوبة' : 'Articles commandés'}</h3>
+            </div>
+            <div className="divide-y divide-emerald-950/5">
+              {order.items.map((item, idx) => (
+                <div key={idx} className="p-8 flex items-center justify-between gap-6 group hover:bg-neutral-50/50 transition-colors">
+                  <div className="flex gap-6 items-center">
+                    <div className="w-16 h-16 bg-neutral-50 rounded-2xl flex items-center justify-center text-emerald-900/10 group-hover:scale-110 transition-transform">
+                      <Receipt size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-emerald-950 mb-1">
+                        {isAr ? item.product_name_ar : item.product_name_fr}
+                      </h4>
+                      <p className="text-xs text-emerald-950/40 font-medium">
+                        {item.quantity_grams ? `${item.quantity_grams}g` : `${item.quantity_units} unités`} 
+                        <span className="mx-2 opacity-30">×</span>
+                        {item.unit_price.toLocaleString()} DZD
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-serif text-lg text-emerald-950">{item.total_price.toLocaleString()} <span className="text-[10px] font-sans opacity-40">DZD</span></p>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                   <span className="text-muted-foreground">{language === 'ar' ? 'التوصيل' : 'Livraison'}</span>
-                   <span>800 {t('common.currency')}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Totals Summary */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-[#0a3d2e] p-8 md:p-10 rounded-[3rem] text-white shadow-2xl shadow-emerald-950/20 relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-400/10 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2" />
+             <div className="relative z-10 space-y-8">
+                <div>
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-100/40 mb-6 border-b border-emerald-400/10 pb-4">
+                     {isAr ? 'ملخص الدفع' : 'Résumé du paiement'}
+                   </h3>
+                   <div className="space-y-4">
+                      <div className="flex justify-between text-sm">
+                         <span className="text-emerald-100/60 font-medium">{isAr ? 'المجموع' : 'Total'}</span>
+                         <span className="font-bold">{order.total_amount.toLocaleString()} DZD</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                         <span className="text-emerald-100/60 font-medium">{isAr ? 'المدفوع' : 'Payé'}</span>
+                         <span className="font-bold text-emerald-400">{order.amount_paid.toLocaleString()} DZD</span>
+                      </div>
+                      <div className="pt-4 border-t border-emerald-400/10 flex justify-between items-center">
+                         <span className="text-[10px] font-black uppercase tracking-widest">{isAr ? 'المتبقي' : 'Reste à payer'}</span>
+                         <span className="font-serif text-3xl text-amber-400">{remaining.toLocaleString()} <span className="text-xs font-sans">DZD</span></span>
+                      </div>
+                   </div>
                 </div>
-                <div className="pt-3 border-t flex justify-between font-bold text-lg">
-                   <span>Total</span>
-                   <span className="text-primary">{order.total} {t('common.currency')}</span>
+
+                <div className={`flex items-center gap-3 p-4 rounded-2xl ${order.payment_status === 'paid' ? 'bg-emerald-400/10 text-emerald-400' : 'bg-amber-400/10 text-amber-400'}`}>
+                   <CreditCard size={18} />
+                   <span className="text-[10px] font-black uppercase tracking-widest">
+                      {order.payment_status === 'paid' ? (isAr ? 'تم الدفع كلياً' : 'Paiement complet') : (isAr ? 'دفع جزئي / عند الاستلام' : 'Paiement partiel / Livraison')}
+                   </span>
                 </div>
-             </div>
-             
-             <div className={`p-3 rounded-md text-center font-bold text-sm ${
-               order.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-             }`}>
-               {order.paymentStatus === 'paid' 
-                 ? (language === 'ar' ? 'تم الدفع بالكامل' : 'Payé en totalité')
-                 : (language === 'ar' ? 'الدفع عند الاستلام (غير مدفوع بعد)' : 'Paiement à la livraison (Non payé)')}
              </div>
           </div>
-          
-          {invoice?.pdf_url ? (
-            <Link href={invoice.pdf_url} target="_blank" className="w-full">
-              <Button variant="outline" className="w-full gap-2 text-primary border-primary hover:bg-primary hover:text-primary-foreground">
-                <FileText className="w-4 h-4" />
-                {language === 'ar' ? 'عرض الفاتورة' : 'Voir la facture'}
-              </Button>
-            </Link>
-          ) : (
-            <Button variant="outline" disabled className="w-full gap-2">
-              <FileText className="w-4 h-4" />
-              {language === 'ar' ? 'الفاتورة غير متوفرة بعد' : 'Facture non disponible'}
-            </Button>
-          )}
         </div>
       </div>
     </div>

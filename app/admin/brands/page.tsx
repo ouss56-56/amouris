@@ -1,169 +1,139 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getBrands, deleteBrand } from '@/lib/actions/brands'
-import { Plus, Search, Edit2, Trash2, Store } from 'lucide-react'
+import { useBrandsStore, Brand } from '@/store/brands.store'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
+import { Plus, Search, Edit2, Trash2, Store, Loader2, Image as ImageIcon, MapPin } from 'lucide-react'
 import { BrandModal } from '@/components/admin/BrandModal'
-import { Brand } from '@/lib/types'
 
 export default function AdminBrandsPage() {
-  const [brands, setBrands] = useState<Brand[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { brands, fetchBrands, remove, isLoading } = useBrandsStore()
   const [search, setSearch] = useState('')
-
   const [modalOpen, setModalOpen] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
 
-  const loadData = async () => {
-    setIsLoading(true)
-    try {
-      const b = await getBrands()
-      setBrands(b)
-    } catch (error) {
-      console.error('Failed to load admin brands:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   useEffect(() => {
-    loadData()
-  }, [])
+    fetchBrands()
+  }, [fetchBrands])
+
+  const filtered = brands.filter(b => 
+    b.name.toLowerCase().includes(search.toLowerCase()) || 
+    b.name_ar.includes(search)
+  )
 
   const handleAdd = () => {
     setEditingBrand(null)
     setModalOpen(true)
   }
 
-  const handleEdit = (brand: Brand) => {
-    setEditingBrand(brand)
+  const handleEdit = (b: Brand) => {
+    setEditingBrand(b)
     setModalOpen(true)
   }
 
-  const handleDelete = async (id: string, logoUrl?: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette marque ? Cela peut affecter les produits qui y sont liés.')) {
+  const handleDelete = async (id: string) => {
+    if (confirm('Voulez-vous vraiment supprimer cette marque ?')) {
       try {
-        await deleteBrand(id) // If you need to delete image from storage it could be done inside server action
-        loadData()
-      } catch (error) {
+        await remove(id)
+      } catch (err) {
         alert('Erreur lors de la suppression')
       }
     }
   }
 
-  const filtered = brands.filter(b => {
-    return (b.nameFR?.toLowerCase().includes(search.toLowerCase()) || false) || (b.nameAR?.includes(search) || false)
-  })
-
   return (
-    <div className="space-y-8 p-4 md:p-0">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-12 pb-20">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div>
-            <h1 className="text-3xl font-bold font-serif text-emerald-950 flex items-center gap-3">
-              <Store size={32} />
-              Marques
-            </h1>
-            <p className="text-emerald-950/40 text-sm mt-1">Gérez les marques disponibles sur votre boutique</p>
+           <h1 className="font-serif text-4xl text-emerald-950 mb-2">Les Maisons</h1>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">Gestion des marques et partenaires</p>
         </div>
-        <Button onClick={handleAdd} className="bg-emerald-900 text-white px-8 py-6 rounded-2xl hover:bg-emerald-800 shadow-xl shadow-emerald-900/10 transition-all font-bold flex items-center gap-3">
-          <Plus size={20} /> Ajouter une marque
-        </Button>
-      </div>
+        <button 
+          onClick={handleAdd}
+          className="bg-[#0a3d2e] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3"
+        >
+          <Plus size={16} /> Ajouter une Maison
+        </button>
+      </header>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-900/20" />
-          <input
-            type="text"
-            placeholder="Rechercher une marque..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-14 pr-6 py-4 bg-white border border-emerald-50 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-emerald-900/5 transition-all shadow-sm"
-          />
-        </div>
-      </div>
+      <section className="relative group">
+        <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-950/20 group-focus-within:text-[#C9A84C] transition-colors" />
+        <input 
+          type="text"
+          placeholder="Rechercher une marque..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full h-16 pl-16 pr-8 bg-white border border-emerald-950/5 rounded-2xl outline-none focus:border-[#C9A84C] shadow-sm font-medium text-emerald-950 transition-all"
+        />
+      </section>
 
-      {isLoading ? (
-        <div className="py-20 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-900 mx-auto"></div>
+      {isLoading && brands.length === 0 ? (
+        <div className="py-32 flex justify-center">
+          <Loader2 className="animate-spin text-emerald-900" size={40} />
         </div>
       ) : (
-        <div className="bg-white rounded-[2.5rem] border border-emerald-50 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-              <table className="w-full text-left">
-              <thead>
-                  <tr className="bg-emerald-50/30">
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">Logo</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">Nom (FR)</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40 text-right">Nom (AR)</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40 text-right">Actions</th>
-                  </tr>
-              </thead>
-              <tbody className="divide-y divide-emerald-50">
-                  <AnimatePresence mode="popLayout">
-                  {filtered.map(brand => (
-                      <motion.tr 
-                          layout
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          key={brand.id} 
-                          className="hover:bg-emerald-50/20 transition-all group"
-                      >
-                      <td className="px-8 py-6">
-                        {brand.logo ? (
-                          <div className="w-16 h-16 rounded-full border border-gray-100 overflow-hidden shadow-sm">
-                            <img src={brand.logo} alt={brand.nameFR} className="w-full h-full object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
-                             <Store className="text-emerald-900/20" size={24} />
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-8 py-6 font-bold text-emerald-950 font-sans">
-                         {brand.nameFR}
-                      </td>
-                      <td className="px-8 py-6">
-                          <div className="text-emerald-950 text-right font-bold font-arabic" dir="rtl">{brand.nameAR}</div>
-                      </td>
-                      <td className="px-8 py-6">
-                          <div className="flex justify-end gap-3">
-                          <button onClick={() => handleEdit(brand)} className="w-10 h-10 flex items-center justify-center text-emerald-900/20 hover:text-emerald-900 hover:bg-emerald-50 rounded-xl transition-all">
-                              <Edit2 size={16} />
-                          </button>
-                          <button 
-                              onClick={() => handleDelete(brand.id, brand.logo)}
-                              className="w-10 h-10 flex items-center justify-center text-rose-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
-                          >
-                              <Trash2 size={16} />
-                          </button>
-                          </div>
-                      </td>
-                      </motion.tr>
-                  ))}
-                  </AnimatePresence>
-              </tbody>
-              </table>
-          </div>
-          {filtered.length === 0 && (
-            <div className="p-24 text-center">
-                <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Store size={32} className="text-emerald-950/10" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <AnimatePresence mode="popLayout">
+            {filtered.map((brand) => (
+              <motion.div 
+                layout
+                key={brand.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="group bg-white p-8 rounded-[3rem] border border-emerald-950/5 shadow-xl shadow-emerald-950/5 hover:shadow-2xl hover:shadow-emerald-950/10 transition-all relative overflow-hidden"
+              >
+                <div className="absolute -right-8 -top-8 p-12 opacity-[0.02] group-hover:scale-110 transition-transform">
+                    <Store size={140} />
                 </div>
-                <p className="text-emerald-950/20 font-serif text-xl">Aucune marque trouvée</p>
-            </div>
-          )}
+
+                <div className="flex items-center gap-6 mb-8 relative z-10">
+                  <div className="w-24 h-24 bg-neutral-50 rounded-[2.5rem] flex items-center justify-center text-emerald-950/20 group-hover:bg-emerald-50 group-hover:text-amber-600 transition-all overflow-hidden border border-emerald-950/5 p-4 mix-blend-multiply">
+                    {brand.logo_url ? (
+                      <img src={brand.logo_url} alt={brand.name} className="w-full h-full object-contain" />
+                    ) : (
+                      <Store size={40} />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-2xl text-emerald-950 mb-1 leading-tight">{brand.name}</h3>
+                    <p className="text-xl font-arabic text-emerald-950/30" dir="rtl">{brand.name_ar}</p>
+                  </div>
+                </div>
+
+                <div className="relative z-10 space-y-6">
+                  <p className="text-xs text-emerald-950/60 leading-relaxed font-medium line-clamp-2">
+                    {brand.description_fr || "Aucune description fournie pour cette marque."}
+                  </p>
+                  
+                  <div className="flex items-center justify-between pt-6 border-t border-emerald-950/5">
+                    <div className="flex gap-2">
+                      <button onClick={() => handleEdit(brand)} className="w-12 h-12 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/40 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm">
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => handleDelete(brand.id)} className="w-12 h-12 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-rose-300 hover:text-rose-600 hover:border-rose-100 transition-all shadow-sm">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
 
-      <BrandModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        brand={editingBrand}
-        onSuccess={loadData}
+      {!isLoading && filtered.length === 0 && (
+        <div className="py-32 text-center text-emerald-950/20">
+          <Store size={48} className="mx-auto mb-4 opacity-20" />
+          <p className="font-serif text-2xl italic">Aucune marque trouvée.</p>
+        </div>
+      )}
+
+      <BrandModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        brand={editingBrand} 
       />
     </div>
   )

@@ -5,8 +5,11 @@ import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
+import { useSettingsStore } from '@/store/settings.store';
+
 export function AnnouncementBar() {
   const { language } = useI18n();
+  const settings = useSettingsStore();
   const [isVisible, setIsVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -14,8 +17,8 @@ export function AnnouncementBar() {
 
   const announcements = [
     {
-      fr: "Livraison gratuite pour les commandes de plus de 50 000 DZD",
-      ar: "توصيل مجاني للطلبات التي تزيد عن 50,000 دج",
+      fr: `Livraison gratuite pour les commandes de plus de ${settings.freeDeliveryThreshold.toLocaleString()} DZD`,
+      ar: `توصيل مجاني للطلبات التي تزيد عن ${settings.freeDeliveryThreshold.toLocaleString()} دج`,
       link: "/shop"
     },
     {

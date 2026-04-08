@@ -1,26 +1,12 @@
-import { getCurrentUser } from '@/lib/actions/auth';
-import { redirect } from 'next/navigation';
+'use client';
+
 import SettingsClient from './SettingsClient';
-import { Customer } from '@/lib/types';
+import { useCustomerAuth } from '@/store/customer-auth.store';
 
-export default async function SettingsPage() {
-  const data = await getCurrentUser();
+export default function SettingsPage() {
+  const { customer, isAuthenticated } = useCustomerAuth();
   
-  if (!data || !data.profile) {
-    redirect('/login');
-  }
+  if (!customer || !isAuthenticated) return null;
 
-  const user: Customer = {
-    id: data.profile.id,
-    firstName: data.profile.first_name,
-    lastName: data.profile.last_name,
-    shopName: data.profile.shop_name,
-    phoneNumber: data.profile.phone,
-    wilaya: data.profile.wilaya,
-    commune: data.profile.commune,
-    status: data.profile.is_frozen ? 'frozen' : 'active',
-    joinedAt: data.profile.created_at,
-  };
-
-  return <SettingsClient user={user} />;
+  return <SettingsClient />;
 }

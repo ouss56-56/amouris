@@ -1,40 +1,94 @@
 'use client'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createClient } from '@/lib/supabase/client'
 
 export interface Tag {
   id: string
   name_fr: string
   name_ar: string
   slug: string
-  show_on_homepage?: boolean
-  homepage_order?: number
+  show_on_homepage: boolean
+  homepage_order: number
 }
 
 interface TagsStore {
   tags: Tag[]
-  _seeded: boolean
-  seed: (data: Tag[]) => void
-  add: (t: Tag) => void
-  update: (id: string, updates: Partial<Tag>) => void
-  remove: (id: string) => void
+  isLoading: boolean
+  error: string | null
+  fetchTags: () => Promise<void>
+  addTag: (t: Omit<Tag, 'id'>) => Promise<void>
+  updateTag: (id: string, updates: Partial<Tag>) => Promise<void>
+  deleteTag: (id: string) => Promise<void>
   getHomepageTags: () => Tag[]
 }
 
-export const useTagsStore = create<TagsStore>()(
-  persist(
-    (set, get) => ({
-      tags: [],
-      _seeded: false,
-      seed: (data) => { if (!get()._seeded) set({ tags: data, _seeded: true }) },
-      add: (t) => set(s => ({ tags: [...s.tags, t] })),
-      update: (id, u) => set(s => ({ tags: s.tags.map(t => t.id === id ? { ...t, ...u } : t) })),
-      remove: (id) => set(s => ({ tags: s.tags.filter(t => t.id !== id) })),
-      getHomepageTags: () =>
-        get().tags
-          .filter(t => t.show_on_homepage)
-          .sort((a, b) => (a.homepage_order || 0) - (b.homepage_order || 0)),
-    }),
-    { name: 'amouris_tags' }
-  )
-)
+const supabase = createClient()
+
+export const useTagsStore = create<TagsStore>((set, get) => ({
+  tags: [],
+  isLoading: false,
+  error: null,
+
+  fetchTags: async () => {
+    set({ isLoading: true })
+    const { data, error } = await supabase
+      .from('tags')
+      .select('*')
+      .order('homepage_order', { ascending: true })
+    
+    if (error) set({ error: error.message, isLoading: false })
+    else set({ tags: data || [], isLoading: false })
+  },
+
+  addTag: async (tag) => {
+    set({ isLoading: true })
+    const { data, error } = await supabase
+      .from('tags')
+      .insert([tag])
+      .select()
+      .single()
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({ tags: [...s.tags, data], isLoading: false }))
+  },
+
+  updateTag: async (id, updates) => {
+    set({ isLoading: true })
+    const { error } = await supabase
+      .from('tags')
+      .update(updates)
+      .eq('id', id)
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({
+      tags: s.tags.map(t => t.id === id ? { ...t, ...updates } : t),
+      isLoading: false
+    }))
+  },
+
+  deleteTag: async (id) => {
+    set({ isLoading: true })
+    const { error } = await supabase
+      .from('tags')
+      .delete()
+      .eq('id', id)
+    
+    if (error) {
+      set({ error: error.message, isLoading: false })
+      throw error
+    }
+    set(s => ({ tags: s.tags.filter(t => t.id !== id), isLoading: false }))
+  },
+
+  getHomepageTags: () => {
+    return get().tags
+      .filter(t => t.show_on_homepage)
+      .sort((a, b) => (a.homepage_order || 0) - (b.homepage_order || 0))
+  }
+}))

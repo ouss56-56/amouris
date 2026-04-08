@@ -1,31 +1,39 @@
-import { getCurrentUser } from '@/lib/actions/auth';
-import { getOrderById } from '@/lib/actions/orders';
+'use client';
+
+import { useOrdersStore } from '@/store/orders.store';
 import OrderDetailClient from './OrderDetailClient';
-import { notFound, redirect } from 'next/navigation';
+import { useCustomerAuth } from '@/store/customer-auth.store';
+import { useEffect, useState, use } from 'react';
+import { Order } from '@/store/orders.store';
 
-import { getInvoiceByOrder } from '@/lib/actions/invoices';
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const { customer, isAuthenticated } = useCustomerAuth();
+  const getByCustomer = useOrdersStore(s => s.getByCustomer);
+  const [order, setOrder] = useState<Order | null>(null);
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
-  const data = await getCurrentUser();
-  
-  if (!data || !data.profile) {
-    redirect('/login');
+  useEffect(() => {
+    if (customer) {
+      const orders = getByCustomer(customer.id);
+      const found = orders.find(o => o.id === id);
+      if (found) {
+        setOrder(found);
+      }
+    }
+  }, [customer, getByCustomer, id]);
+
+  if (!isAuthenticated || !customer) {
+    return null;
   }
 
-  const [order, invoice] = await Promise.all([
-    getOrderById(params.id),
-    getInvoiceByOrder(params.id)
-  ]);
-
-  if (!order) {
-    notFound();
+  if (order === null) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-4 text-emerald-950/20">
+        <div className="w-12 h-12 border-4 border-emerald-950/5 border-t-emerald-900 rounded-full animate-spin" />
+        <p className="text-[10px] font-black uppercase tracking-widest">Chargement de la commande...</p>
+      </div>
+    );
   }
 
-  // Security check: ensure order belongs to current user
-  if (order.customerId !== data.profile.id && data.profile.role !== 'admin' && data.profile.role !== 'owner') {
-    redirect('/account/orders');
-  }
-
-  return <OrderDetailClient order={order} invoice={invoice} />;
+  return <OrderDetailClient order={order} />;
 }
-
