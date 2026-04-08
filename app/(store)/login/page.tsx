@@ -17,7 +17,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     await new Promise(r => setTimeout(r, 400))
-    const result = login(phone, password)
+    const result = await login(phone, password)
     if (result.ok) {
       router.replace('/account')
     } else {

@@ -80,7 +80,7 @@ export async function registerCustomer(customerData: {
   
   // Créer l'utilisateur Supabase Auth
   // On utilise phone@amouris-user.dz comme email factice
-  const fakeEmail = `${normalizedPhone}@amouris-user.dz`;
+  const fakeEmail = `${normalizedPhone}@amouris.dz`;
   
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: fakeEmail,

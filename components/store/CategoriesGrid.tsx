@@ -2,56 +2,99 @@
 import Link from 'next/link'
 import { useI18n } from '@/i18n/i18n-context'
 import { motion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Sparkles } from 'lucide-react'
 
 export function CategoriesGrid({ categories }: { categories: any[] }) {
-  const { language } = useI18n()
+  const { language, t } = useI18n()
+
+  const getBentoClass = (idx: number) => {
+    const classes = [
+      'md:col-span-3 md:row-span-2', // Large featured
+      'md:col-span-2 md:row-span-1', // Medium
+      'md:col-span-2 md:row-span-1', // Medium
+      'md:col-span-2 md:row-span-2', // Tall
+      'md:col-span-2 md:row-span-1', // Small
+    ]
+    return classes[idx % classes.length]
+  }
 
   const getGradient = (id: string) => {
     const map: Record<string, string> = {
-      'cat-01': 'from-amber-100/50 to-orange-50/50 hover:bg-amber-100',
-      'cat-02': 'from-rose-100/50 to-pink-50/50 hover:bg-rose-100',
-      'cat-03': 'from-indigo-100/50 to-blue-50/50 hover:bg-indigo-100',
-      'cat-04': 'from-emerald-100/50 to-teal-50/50 hover:bg-emerald-100',
-      'cat-05': 'from-stone-100/50 to-gray-50/50 hover:bg-stone-100',
+      'cat-01': 'from-amber-200/20 to-orange-100/10',
+      'cat-02': 'from-rose-200/20 to-pink-100/10',
+      'cat-03': 'from-indigo-200/20 to-blue-100/10',
+      'cat-04': 'from-emerald-200/20 to-teal-100/10',
+      'cat-05': 'from-stone-200/20 to-gray-100/10',
     }
-    return map[id] || 'from-emerald-50 to-amber-50 hover:bg-emerald-100/50'
+    return map[id] || 'from-emerald-100/20 to-amber-100/10'
   }
 
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
-        <h2 className="font-serif text-4xl md:text-5xl text-emerald-950 mb-4">Explorez par Univers</h2>
-        <div className="w-12 h-1 bg-amber-400 mx-auto rounded-full" />
-      </div>
+    <section className="py-32 bg-secondary/30 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-emerald-950/5 to-transparent" />
+      <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-emerald-950/5 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sparkles className="text-amber-500 w-4 h-4" />
+            <span className="text-amber-600 text-[10px] font-black uppercase tracking-[0.4em]">Univers Olfactifs</span>
+          </div>
+          <h2 className="font-serif text-4xl md:text-6xl text-emerald-950 mb-6">{t('home.categories')}</h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto rounded-full" />
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-7 gap-6 auto-rows-[200px]">
           {categories.map((cat, idx) => (
             <motion.div
               key={cat.id}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
+              transition={{ delay: idx * 0.1 }}
+              className={getBentoClass(idx)}
             >
               <Link 
                 href={`/shop?category=${cat.id}`}
-                className={`group block p-8 rounded-3xl bg-gradient-to-br ${getGradient(cat.id)} border border-white transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/5 relative overflow-hidden`}
+                className={`group relative h-full block p-8 rounded-[2rem] bg-gradient-to-br ${getGradient(cat.id)} border border-emerald-950/5 hover:border-amber-500/30 transition-all duration-700 overflow-hidden shadow-luxury hover:shadow-2xl`}
               >
-                <div className="relative z-10 flex flex-col items-center gap-4">
-                  <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500">
-                    <span className="text-2xl font-serif text-emerald-900">{(cat.nameFR || cat.id).charAt(0)}</span>
+                {/* Visual texture */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(251,191,36,0.15),transparent_80%)]" />
+                
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border border-emerald-50">
+                      <span className="text-3xl font-serif text-emerald-950">{(cat.nameFR || cat.id).charAt(0)}</span>
+                    </div>
+                    <motion.div 
+                      whileHover={{ scale: 1.2, rotate: 45 }}
+                      className="w-10 h-10 rounded-full bg-emerald-950 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0"
+                    >
+                      <ArrowUpRight size={20} />
+                    </motion.div>
                   </div>
+
                   <div>
-                    <span className="block font-bold text-emerald-950 text-base md:text-lg mb-1">{language === 'ar' ? cat.nameAR : cat.nameFR}</span>
-                    <span className="block text-[10px] uppercase tracking-widest text-emerald-900/40 font-black">{language === 'ar' ? cat.nameFR : cat.nameAR}</span>
+                    <h3 className="font-serif text-2xl md:text-3xl text-emerald-950 mb-2 group-hover:text-amber-600 transition-colors">
+                      {language === 'ar' ? cat.nameAR : cat.nameFR}
+                    </h3>
+                    <div className="flex items-center gap-3">
+                        <div className="h-px w-8 bg-amber-400 group-hover:w-16 transition-all duration-500" />
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-900/40 font-black">
+                            {language === 'ar' ? cat.nameFR : cat.nameAR}
+                        </span>
+                    </div>
                   </div>
                 </div>
-                
-                {/* Decoration */}
-                <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-white/50 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
-                <ArrowUpRight className="absolute top-4 right-4 w-4 h-4 text-emerald-900/10 group-hover:text-emerald-900/40 transition-colors" />
+
+                {/* Decorative element */}
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/40 rounded-full blur-3xl group-hover:bg-amber-100/60 transition-colors duration-700" />
               </Link>
             </motion.div>
           ))}

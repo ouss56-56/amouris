@@ -1,11 +1,17 @@
 'use client'
 import Link from 'next/link'
 import { useI18n } from '@/i18n/i18n-context'
-import { motion } from 'framer-motion'
-import { ArrowRight, Star, Globe, ShieldCheck } from 'lucide-react'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { ArrowLeft, Star, Globe, ShieldCheck, ChevronDown } from 'lucide-react'
+import { useRef } from 'react'
 
 export function HeroSection() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollY } = useScroll()
+  
+  const y1 = useTransform(scrollY, [0, 500], [0, 200])
+  const opacity = useTransform(scrollY, [0, 300], [1, 0])
 
   const stats = [
     { icon: Star, label: '500+', sub: t('home.stats_references') },
@@ -14,71 +20,147 @@ export function HeroSection() {
   ]
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-emerald-950">
-      {/* Background Decor */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.1),transparent)]" />
-        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(217,119,6,0.1),transparent)]" />
-        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
-      </div>
+    <section 
+      ref={containerRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-emerald-950"
+    >
+      {/* Dynamic Background Elements */}
+      <motion.div 
+        style={{ y: y1 }}
+        className="absolute inset-0 z-0"
+      >
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.15),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-20 mix-blend-overlay" />
+        
+        {/* Animated Gold Particles */}
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="gold-particle"
+            style={{
+              width: Math.random() * 4 + 2 + 'px',
+              height: Math.random() * 4 + 2 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+              animationDelay: Math.random() * 5 + 's',
+              animationDuration: Math.random() * 10 + 10 + 's'
+            }}
+          />
+        ))}
+      </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-900/50 border border-emerald-400/20 text-emerald-400 text-xs font-bold uppercase tracking-[0.3em] mb-8">
-            Expert Parfumeur & Grossiste
-          </span>
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8"
+          >
+            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-white/60 text-[10px] uppercase tracking-[0.4em] font-bold">
+              Amouris L'Excellence
+            </span>
+          </motion.div>
 
-          <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 leading-[1.1]">
-            {t('home.hero_title_1')}{' '}
-            <span className="text-amber-400 italic">{t('home.hero_title_2')}</span>{' '}
-            <br />
-            {t('home.hero_title_3')}
+          {/* Main Titles */}
+          <h1 className="text-6xl md:text-9xl font-serif text-white mb-8 leading-[0.9] tracking-tight">
+            <motion.span 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="block"
+            >
+              {t('home.hero_title_1')}
+            </motion.span>
+            <motion.span 
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="text-gold-gradient italic font-normal block mt-2"
+            >
+              {t('home.hero_title_2')}
+            </motion.span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-emerald-100/60 text-lg md:text-xl mb-12 leading-relaxed">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 1 }}
+            className="max-w-2xl mx-auto text-emerald-100/40 text-lg md:text-xl mb-12 font-light leading-relaxed tracking-wide"
+          >
             {t('home.hero_subtitle')}
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+          {/* Buttons */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24"
+          >
             <Link 
               href="/shop"
-              className="w-full sm:w-auto px-8 py-4 bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 group"
+              className="group relative px-10 py-5 bg-amber-600 overflow-hidden rounded-full transition-all hover:scale-105 active:scale-95"
             >
-              {t('home.hero_cta_primary')}
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10 text-emerald-950 font-black uppercase tracking-[0.2em] text-xs flex items-center gap-3">
+                {t('home.hero_cta_primary')}
+                {language === 'ar' ? <ArrowLeft size={16} /> : <ArrowLeft size={16} className="rotate-180" />}
+              </span>
             </Link>
+            
             <Link 
               href="/register"
-              className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-all backdrop-blur-sm"
+              className="px-10 py-5 rounded-full border border-white/20 hover:bg-white/5 transition-colors group"
             >
-              {t('home.hero_cta_secondary')}
+              <span className="text-white text-xs font-bold uppercase tracking-[0.2em]">
+                {t('home.hero_cta_secondary')}
+              </span>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Stats Bar */}
-          <div className="grid grid-cols-3 gap-4 md:gap-12 max-w-4xl mx-auto border-t border-white/5 pt-12">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.8 }}
+            className="grid grid-cols-3 gap-8 md:gap-24 max-w-4xl mx-auto py-12 border-t border-white/5"
+          >
             {stats.map((stat, i) => (
               <div key={i} className="text-center group">
-                <div className="flex justify-center mb-3">
-                    <stat.icon className="w-5 h-5 text-amber-500/50 group-hover:text-amber-500 transition-colors" />
+                <div className="flex justify-center mb-4">
+                  <stat.icon className="w-5 h-5 text-amber-500/30 group-hover:text-amber-500 transition-all duration-500 group-hover:scale-125" />
                 </div>
-                <div className="text-2xl md:text-4xl font-serif text-white mb-1">{stat.label}</div>
-                <div className="text-[10px] md:text-xs text-emerald-100/40 uppercase tracking-widest font-medium">
+                <div className="text-2xl md:text-4xl font-serif text-white mb-1 tracking-tighter">{stat.label}</div>
+                <div className="text-[9px] uppercase tracking-[0.3em] text-emerald-100/20 font-black transition-colors group-hover:text-emerald-100/40">
                   {stat.sub}
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
         </motion.div>
       </div>
 
-      {/* Ornament */}
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]" />
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/5 rounded-full blur-[100px]" />
+      {/* Scroll Indicator */}
+      <motion.div 
+        style={{ opacity }}
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/20 hidden md:block"
+      >
+        <ChevronDown size={24} />
+      </motion.div>
+
+      {/* Luxury Decorative Ornaments */}
+      <div className="absolute -bottom-48 -left-48 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -top-48 -right-48 w-96 h-96 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none" />
     </section>
   )
 }

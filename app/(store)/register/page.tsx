@@ -47,7 +47,7 @@ export default function RegisterPage() {
     setLoading(true)
     await new Promise(r => setTimeout(r, 400))
 
-    const result = register({
+    const result = await register({
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       phone: form.phone.trim(),
