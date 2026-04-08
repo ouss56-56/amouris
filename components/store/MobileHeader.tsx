@@ -17,12 +17,16 @@ export function MobileHeader() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartCount = useCartStore((state) => state.cartCount())
   
+  const [mounted, setMounted] = useState(false)
+  
   const navLinks = [
     { label: 'Boutique', href: '/shop' },
     { label: 'Parfums', href: '/shop/perfumes' },
     { label: 'Flacons', href: '/shop/flacons' },
     { label: 'Marques', href: '/brands' }
   ]
+
+  useEffect(() => setMounted(true), [])
 
   // Prevent body scroll when menu open
   useEffect(() => {
@@ -62,7 +66,7 @@ export function MobileHeader() {
               className="p-2 -mr-2 relative touch-manipulation"
             >
               <ShoppingBag size={20} className="text-emerald-900" />
-              {cartCount > 0 && (
+              {mounted && cartCount > 0 && (
                 <span className="absolute top-1 right-0 bg-emerald-700 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
                   {cartCount}
                 </span>

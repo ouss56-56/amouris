@@ -21,9 +21,14 @@ export function Header() {
   const cartCount = useCartStore((state) => state.cartCount());
   const { customer: user } = useCustomerAuth();
   
+  const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(true);
   const [lastScroll, setLastScroll] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,7 +68,7 @@ export function Header() {
           <div className="flex items-center gap-2 sm:gap-4">
             <LanguageToggle />
             
-            <Link href={user ? "/account" : "/login"}>
+            <Link href={mounted && user ? "/account" : "/login"}>
               <Button variant="ghost" size="icon" className="hover:text-emerald-700 hover:bg-emerald-50 rounded-full">
                 <User className="h-5 w-5" />
                 <span className="sr-only">{t('common.account')}</span>
@@ -87,7 +92,7 @@ export function Header() {
             >
               <ShoppingBag className="h-5 w-5" />
               <span className="sr-only">{t('common.cart')}</span>
-              {cartCount > 0 && (
+              {mounted && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-emerald-800 text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">
                   {cartCount}
                 </span>
