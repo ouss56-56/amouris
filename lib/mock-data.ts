@@ -1,129 +1,126 @@
-export const mockCategories = [
-  { id: 'cat-01', name_ar: 'عود', name_fr: 'Oud' },
-  { id: 'cat-02', name_ar: 'زهري', name_fr: 'Floral' },
-  { id: 'cat-03', name_ar: 'شرقي', name_fr: 'Oriental' },
-  { id: 'cat-04', name_ar: 'منعش', name_fr: 'Frais' },
-  { id: 'cat-05', name_ar: 'خشبي', name_fr: 'Boisé' },
-  { id: 'cat-06', name_ar: 'مسكي', name_fr: 'Musqué' },
-  { id: 'cat-07', name_ar: 'توابل', name_fr: 'Épicé' },
-  { id: 'cat-08', name_ar: 'حمضيات', name_fr: 'Citrus' },
-  { id: 'cat-09', name_ar: 'مائي', name_fr: 'Aquatique' },
-  { id: 'cat-10', name_ar: 'عنبري', name_fr: 'Ambré' },
+import { Category, Brand, Collection, Tag, Product, Customer, Order } from './types';
+
+type Compatible<T> = T & Record<string, any>;
+
+const categoriesData: Compatible<Category>[] = [
+  { 
+    id: 'cat-01', 
+    nameAR: 'عود', nameFR: 'Oud', 
+    name_ar: 'عود', name_fr: 'Oud',
+    image: 'https://images.unsplash.com/photo-1546190255-451a91afc548?q=80&w=800'
+  },
+  { 
+    id: 'cat-02', 
+    nameAR: 'زهري', nameFR: 'Floral', 
+    name_ar: 'زهري', name_fr: 'Floral',
+    image: 'https://images.unsplash.com/photo-1592914610354-fd354ea45e48?q=80&w=800'
+  },
+  { id: 'cat-03', nameAR: 'شرقي', nameFR: 'Oriental', name_ar: 'شرقي', name_fr: 'Oriental' },
+  { id: 'cat-04', nameAR: 'منعش', nameFR: 'Frais', name_ar: 'منعش', name_fr: 'Frais' },
+  { id: 'cat-05', nameAR: 'خشبي', nameFR: 'Boisé', name_ar: 'خشبي', name_fr: 'Boisé' },
+  { id: 'cat-06', nameAR: 'مسكي', nameFR: 'Musqué', name_ar: 'مسكي', name_fr: 'Musqué' },
+  { id: 'cat-07', nameAR: 'توابل', nameFR: 'Épicé', name_ar: 'توابل', name_fr: 'Épicé' },
+  { id: 'cat-08', nameAR: 'حمضيات', nameFR: 'Citrus', name_ar: 'حمضيات', name_fr: 'Citrus' },
+  { id: 'cat-09', nameAR: 'مائي', nameFR: 'Aquatique', name_ar: 'مائي', name_fr: 'Aquatique' },
+  { id: 'cat-10', nameAR: 'عنبري', nameFR: 'Ambré', name_ar: 'عنبري', name_fr: 'Ambré' },
 ]
 
-export const mockBrands = [
-  { id: 'b1', name_ar: 'الحرمين', name_fr: 'Al Haramain' },
-  { id: 'b2', name_ar: 'عمواج', name_fr: 'Amouage' },
-  { id: 'b3', name_ar: 'لطافة', name_fr: 'Lattafa' },
-  { id: 'b4', name_ar: 'ميزون طهارة', name_fr: 'Maison Tahara' },
-  { id: 'b5', name_ar: 'رصاصي', name_fr: 'Rasasi' },
-  { id: 'b6', name_ar: 'سويس أربيان', name_fr: 'Swiss Arabian' },
+const brandsData: Compatible<Brand>[] = [
+  { id: 'b1', nameAR: 'الحرمين', nameFR: 'Al Haramain', name_ar: 'الحرمين', name_fr: 'Al Haramain', logo: '/brands/alharamain.png' },
+  { id: 'b2', nameAR: 'عمواج', nameFR: 'Amouage', name_ar: 'عمواج', name_fr: 'Amouage', logo: '/brands/amouage.png' },
+  { id: 'b3', nameAR: 'لطافة', nameFR: 'Lattafa', name_ar: 'لطافة', name_fr: 'Lattafa', logo: '/brands/lattafa.png' },
+  { id: 'b4', nameAR: 'ميزون طهارة', nameFR: 'Maison Tahara', name_ar: 'ميزون طهارة', name_fr: 'Maison Tahara', logo: '/brands/maison.png' },
+  { id: 'b5', nameAR: 'رصاصي', nameFR: 'Rasasi', name_ar: 'رصاصي', name_fr: 'Rasasi', logo: '/brands/rasasi.png' },
+  { id: 'b6', nameAR: 'سويس أربيان', nameFR: 'Swiss Arabian', name_ar: 'سويس أربيان', name_fr: 'Swiss Arabian', logo: '/brands/swiss.png' },
 ]
 
-export const mockCollections = [
-  { id: 'col1', name_ar: 'المجموعة الملكية', name_fr: 'Collection Royale' },
-  { id: 'col2', name_ar: 'الصيف العربي', name_fr: 'Été Arabe' },
+const collectionsData: Compatible<Collection>[] = [
+  { id: 'col1', nameAR: 'المجموعة الملكية', nameFR: 'Collection Royale', name_ar: 'المجموعة الملكية', name_fr: 'Collection Royale' },
+  { id: 'col2', nameAR: 'الصيف العربي', nameFR: 'Été Arabe', name_ar: 'الصيف العربي', name_fr: 'Été Arabe' },
 ]
 
-export const mockTags = [
-  { id: 'tag-01', name_ar: 'وصل جديد', name_fr: 'Arrivage', show_on_homepage: true, homepage_order: 1, slug: 'arrivage' },
-  { id: 'tag-02', name_ar: 'الأكثر مبيعاً', name_fr: 'Best-seller', show_on_homepage: true, homepage_order: 2, slug: 'best-seller' },
-  { id: 'tag-03', name_ar: 'مميز', name_fr: 'Premium', show_on_homepage: true, homepage_order: 3, slug: 'premium' },
-  { id: 'tag-04', name_ar: 'عرض خاص', name_fr: 'Offre spéciale', show_on_homepage: false, homepage_order: 4, slug: 'offre' },
+const tagsData: Compatible<Tag>[] = [
+  { id: 'tag-01', nameAR: 'وصل جديد', nameFR: 'Arrivage', name_ar: 'وصل جديد', name_fr: 'Arrivage', showOnHomepage: true, show_on_homepage: true, homepage_order: 1, slug: 'arrivage' },
+  { id: 'tag-02', nameAR: 'الأكثر مبيعاً', nameFR: 'Best-seller', name_ar: 'الأكثر مبيعاً', name_fr: 'Best-seller', showOnHomepage: true, show_on_homepage: true, homepage_order: 2, slug: 'best-seller' },
+  { id: 'tag-03', nameAR: 'مميز', nameFR: 'Premium', name_ar: 'مميز', name_fr: 'Premium', showOnHomepage: true, show_on_homepage: true, homepage_order: 3, slug: 'premium' },
+  { id: 'tag-04', nameAR: 'عرض خاص', nameFR: 'Offre spéciale', name_ar: 'عرض خاص', name_fr: 'Offre spéciale', showOnHomepage: false, show_on_homepage: false, homepage_order: 4, slug: 'offre' },
 ]
 
-export const mockProducts = [
+const productsData: Compatible<Product>[] = [
   // PARFUMS
   {
-    id: 'p1', product_type: 'perfume', slug: 'rose-du-taif',
-    name_fr: 'Rose du Taif', name_ar: 'وردة الطائف',
-    category_id: 'cat-02', brand_id: 'b1', tag_ids: ['tag-01', 'tag-02'],
-    price_per_gram: 850, stock_grams: 5000,
-    status: 'active',
+    id: 'p1', type: 'perfume', product_type: 'perfume', slug: 'rose-du-taif',
+    nameAR: 'وردة الطائف', nameFR: 'Rose du Taif', name_ar: 'وردة الطائف', name_fr: 'Rose du Taif',
+    descriptionAR: 'زيت عطري فاخر', descriptionFR: 'Une huile de parfum luxueuse',
+    categoryId: 'cat-02', category_id: 'cat-02', brandId: 'b1', brand_id: 'b1', tagIds: ['tag-01', 'tag-02'], tag_ids: ['tag-01', 'tag-02'],
+    pricePerGram: 850, price_per_gram: 850, stockInGrams: 5000, stock_grams: 5000,
+    images: ['https://images.unsplash.com/photo-1594035910387-fea477262dc0?q=80&w=800'], status: 'active', createdAt: new Date().toISOString()
   },
   {
-    id: 'p2', product_type: 'perfume', slug: 'oud-malaki',
-    name_fr: 'Oud Malaki', name_ar: 'عود ملكي',
-    category_id: 'cat-01', brand_id: 'b2', tag_ids: ['tag-02', 'tag-03'],
-    price_per_gram: 1200, stock_grams: 3000,
-    status: 'active',
-  },
-  {
-    id: 'p3', product_type: 'perfume', slug: 'jasmin-sauvage',
-    name_fr: 'Jasmin Sauvage', name_ar: 'ياسمين بري',
-    category_id: 'cat-02', brand_id: 'b4', tag_ids: ['tag-01'],
-    price_per_gram: 650, stock_grams: 4500,
-    status: 'active',
-  },
-  {
-    id: 'p4', product_type: 'perfume', slug: 'ambre-noir',
-    name_fr: 'Ambre Noir', name_ar: 'عنبر أسود',
-    category_id: 'cat-03', brand_id: 'b5', tag_ids: ['tag-03'],
-    price_per_gram: 950, stock_grams: 2500,
-    status: 'active',
-  },
-  {
-    id: 'p5', product_type: 'perfume', slug: 'musc-tahara',
-    name_fr: 'Musc Tahara', name_ar: 'مسك طهارة',
-    category_id: 'cat-04', brand_id: 'b4', tag_ids: ['tag-01', 'tag-02'],
-    price_per_gram: 500, stock_grams: 6000,
-    status: 'active',
+    id: 'p2', type: 'perfume', product_type: 'perfume', slug: 'oud-malaki',
+    nameAR: 'عود ملكي', nameFR: 'Oud Malaki', name_ar: 'عود ملكي', name_fr: 'Oud Malaki',
+    descriptionAR: 'العود الملكي الفاخر', descriptionFR: 'L\'oud royal luxueux',
+    categoryId: 'cat-01', category_id: 'cat-01', brandId: 'b2', brand_id: 'b2', tagIds: ['tag-02', 'tag-03'], tag_ids: ['tag-02', 'tag-03'],
+    pricePerGram: 1200, price_per_gram: 1200, stockInGrams: 3000, stock_grams: 3000,
+    images: ['https://images.unsplash.com/photo-1546190255-451a91afc548?q=80&w=800'], status: 'active', createdAt: new Date().toISOString()
   },
 
   // FLACONS
   {
-    id: 'f1', product_type: 'flacon', slug: 'flacon-classique',
-    name_fr: 'Flacon Classique Transparent', name_ar: 'قارورة كلاسيكية شفافة',
-    category_id: 'cat-01', tag_ids: ['tag-01'],
-    base_price: 350,
-    status: 'active',
+    id: 'f1', type: 'flacon', product_type: 'flacon', slug: 'flacon-classique',
+    nameAR: 'قارورة كلاسيكية شفافة', nameFR: 'Flacon Classique Transparent', name_ar: 'قارورة كلاسيكية شفافة', name_fr: 'Flacon Classique Transparent',
+    descriptionAR: 'قارورة زجاجية أنيقة', descriptionFR: 'Un flacon en verre élégant',
+    categoryId: 'cat-01', category_id: 'cat-01', tagIds: ['tag-01'], tag_ids: ['tag-01'],
+    base_price: 350, images: ['https://images.unsplash.com/photo-1592914610354-fd354ea45e48?q=80&w=800'], status: 'active', createdAt: new Date().toISOString(),
     variants: [
-      { id: 'fv1', price: 350, color: 'transparent', size: '30ml' },
-      { id: 'fv2', price: 450, color: 'transparent', size: '50ml' },
-    ]
-  },
-  {
-    id: 'f2', product_type: 'flacon', slug: 'flacon-luxe-noir',
-    name_fr: 'Flacon Luxe Noir Atomiseur', name_ar: 'قارورة فخمة سوداء',
-    category_id: 'cat-01', tag_ids: ['tag-02', 'tag-03'],
-    base_price: 550,
-    status: 'active',
-    variants: [
-      { id: 'fv4', price: 550, color: 'black', size: '30ml' },
-      { id: 'fv5', price: 750, color: 'black', size: '50ml' },
-    ]
-  },
-  {
-    id: 'f3', product_type: 'flacon', slug: 'flacon-oriental',
-    name_fr: 'Flacon Oriental Gravé', name_ar: 'قارورة شرقية',
-    category_id: 'cat-01', tag_ids: ['tag-03'],
-    base_price: 890,
-    status: 'active',
-    variants: [
-      { id: 'fv8', price: 890, color: 'gold', size: '50ml' },
-    ]
-  },
-  {
-    id: 'f4', product_type: 'flacon', slug: 'mini-flacon-voyage',
-    name_fr: 'Mini Flacon Voyage', name_ar: 'قارورة ميني للسفر',
-    category_id: 'cat-01', tag_ids: ['tag-01', 'tag-02'],
-    base_price: 180,
-    status: 'active',
-    variants: [
-      { id: 'fv12', price: 180, color: 'transparent', size: '5ml' },
+      { id: 'fv1', size: '30ml', color: 'transparent', shape: 'carré', price: 350, stock: 100 },
+      { id: 'fv2', size: '50ml', color: 'transparent', shape: 'carré', price: 450, stock: 80 }
     ]
   },
 ]
 
-export const mockCustomers = [
-  { id: 'cu1', first_name: 'Mohammed', last_name: 'Benali', phone: '0550123456', wilaya: 'Alger' },
-  { id: 'cu2', first_name: 'Fatima', last_name: 'Bouzidi', phone: '0661234567', wilaya: 'Oran' },
-]
-
-export const mockOrders = [
-  {
-    id: 'o1', order_number: 'AM-000001', customer_id: 'cu1',
-    total_amount: 425000, order_status: 'delivered', payment_status: 'paid',
-    created_at: '2026-03-15T12:00:00Z', guest_first_name: null, guest_last_name: null
+const customersData: Compatible<Customer>[] = [
+  { 
+    id: 'cu1', 
+    firstName: 'Mohammed', lastName: 'Benali', 
+    first_name: 'Mohammed', last_name: 'Benali', 
+    shopName: 'Parfumerie El Nour', 
+    phoneNumber: '0550123456', phone: '0550123456', 
+    wilaya: 'Alger', commune: 'Bab El Oued', 
+    status: 'active', joinedAt: '2025-01-01'
   },
 ]
+
+const ordersData: Compatible<Order>[] = [
+  {
+    id: 'o1', 
+    orderNumber: 'AM-000001', order_number: 'AM-000001', 
+    customerId: 'cu1', customer_id: 'cu1',
+    total: 425000, total_amount: 425000, 
+    status: 'delivered', order_status: 'delivered', 
+    paymentStatus: 'paid', payment_status: 'paid',
+    amountPaid: 425000, 
+    createdAt: '2026-03-15T12:00:00Z', created_at: '2026-03-15T12:00:00Z',
+    updatedAt: '2026-03-15T12:00:00Z', 
+    guest_first_name: null, guest_last_name: null,
+    items: []
+  },
+]
+
+// Named exports asked by the USER
+export const mockCategories = categoriesData;
+export const mockBrands = brandsData;
+export const mockCollections = collectionsData;
+export const mockTags = tagsData;
+export const mockProducts = productsData;
+export const mockCustomers = customersData;
+export const mockOrders = ordersData;
+
+// Aliases for compatibility with existing files
+export const categories = categoriesData;
+export const brands = brandsData;
+export const collections = collectionsData;
+export const tags = tagsData;
+export const products = productsData;
+export const customers = customersData;
+export const orders = ordersData;

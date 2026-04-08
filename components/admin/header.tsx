@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from '@/i18n/i18n-context';
-import { useAdminStore } from '@/store/admin-store';
+import { useAdminStore } from '@/store/admin-ui.store';
 import { Button } from '@/components/ui/button';
 import { Menu, Bell, User } from 'lucide-react';
 import { LanguageToggle } from '@/components/store/language-toggle';

@@ -7,7 +7,7 @@ import { LanguageToggle } from './language-toggle';
 import { ShoppingBag, User, Shield } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useCartStore } from '@/store/cart-store';
-import { useAuthStore } from '@/store/auth-store';
+import { useCustomerAuth } from '@/store/customer-auth.store';
 import { MobileHeader } from './MobileHeader';
 import dynamic from 'next/dynamic';
 
@@ -19,7 +19,7 @@ const CartDrawer = dynamic(() => import('./CartDrawer'), {
 export function Header() {
   const { t } = useI18n();
   const cartCount = useCartStore((state) => state.cartCount());
-  const { user } = useAuthStore();
+  const { customer: user } = useCustomerAuth();
   
   const [visible, setVisible] = useState(true);
   const [lastScroll, setLastScroll] = useState(0);

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
-import { useAdminStore } from '@/store/admin-store';
+import { useAdminStore } from '@/store/admin-ui.store';
 import { 
   LayoutDashboard, Package, Tag, Users, ShoppingCart, 
   FileText, TrendingUp, Settings, Inbox, Menu, Store 

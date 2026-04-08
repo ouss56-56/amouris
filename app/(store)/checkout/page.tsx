@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
 import { useCartStore } from '@/store/cart-store';
-import { useAuthStore } from '@/store/auth-store';
+import { useCustomerAuth } from '@/store/customer-auth.store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,12 +19,12 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { t, language } = useI18n();
   const { items, cartTotal, clearCart } = useCartStore();
-  const { user } = useAuthStore();
+  const { customer: user } = useCustomerAuth();
 
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    phone: user?.phoneNumber || '',
+    phone: user?.phone || '',
     wilaya: user?.wilaya || '',
   });
 

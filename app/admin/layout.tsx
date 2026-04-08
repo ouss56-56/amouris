@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAdminAuth } from '@/store/admin-auth.store'
-import { AdminSidebar } from '@/components/admin/AdminSidebar'
+import { AdminSidebar } from '@/components/admin/sidebar'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAdminAuthenticated } = useAdminAuth()

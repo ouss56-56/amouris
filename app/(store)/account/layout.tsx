@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
-import { useAuthStore } from '@/store/auth-store';
+import { useCustomerAuth } from '@/store/customer-auth.store';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, ShoppingBag, Heart, Settings, LogOut } from 'lucide-react';
 
@@ -16,7 +16,7 @@ export default function AccountLayout({
   const router = useRouter();
   const pathname = usePathname();
   const { t, language } = useI18n();
-  const { user, logout } = useAuthStore();
+  const { customer: user, logout } = useCustomerAuth();
 
   useEffect(() => {
     if (user === null) {
