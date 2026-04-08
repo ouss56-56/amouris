@@ -22,6 +22,7 @@ interface DbProduct {
   product_type: string;
   name_ar: string;
   name_fr: string;
+  slug: string;
   description_ar?: string;
   description_fr?: string;
   category_id: string;
@@ -44,6 +45,7 @@ export function mapDbProductToFrontend(dbProduct: DbProduct): Product {
     type: dbProduct.product_type as ProductType,
     nameAR: dbProduct.name_ar,
     nameFR: dbProduct.name_fr,
+    slug: dbProduct.slug,
     descriptionAR: dbProduct.description_ar || '',
     descriptionFR: dbProduct.description_fr || '',
     categoryId: dbProduct.category_id,

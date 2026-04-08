@@ -2,6 +2,7 @@ export interface Category {
   id: string;
   nameAR: string;
   nameFR: string;
+  slug: string;
   image?: string;
 }
 
@@ -23,7 +24,9 @@ export interface Tag {
   id: string;
   nameAR: string;
   nameFR: string;
+  slug: string;
   showOnHomepage?: boolean;
+  homepageOrder?: number;
 }
 
 export type ProductType = 'perfume' | 'flacon';
@@ -33,6 +36,7 @@ export interface BaseProduct {
   type: ProductType;
   nameAR: string;
   nameFR: string;
+  slug: string;
   descriptionAR: string;
   descriptionFR: string;
   categoryId: string;

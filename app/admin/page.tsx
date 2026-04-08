@@ -131,7 +131,7 @@ export default function AdminDashboard() {
                 {customers.slice(0, 5).map(customer => (
                     <div key={customer.id} className="flex items-center gap-4 group">
                         <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center text-amber-700 font-bold group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                            {customer.firstName.charAt(0)}
+                            {(customer.firstName || customer.phoneNumber).charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-emerald-950 truncate">{customer.firstName} {customer.lastName}</p>

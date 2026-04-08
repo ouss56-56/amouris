@@ -22,11 +22,13 @@ export async function getHomepageTags() {
   }
 
   // 2. Map to frontend types
-  return (tags || []).map((t: { id: string; name_ar: string; name_fr: string; show_on_homepage: boolean }) => ({
+  return (tags || []).map((t: { id: string; name_ar: string; name_fr: string; slug: string; show_on_homepage: boolean; homepage_order: number }) => ({
     id: t.id,
     nameAR: t.name_ar,
     nameFR: t.name_fr,
+    slug: t.slug,
     showOnHomepage: t.show_on_homepage,
+    homepageOrder: t.homepage_order,
   }));
 }
 
@@ -48,6 +50,7 @@ export async function getTags(): Promise<Tag[]> {
     id: t.id,
     nameAR: t.name_ar,
     nameFR: t.name_fr,
+    slug: t.slug,
   }));
 }
 

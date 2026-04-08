@@ -41,11 +41,11 @@ export function CategoriesGrid({ categories }: { categories: any[] }) {
               >
                 <div className="relative z-10 flex flex-col items-center gap-4">
                   <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500">
-                    <span className="text-2xl font-serif text-emerald-900">{cat.name_fr.charAt(0)}</span>
+                    <span className="text-2xl font-serif text-emerald-900">{(cat.nameFR || cat.id).charAt(0)}</span>
                   </div>
                   <div>
-                    <span className="block font-bold text-emerald-950 text-base md:text-lg mb-1">{language === 'ar' ? cat.name_ar : cat.name_fr}</span>
-                    <span className="block text-[10px] uppercase tracking-widest text-emerald-900/40 font-black">{language === 'ar' ? cat.name_fr : cat.name_ar}</span>
+                    <span className="block font-bold text-emerald-950 text-base md:text-lg mb-1">{language === 'ar' ? cat.nameAR : cat.nameFR}</span>
+                    <span className="block text-[10px] uppercase tracking-widest text-emerald-900/40 font-black">{language === 'ar' ? cat.nameFR : cat.nameAR}</span>
                   </div>
                 </div>
                 

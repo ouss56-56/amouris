@@ -21,7 +21,7 @@ export function BrandsMarquee({ brands }: { brands: any[] }) {
                 className="flex flex-col items-center gap-2 group/brand"
             >
                 <span className="text-gray-300 group-hover/brand:text-emerald-900 font-serif text-3xl md:text-5xl transition-all duration-500 scale-90 group-hover/brand:scale-100 italic opacity-40 group-hover/brand:opacity-100 px-4">
-                    {language === 'ar' ? brand.name_ar : brand.name}
+                    {language === 'ar' ? brand.nameAR : brand.nameFR}
                 </span>
                 <div className="w-0 group-hover/brand:w-full h-0.5 bg-amber-400 transition-all duration-500 rounded-full" />
             </div>

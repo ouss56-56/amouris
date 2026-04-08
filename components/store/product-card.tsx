@@ -62,7 +62,7 @@ export function ProductCard({ product, index = 0, compact = false }: ProductCard
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-emerald-900/10 font-serif text-8xl md:text-9xl select-none group-hover:scale-110 transition-transform duration-700">
-                    {product.nameFR.charAt(0)}
+                    {(product.nameFR || 'P').charAt(0)}
                 </span>
             </div>
           )}

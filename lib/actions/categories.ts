@@ -22,5 +22,6 @@ export async function getCategories() {
     id: c.id,
     nameAR: c.name_ar,
     nameFR: c.name_fr,
+    slug: c.slug,
   }));
 }

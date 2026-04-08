@@ -81,7 +81,7 @@ export default function AdminCustomersClient({ initialCustomers, orders }: Admin
                     <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-serif shadow-sm ${isFrozen ? 'bg-rose-50 text-rose-300' : 'bg-amber-100 text-amber-700'}`}>
-                            {customer.firstName.charAt(0)}
+                            {(customer.firstName || customer.phoneNumber).charAt(0)}
                         </div>
                         <div>
                             <div className="font-bold text-emerald-950 text-base">{customer.firstName} {customer.lastName}</div>
