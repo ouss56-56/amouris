@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAdminAuthStore } from '@/store/admin-auth.store'
 import { getProducts } from '@/lib/actions/products'
 import { getAllOrders } from '@/lib/actions/orders'
-import { getCustomers } from '@/lib/actions/customers'
+import { getAllCustomers } from '@/lib/actions/customers'
 import { ShoppingBag, Users, TrendingUp, Package, Clock, CheckCircle, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { Product, Order, Customer } from '@/lib/types'
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
       const [p, o, c] = await Promise.all([
         getProducts({ status: 'active' }),
         getAllOrders(),
-        getCustomers()
+        getAllCustomers()
       ])
       setProducts(p)
       setOrders(o)

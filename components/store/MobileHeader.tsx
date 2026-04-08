@@ -15,7 +15,7 @@ const CartDrawer = dynamic(() => import('./CartDrawer'), {
 export function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const cartCount = useCartStore((state) => state.cartCount())
+  const cartCount = useCartStore((state) => state.getCount())
   
   const [mounted, setMounted] = useState(false)
   

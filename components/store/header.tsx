@@ -18,7 +18,7 @@ const CartDrawer = dynamic(() => import('./CartDrawer'), {
 
 export function Header() {
   const { t } = useI18n();
-  const cartCount = useCartStore((state) => state.cartCount());
+  const cartCount = useCartStore((state) => state.getCount());
   const { customer: user } = useCustomerAuth();
   
   const [mounted, setMounted] = useState(false);
