@@ -1,5 +1,11 @@
 'use client'
 import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { useI18n } from '@/i18n/i18n-context'
+import { Button } from '@/components/ui/button'
+import { CheckCircle2, ShoppingBag, ArrowRight, PackageCheck } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 function SuccessContent() {
   const { t, language } = useI18n()
