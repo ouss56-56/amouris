@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Menu, ShoppingBag, User } from 'lucide-react'
 import Link from 'next/link'
-import { useCartStore } from '@/store/cart-store'
+import { useCartStore } from '@/store/cart.store'
 import { LanguageToggle } from './language-toggle'
 import dynamic from 'next/dynamic'
 

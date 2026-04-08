@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { LanguageToggle } from './language-toggle';
 import { ShoppingBag, User, Shield } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useCartStore } from '@/store/cart-store';
+import { useCartStore } from '@/store/cart.store';
 import { useCustomerAuth } from '@/store/customer-auth.store';
 import { MobileHeader } from './MobileHeader';
 import dynamic from 'next/dynamic';
