@@ -7,7 +7,7 @@ import {
   AlertTriangle, CreditCard, Loader2, 
   CheckCircle2, Plus, Trash2, Megaphone,
   LogOut, User, ExternalLink, GripVertical,
-  ChevronUp, ChevronDown, Check, X, Instagram
+  ChevronUp, ChevronDown, Check, X, Camera
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSettingsStore, StoreSettings } from '@/store/settings.store'
@@ -119,7 +119,7 @@ export default function AdminSettingsPage() {
 
   const tabs = [
     { id: 'Boutique', label: 'Boutique', icon: Globe },
-    { id: 'Social', label: 'Réseaux Sociaux', icon: Instagram },
+    { id: 'Social', label: 'Réseaux Sociaux', icon: Camera },
     { id: 'Logistique', label: 'Livraison & Stocks', icon: CreditCard },
     { id: 'Annonces', label: 'Annonces', icon: Megaphone },
     { id: 'Compte', label: 'Compte Admin', icon: User },
@@ -228,7 +228,7 @@ export default function AdminSettingsPage() {
               {activeTab === 'Social' && (
                 <section className="space-y-8">
                    <div className="flex items-center gap-4 border-b border-emerald-950/5 pb-4">
-                      <Instagram size={18} className="text-rose-600" />
+                      <Camera size={18} className="text-rose-600" />
                       <h3 className="font-serif text-xl font-bold text-emerald-950">Réseaux Sociaux</h3>
                    </div>
                    <div className="grid grid-cols-1 gap-6">

@@ -90,3 +90,5 @@ export const useCustomerAuthStore = create<CustomerAuthStore>()(
     }
   )
 )
+
+export const useCustomerAuth = useCustomerAuthStore

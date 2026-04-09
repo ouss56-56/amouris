@@ -9,11 +9,13 @@ export interface Customer {
   first_name: string
   last_name: string
   phone: string
+  phone_number: string // alias for UI
   shop_name?: string
   wilaya: string
   commune?: string
   password?: string
   is_frozen: boolean
+  status: 'active' | 'frozen' // alias for UI
   role?: string
   created_at: string
 }
@@ -27,6 +29,7 @@ interface CustomersStore {
   register: (data: any) => Promise<{ ok: boolean; customer?: Customer; error?: string }>
   freeze: (id: string) => Promise<void>
   unfreeze: (id: string) => Promise<void>
+  toggleFreeze: (id: string) => Promise<void>
   remove: (id: string) => Promise<void>
   resetPassword: (id: string, newPassword: string) => Promise<void>
   update: (id: string, updates: Partial<Customer>) => Promise<{ ok: boolean; customer?: Customer; error?: string }>
@@ -61,7 +64,14 @@ export const useCustomersStore = create<CustomersStore>()(
             .order('created_at', { ascending: false })
           
           if (error) throw error
-          set({ customers: data || [], lastUpdated: now, isLoading: false })
+          
+          const transformed = (data || []).map(c => ({
+            ...c,
+            phone_number: c.phone,
+            status: c.is_frozen ? 'frozen' : 'active'
+          }))
+          
+          set({ customers: transformed, lastUpdated: now, isLoading: false })
         } catch (err: any) {
           set({ error: err.message, isLoading: false })
         }
@@ -101,7 +111,7 @@ export const useCustomersStore = create<CustomersStore>()(
           return
         }
         set(s => ({
-          customers: s.customers.map(c => c.id === id ? { ...c, is_frozen: true } : c),
+          customers: s.customers.map(c => c.id === id ? { ...c, is_frozen: true, status: 'frozen' } : c),
           isLoading: false
         }))
       },
@@ -115,9 +125,19 @@ export const useCustomersStore = create<CustomersStore>()(
           return
         }
         set(s => ({
-          customers: s.customers.map(c => c.id === id ? { ...c, is_frozen: false } : c),
+          customers: s.customers.map(c => c.id === id ? { ...c, is_frozen: false, status: 'active' } : c),
           isLoading: false
         }))
+      },
+
+      toggleFreeze: async (id) => {
+        const customer = get().customers.find(c => c.id === id)
+        if (!customer) return
+        if (customer.is_frozen) {
+          return get().unfreeze(id)
+        } else {
+          return get().freeze(id)
+        }
       },
 
       remove: async (id) => {

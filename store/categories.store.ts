@@ -1,6 +1,8 @@
 'use client'
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { createClient } from '@/lib/supabase/client'
+import { productsApi } from '@/lib/api/products.api'
 
 export interface Category {
   id: string
