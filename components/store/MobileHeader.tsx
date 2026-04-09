@@ -18,8 +18,9 @@ export function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartCount = useCartStore((state) => state.getCount())
-  const { customer: user } = useCustomerAuth()
+  const { customer: user, logout } = useCustomerAuth()
   const { t, language, dir } = useI18n()
+  const isAr = language === 'ar'
   
   const [mounted, setMounted] = useState(false)
   
