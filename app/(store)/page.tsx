@@ -29,6 +29,7 @@ export default function HomePage() {
   // Select raw arrays (stable references from Zustand)
   const brands = useBrandsStore(s => s.brands)
   const tags = useTagsStore(s => s.tags)
+  const isLoading = useProductsStore(s => s.isLoading)
   const products = useProductsStore(s => s.products)
   const categories = useCategoriesStore(s => s.categories)
 
@@ -38,8 +39,12 @@ export default function HomePage() {
     [tags]
   )
 
+  const hasContent = homepageTags.some(tag => 
+    products.some(p => p.status === 'active' && p.tag_ids?.includes(tag.id))
+  )
+
   return (
-    <main>
+    <main className="min-h-screen">
       {/* 1. Hero with Stats */}
       <HeroSection />
 
@@ -47,19 +52,31 @@ export default function HomePage() {
       <BrandsMarquee brands={brands} />
 
       {/* 3. Sections par tag (Arrivage, Best-seller, Premium) */}
-      {homepageTags.map(tag => {
-        const tagProducts = products.filter(
-          p => p.status === 'active' && p.tag_ids?.includes(tag.id)
-        )
-        if (tagProducts.length === 0) return null
-        return (
-          <TagSection
-            key={tag.id}
-            tag={tag}
-            products={tagProducts}
-          />
-        )
-      })}
+      {isLoading && products.length === 0 ? (
+        <div className="py-24 text-center">
+          <div className="inline-block w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-gray-400 font-serif italic">Chargement des collections...</p>
+        </div>
+      ) : !hasContent && !isLoading ? (
+        <div className="py-24 text-center bg-neutral-50 border-y border-neutral-100">
+           <h3 className="font-serif text-2xl text-emerald-950 mb-2">Nos collections arrivent</h3>
+           <p className="text-gray-500 max-w-md mx-auto">Nous préparons actuellement nos nouveaux arrivages. Revenez très bientôt.</p>
+        </div>
+      ) : (
+        homepageTags.map(tag => {
+          const tagProducts = products.filter(
+            p => p.status === 'active' && p.tag_ids?.includes(tag.id)
+          )
+          if (tagProducts.length === 0) return null
+          return (
+            <TagSection
+              key={tag.id}
+              tag={tag}
+              products={tagProducts}
+            />
+          )
+        })
+      )}
 
       {/* 4. Grille catégories (Dynamique) */}
       <CategoriesGrid categories={categories} />

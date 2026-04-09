@@ -26,7 +26,9 @@ export function ProductCard({ product, index = 0, compact = false }: ProductCard
 
   const displayPrice = isPerfume 
     ? product.price_per_gram
-    : Math.min(...(product.variants?.map(v => v.price) || [0]))
+    : (product.variants && product.variants.length > 0)
+      ? Math.min(...product.variants.map(v => v.price))
+      : product.base_price || 0
 
   // Color swatches for flacons
   const colors = !isPerfume ? Array.from(new Set(product.variants?.map(v => v.color))).filter(Boolean) : []

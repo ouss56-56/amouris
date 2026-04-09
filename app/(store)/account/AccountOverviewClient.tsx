@@ -105,12 +105,3 @@ export default function AccountOverviewClient({ user, orders }: AccountOverviewC
     </div>
   );
 }
-r>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}

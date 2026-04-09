@@ -239,13 +239,24 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, first_name, last_name, phone, wilaya, role)
+  INSERT INTO public.profiles (
+    id, 
+    first_name, 
+    last_name, 
+    phone, 
+    shop_name,
+    wilaya, 
+    commune,
+    role
+  )
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'first_name', ''),
     COALESCE(new.raw_user_meta_data->>'last_name', ''),
     COALESCE(new.raw_user_meta_data->>'phone', ''),
+    COALESCE(new.raw_user_meta_data->>'shop_name', NULL),
     COALESCE(new.raw_user_meta_data->>'wilaya', 'Alger'),
+    COALESCE(new.raw_user_meta_data->>'commune', NULL),
     COALESCE(new.raw_user_meta_data->>'role', 'customer')
   );
   RETURN new;

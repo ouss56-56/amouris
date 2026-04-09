@@ -88,7 +88,7 @@ export default function FlaconsClient() {
           <h1 className="text-white font-serif text-5xl md:text-7xl mb-6">
             {isAr ? 'القوارير والعبوات' : 'Flacons & Vides'}
           </h1>
-          <p className="text-gray-400 font-light text-sm md:text-lg max-w-2xl mx-auto italic">
+          <p className="text-gray-400/80 font-light text-sm md:text-lg max-w-2xl mx-auto italic">
             {isAr 
               ? 'مجموعة متنوعة من القوارير الفاخرة للاستخدامات المختلفة' 
               : 'Écrins de verre et packaging premium pour vos plus belles créations'}
@@ -110,11 +110,11 @@ export default function FlaconsClient() {
             <div className="space-y-12 sticky top-32">
               {/* Size Chips */}
               <div className="space-y-6">
-                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">Contenance</h3>
+                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">Contenance</h3>
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setSelectedSize('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedSize === 'all' ? 'bg-amber-600 text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
+                  <button onClick={() => setSelectedSize('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedSize === 'all' ? 'bg-amber-600 text-white shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
                   {filterOptions.sizes.map(size => (
-                    <button key={size} onClick={() => setSelectedSize(size)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedSize === size ? 'bg-amber-600 text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5'}`}>
+                    <button key={size} onClick={() => setSelectedSize(size)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedSize === size ? 'bg-amber-600 text-white shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5'}`}>
                       {size}
                     </button>
                   ))}
@@ -123,7 +123,7 @@ export default function FlaconsClient() {
 
               {/* Color Swatches */}
               <div className="space-y-6">
-                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">Coloris</h3>
+                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">Coloris</h3>
                 <div className="flex flex-wrap gap-2">
                   <button onClick={() => setSelectedColor('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedColor === 'all' ? 'bg-amber-600 text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
                   {filterOptions.colors.map(color => (
@@ -138,7 +138,7 @@ export default function FlaconsClient() {
 
                {/* Shape Chips */}
                <div className="space-y-6">
-                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">Silhouette</h3>
+                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">Silhouette</h3>
                 <div className="flex flex-wrap gap-2">
                   <button onClick={() => setSelectedShape('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedShape === 'all' ? 'bg-amber-600 text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
                   {filterOptions.shapes.map(shape => (
@@ -151,7 +151,7 @@ export default function FlaconsClient() {
 
               {/* Price Range Slider */}
               <div className="space-y-6">
-                <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">
+                <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">
                   <span>Prix max</span>
                   <span className="text-emerald-950">{maxPrice} DZD</span>
                 </div>
@@ -172,7 +172,7 @@ export default function FlaconsClient() {
              {/* Header bar */}
              <div className="flex justify-between items-center mb-12">
               <div>
-                <span className="text-xs uppercase font-black tracking-widest text-emerald-950/20">{filteredProducts.length} Modèles trouvés</span>
+                <span className="text-xs uppercase font-black tracking-widest text-emerald-950/50">{filteredProducts.length} Modèles trouvés</span>
               </div>
               
               <div className="flex items-center gap-4">
@@ -191,7 +191,7 @@ export default function FlaconsClient() {
                     <option value="price-desc">Prix décroissant</option>
                     <option value="name-az">Nom A-Z</option>
                   </select>
-                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-950/20" />
+                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-950/50" />
                 </div>
               </div>
             </div>

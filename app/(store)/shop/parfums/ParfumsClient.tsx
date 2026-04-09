@@ -57,7 +57,7 @@ export default function ParfumsClient() {
           <h1 className="text-white font-serif text-5xl md:text-7xl mb-6">
             {isAr ? 'العطور والزيوت' : 'Parfums & Huiles'}
           </h1>
-          <p className="text-emerald-100/40 font-light text-sm md:text-lg max-w-2xl mx-auto italic">
+          <p className="text-emerald-100/70 font-light text-sm md:text-lg max-w-2xl mx-auto italic">
             {isAr 
               ? 'أفخر الزيوت العطرية العالمية - الحد الأدنى للطلب 100 جرام' 
               : 'Les plus grandes références de la parfumerie mondiale - Commande min. 100g'}
@@ -78,11 +78,11 @@ export default function ParfumsClient() {
             <div className="space-y-12 sticky top-32">
               {/* Category Chips */}
               <div className="space-y-6">
-                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">Collections</h3>
+                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">Collections</h3>
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setSelectedCategory('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
+                  <button onClick={() => setSelectedCategory('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
                   {categories.map(cat => (
-                    <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>
+                    <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5 hover:border-emerald-950/20'}`}>
                       {isAr ? cat.name_ar : cat.name_fr}
                     </button>
                   ))}
@@ -91,11 +91,11 @@ export default function ParfumsClient() {
 
               {/* Brands Chips */}
               <div className="space-y-6">
-                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">Maisons</h3>
+                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">Maisons</h3>
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setSelectedBrand('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedBrand === 'all' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
+                  <button onClick={() => setSelectedBrand('all')} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedBrand === 'all' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5 hover:border-emerald-950/20'}`}>TOUT</button>
                   {brands.map(brand => (
-                    <button key={brand.id} onClick={() => setSelectedBrand(brand.id)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedBrand === brand.id ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5 hover:border-emerald-950/20'}`}>
+                    <button key={brand.id} onClick={() => setSelectedBrand(brand.id)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedBrand === brand.id ? 'bg-[#0a3d2e] text-white shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5 hover:border-emerald-950/20'}`}>
                       {isAr ? brand.name_ar : brand.name}
                     </button>
                   ))}
@@ -104,7 +104,7 @@ export default function ParfumsClient() {
 
               {/* Price Slider */}
               <div className="space-y-6">
-                <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">
+                <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">
                   <span>Prix / g</span>
                   <span className="text-emerald-950">{maxPrice} DZD</span>
                 </div>
@@ -119,10 +119,10 @@ export default function ParfumsClient() {
 
               {/* Tags Chips */}
               <div className="space-y-6">
-                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/20 border-b border-emerald-950/5 pb-2">Ambiances</h3>
+                <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-950/60 border-b border-emerald-950/5 pb-2">Ambiances</h3>
                 <div className="flex flex-wrap gap-2">
                   {tags.map(tag => (
-                    <button key={tag.id} onClick={() => setSelectedTag(selectedTag === tag.id ? 'all' : tag.id)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedTag === tag.id ? 'bg-[#C9A84C] text-emerald-950 shadow-lg' : 'bg-white text-emerald-950/40 border border-emerald-950/5'}`}>
+                    <button key={tag.id} onClick={() => setSelectedTag(selectedTag === tag.id ? 'all' : tag.id)} className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedTag === tag.id ? 'bg-[#C9A84C] text-emerald-950 shadow-lg' : 'bg-white text-emerald-950/60 border border-emerald-950/5'}`}>
                       {isAr ? tag.name_ar : tag.name_fr}
                     </button>
                   ))}
@@ -135,7 +135,7 @@ export default function ParfumsClient() {
           <main className="flex-1">
             <div className="flex justify-between items-center mb-12">
               <div>
-                <span className="text-xs uppercase font-black tracking-widest text-emerald-950/20">{filteredProducts.length} Références trouvées</span>
+                <span className="text-xs uppercase font-black tracking-widest text-emerald-950/50">{filteredProducts.length} Références trouvées</span>
               </div>
               
               <div className="flex items-center gap-4">
@@ -154,7 +154,7 @@ export default function ParfumsClient() {
                     <option value="price-desc">Prix décroissant</option>
                     <option value="name-az">Nom A-Z</option>
                   </select>
-                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-950/20" />
+                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-950/50" />
                 </div>
               </div>
             </div>

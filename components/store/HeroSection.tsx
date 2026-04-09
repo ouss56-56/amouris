@@ -87,6 +87,14 @@ export function HeroSection() {
             >
               {t('home.hero_title_2')}
             </motion.span>
+            <motion.span 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.0, duration: 0.8 }}
+              className="block mt-2"
+            >
+              {t('home.hero_title_3')}
+            </motion.span>
           </h1>
 
           <motion.p 

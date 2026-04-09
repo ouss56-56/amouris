@@ -54,10 +54,17 @@ interface ProductsStore {
 
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
-const mapProductFromDb = (p: any): Product => ({
-  ...p,
-  tag_ids: p.tags?.map((t: any) => t.tag_id) || []
-})
+const mapProductFromDb = (p: any): Product => {
+  // Ensure tag_ids is always extracted correctly from the joined 'tags' array
+  const tag_ids = Array.isArray(p.tags) 
+    ? p.tags.map((t: any) => t.tag_id || t.id).filter(Boolean)
+    : [];
+
+  return {
+    ...p,
+    tag_ids: tag_ids.length > 0 ? tag_ids : (p.tag_ids || [])
+  };
+};
 
 export const useProductsStore = create<ProductsStore>()(
   persist(
@@ -77,7 +84,7 @@ export const useProductsStore = create<ProductsStore>()(
 
         set({ isLoading: true, error: null })
         try {
-          const fetchedProducts = await fetchAllProducts({ status: 'admin' }) // Fetch all for admin/store sync
+          const fetchedProducts = await fetchAllProducts({ status: 'admin' })
           const mapped = fetchedProducts.map(mapProductFromDb)
           set({ products: mapped, lastUpdated: now, isLoading: false })
         } catch (err: any) {
@@ -85,7 +92,7 @@ export const useProductsStore = create<ProductsStore>()(
         }
       },
 
-      addProduct: async (data) => {
+      addProduct: async (data: any) => {
         set({ isLoading: true, error: null })
         try {
           const newProduct = await createProduct(data)
@@ -101,12 +108,22 @@ export const useProductsStore = create<ProductsStore>()(
         }
       },
 
-      updateProduct: async (id, updates) => {
+      updateProduct: async (id, updates: any) => {
         set({ isLoading: true, error: null })
         try {
           await updateProduct(id, updates)
           set((s) => ({
-            products: s.products.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+            products: s.products.map((p) => {
+              if (p.id === id) {
+                const updatedProduct = { ...p, ...updates };
+                // If tags were updated, we need to ensure tag_ids is updated in the store too
+                if (updates.tags) {
+                  updatedProduct.tag_ids = updates.tags;
+                }
+                return updatedProduct;
+              }
+              return p;
+            }),
             isLoading: false
           }))
         } catch (err: any) {

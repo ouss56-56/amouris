@@ -29,7 +29,8 @@ export const loginAdmin = async (email: string, password: string) => {
 
 export const loginCustomer = async (phone: string, password?: string) => {
   const supabase = await createClient();
-  const email = `${phone.replace(/\s/g, '')}@amouris-user.dz`;
+  const normalizedPhone = phone.replace(/\s+/g, '').replace(/[-+]/g, '');
+  const email = `${normalizedPhone}@amouris-user.dz`;
   
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -49,7 +50,8 @@ export const loginCustomer = async (phone: string, password?: string) => {
 
 export const registerCustomer = async (data: any) => {
   const admin = createAdminClient();
-  const email = `${data.phone.replace(/\s/g, '')}@amouris-user.dz`;
+  const normalizedPhone = data.phone.replace(/\s+/g, '').replace(/[-+]/g, '');
+  const email = `${normalizedPhone}@amouris-user.dz`;
 
   const { data: authUser, error: authError } = await admin.auth.admin.createUser({
     email,
@@ -58,7 +60,10 @@ export const registerCustomer = async (data: any) => {
     user_metadata: {
       first_name: data.first_name,
       last_name: data.last_name,
-      phone: data.phone,
+      phone: data.phone, // We store the original phone in metadata for UI
+      shop_name: data.shop_name,
+      wilaya: data.wilaya,
+      commune: data.commune,
       role: 'customer'
     }
   });

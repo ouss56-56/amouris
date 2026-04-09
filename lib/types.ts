@@ -56,11 +56,13 @@ export interface PerfumeProduct extends BaseProduct {
 
 export interface FlaconVariant {
   id: string;
-  size: string; // e.g., '30ml', '50ml', '100ml'
-  color: string; // Hex color code or name
-  shape: string; // e.g., 'carré', 'rond', 'atomiseur'
-  price: number; // DZD
-  stock: number;
+  product_id?: string;
+  size_ml: number;
+  color: string;
+  color_name: string;
+  shape: string;
+  price: number;
+  stock_units: number;
 }
 
 export interface FlaconProduct extends BaseProduct {
@@ -77,42 +79,49 @@ export interface Customer {
   shop_name?: string;
   phone: string; 
   wilaya: string;
-  commune: string;
-  status: 'active' | 'frozen';
-  joined_at: string;
+  commune?: string;
+  role: 'admin' | 'customer';
+  is_frozen: boolean;
+  created_at: string;
 }
 
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
 export type PaymentStatus = 'unpaid' | 'partial' | 'paid';
 
 export interface OrderItem {
+  id: string;
+  order_id: string;
   product_id: string;
-  variant_id?: string; // For flacons
-  quantity: number; // Grams for perfume, units for flacons
+  product_type: string;
+  flacon_variant_id?: string;
+  product_name_fr: string;
+  product_name_ar: string;
+  variant_label?: string;
+  quantity_grams?: number;
+  quantity_units?: number;
   unit_price: number;
-  name_fr: string;
-  name_ar: string;
+  total_price: number;
 }
 
 export interface Order {
   id: string;
-  order_number: string; // e.g., AM-100234
-  customer_id: string | 'guest'; // 'guest' for guests
-  guest_info?: {
-    first_name: string;
-    last_name: string;
-    phone: string;
-    wilaya: string;
-  };
-  items: OrderItem[];
-  total: number;
-  status: OrderStatus;
-  payment_status: PaymentStatus;
+  order_number: string;
+  customer_id?: string | null;
+  is_registered_customer: boolean;
+  guest_first_name?: string;
+  guest_last_name?: string;
+  guest_phone?: string;
+  guest_wilaya?: string;
+  guest_commune?: string;
+  total_amount: number;
   amount_paid: number;
+  payment_status: PaymentStatus;
+  order_status: OrderStatus;
+  admin_notes?: string;
+  invoice_generated?: boolean;
+  invoice_data?: any;
   created_at: string;
   updated_at: string;
-  notes?: string;
-  invoice_url?: string;
 }
 
 export interface Invoice {

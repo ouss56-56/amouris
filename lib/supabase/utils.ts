@@ -39,45 +39,46 @@ interface DbProduct {
   flacon_variants?: DbVariant[];
 }
 
-export function mapDbProductToFrontend(dbProduct: DbProduct): Product {
+export function mapDbProductToFrontend(p: DbProduct): Product {
   const base = {
-    id: dbProduct.id,
-    type: dbProduct.product_type as ProductType,
-    nameAR: dbProduct.name_ar,
-    nameFR: dbProduct.name_fr,
-    slug: dbProduct.slug,
-    descriptionAR: dbProduct.description_ar || '',
-    descriptionFR: dbProduct.description_fr || '',
-    categoryId: dbProduct.category_id,
-    brandId: dbProduct.brand_id || '',
-    collectionId: dbProduct.collection_id || '',
-    tagIds: dbProduct.tags?.map((t: DbTag) => t.tag.id) || dbProduct.product_tags?.map((t: DbProductTag) => t.tag_id) || [],
-    images: dbProduct.images || [],
-    status: dbProduct.status,
-    createdAt: dbProduct.created_at,
+    id: p.id,
+    product_type: p.product_type as ProductType,
+    name_ar: p.name_ar,
+    name_fr: p.name_fr,
+    slug: p.slug,
+    description_ar: p.description_ar || '',
+    description_fr: p.description_fr || '',
+    category_id: p.category_id,
+    brand_id: p.brand_id || null,
+    collection_id: p.collection_id || null,
+    tag_ids: p.tags?.map((t: DbTag) => t.tag.id) || p.product_tags?.map((t: DbProductTag) => t.tag_id) || [],
+    images: p.images || [],
+    status: p.status,
+    created_at: p.created_at,
   };
 
-  if (dbProduct.product_type === 'perfume') {
+  if (p.product_type === 'perfume') {
     return {
       ...base,
-      type: 'perfume' as const,
-      pricePerGram: Number(dbProduct.price_per_gram),
-      stockInGrams: Number(dbProduct.stock_grams),
-    };
+      product_type: 'perfume',
+      price_per_gram: Number(p.price_per_gram || 0),
+      stock_grams: Number(p.stock_grams || 0),
+    } as Product;
   } else {
-    const variants = (dbProduct.variants || dbProduct.flacon_variants || []).map((v: DbVariant) => ({
+    const variants = (p.variants || p.flacon_variants || []).map((v: DbVariant) => ({
       id: v.id,
-      size: v.size_ml ? `${v.size_ml}ml` : '',
+      size_ml: v.size_ml || 0,
       color: v.color || '',
+      color_name: v.color || '', // Default to color if color_name missing in DB
       shape: v.shape || '',
-      price: Number(v.price),
-      stock: v.stock_units,
+      price: Number(v.price || 0),
+      stock_units: v.stock_units || 0,
     }));
 
     return {
       ...base,
-      type: 'flacon' as const,
+      product_type: 'flacon',
       variants,
-    };
+    } as Product;
   }
 }

@@ -71,7 +71,7 @@ export function Header() {
           <nav className="hidden lg:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.25em] text-gray-700">
             {[
               { name: t('nav.shop'), href: '/shop' },
-              { name: t('nav.perfumes'), href: '/shop/perfumes' },
+              { name: t('nav.perfumes'), href: '/shop/parfums' },
               { name: t('nav.flacons'), href: '/shop/flacons' },
               { name: t('nav.brands'), href: '/brands' },
             ].map((item) => {

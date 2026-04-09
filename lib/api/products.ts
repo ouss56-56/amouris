@@ -57,24 +57,30 @@ export const fetchProductBySlug = async (slug: string) => {
 
 export const createProduct = async (data: any) => {
   const admin = createAdminClient();
-  const { tags, variants, ...productData } = data;
+  const { tag_ids, variants, ...productPayload } = data;
 
+  // Insert the product core data
   const { data: product, error } = await admin
     .from('products')
-    .insert(productData)
+    .insert(productPayload)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error in createProduct:', error);
+    throw error;
+  }
 
-  if (tags && tags.length > 0) {
-    const tagLinks = tags.map((tagId: string) => ({
+  // Handle M2M relationships for tags
+  if (tag_ids && tag_ids.length > 0) {
+    const tagLinks = tag_ids.map((tagId: string) => ({
       product_id: product.id,
       tag_id: tagId
     }));
     await admin.from('product_tags').insert(tagLinks);
   }
 
+  // Handle variants for flacons
   if (product.product_type === 'flacon' && variants) {
     const variantData = variants.map((v: any) => ({
       ...v,
@@ -88,19 +94,24 @@ export const createProduct = async (data: any) => {
 
 export const updateProduct = async (id: string, data: any) => {
   const admin = createAdminClient();
-  const { tags, variants, ...productData } = data;
+  const { tag_ids, variants, ...productPayload } = data;
 
+  // Update the product core data
   const { error } = await admin
     .from('products')
-    .update(productData)
+    .update(productPayload)
     .eq('id', id);
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error in updateProduct:', error);
+    throw error;
+  }
 
-  if (tags !== undefined) {
+  // Sync tags
+  if (tag_ids !== undefined) {
     await admin.from('product_tags').delete().eq('product_id', id);
-    if (tags.length > 0) {
-      const tagLinks = tags.map((tagId: string) => ({
+    if (tag_ids.length > 0) {
+      const tagLinks = tag_ids.map((tagId: string) => ({
         product_id: id,
         tag_id: tagId
       }));
@@ -108,6 +119,7 @@ export const updateProduct = async (id: string, data: any) => {
     }
   }
 
+  // Sync variants
   if (variants !== undefined) {
     await admin.from('flacon_variants').delete().eq('product_id', id);
     if (variants.length > 0) {
