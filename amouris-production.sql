@@ -9,11 +9,13 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- === SECTION 2: CLEANUP ===
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-DROP FUNCTION IF EXISTS public.handle_new_user();
-DROP FUNCTION IF EXISTS public.is_admin();
-DROP FUNCTION IF EXISTS public.increment_product_stock(uuid, numeric);
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
+DROP FUNCTION IF EXISTS public.is_admin() CASCADE;
+DROP FUNCTION IF EXISTS public.increment_product_stock(text, numeric) CASCADE;
+DROP FUNCTION IF EXISTS public.increment_variant_stock(text, integer) CASCADE;
 
 DROP TABLE IF EXISTS public.order_history CASCADE;
+DROP TABLE IF EXISTS public.order_status_history CASCADE;
 DROP TABLE IF EXISTS public.order_items CASCADE;
 DROP TABLE IF EXISTS public.orders CASCADE;
 DROP TABLE IF EXISTS public.flacon_variants CASCADE;
@@ -26,6 +28,7 @@ DROP TABLE IF EXISTS public.categories CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
 DROP TABLE IF EXISTS public.settings CASCADE;
 DROP TABLE IF EXISTS public.announcements CASCADE;
+DROP TABLE IF EXISTS public.catalogues CASCADE;
 
 DROP SEQUENCE IF EXISTS order_number_seq;
 DROP SEQUENCE IF EXISTS invoice_number_seq;
