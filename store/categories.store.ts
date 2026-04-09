@@ -22,6 +22,7 @@ interface CategoriesStore {
   add: (c: Omit<Category, 'id'>) => Promise<void>
   update: (id: string, updates: Partial<Category>) => Promise<void>
   remove: (id: string) => Promise<void>
+  seed: (categories: Category[]) => void
 }
 
 const supabase = createClient()
@@ -92,4 +93,5 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
   add: (c) => get().addCategory(c),
   update: (id, u) => get().updateCategory(id, u),
   remove: (id) => get().deleteCategory(id),
+  seed: (categories) => set({ categories })
 }))

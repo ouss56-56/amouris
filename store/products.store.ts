@@ -44,6 +44,7 @@ interface ProductsStore {
   deleteProduct: (id: string) => Promise<void>
   updateStockGrams: (id: string, delta: number) => Promise<void>
   updateVariantStock: (productId: string, variantId: string, delta: number) => Promise<void>
+  seed: (products: Product[]) => void
 }
 
 const supabase = createClient()
@@ -183,5 +184,6 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
     // We update the specific variant in the DB
     await supabase.from('flacon_variants').update({ stock_units: newVal }).eq('id', variantId)
     await get().fetchProducts()
-  }
+  },
+  seed: (products) => set({ products })
 }))

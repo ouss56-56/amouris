@@ -23,6 +23,7 @@ interface BrandsStore {
   add: (b: Omit<Brand, 'id'>) => Promise<void>
   update: (id: string, updates: Partial<Brand>) => Promise<void>
   remove: (id: string) => Promise<void>
+  seed: (brands: Brand[]) => void
 }
 
 const supabase = createClient()
@@ -92,4 +93,5 @@ export const useBrandsStore = create<BrandsStore>((set, get) => ({
   add: (b) => get().addBrand(b),
   update: (id, u) => get().updateBrand(id, u),
   remove: (id) => get().deleteBrand(id),
+  seed: (brands) => set({ brands })
 }))

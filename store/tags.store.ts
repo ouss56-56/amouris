@@ -20,6 +20,7 @@ interface TagsStore {
   updateTag: (id: string, updates: Partial<Tag>) => Promise<void>
   deleteTag: (id: string) => Promise<void>
   getHomepageTags: () => Tag[]
+  seed: (tags: Tag[]) => void
 }
 
 const supabase = createClient()
@@ -90,5 +91,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
     return get().tags
       .filter(t => t.show_on_homepage)
       .sort((a, b) => (a.homepage_order || 0) - (b.homepage_order || 0))
-  }
+  },
+  seed: (tags) => set({ tags })
 }))

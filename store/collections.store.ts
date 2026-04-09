@@ -23,6 +23,7 @@ interface CollectionsStore {
   add: (c: Omit<Collection, 'id'>) => Promise<void>
   update: (id: string, updates: Partial<Collection>) => Promise<void>
   remove: (id: string) => Promise<void>
+  seed: (collections: Collection[]) => void
 }
 
 const supabase = createClient()
@@ -106,4 +107,5 @@ export const useCollectionsStore = create<CollectionsStore>((set, get) => ({
   add: (c) => get().addCollection(c),
   update: (id, u) => get().updateCollection(id, u),
   remove: (id) => get().deleteCollection(id),
+  seed: (collections) => set({ collections })
 }))
