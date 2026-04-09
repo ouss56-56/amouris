@@ -1,0 +1,14 @@
+# SUPABASE CONFIGURATION
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# DATABASE CONNECTION (FOR PRISMA OR MIGRATIONS IF USED)
+DATABASE_URL="postgresql://postgres.your-project-id:password@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.your-project-id:password@aws-0-eu-west-1.pooler.supabase.com:5432/postgres"
+
+# SITE URL
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# OTHER CONFIGURATIONS
+# (Add any other variables found during audit if applicable)
