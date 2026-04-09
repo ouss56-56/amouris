@@ -8,7 +8,7 @@ import { useProductsStore } from '@/store/products.store'
 import { useTagsStore } from '@/store/tags.store'
 import { useBrandsStore } from '@/store/brands.store'
 import { useCategoriesStore } from '@/store/categories.store'
-
+import { useSettingsStore } from '@/store/settings.store'
 import { useAnnouncementsStore } from '@/store/announcements.store'
 import { useEffect } from 'react'
 
