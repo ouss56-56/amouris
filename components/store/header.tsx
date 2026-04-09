@@ -41,14 +41,12 @@ export function Header() {
     const handleScroll = () => {
       const current = window.scrollY;
       const isVisibleNow = current < lastScroll.current || current < 60;
-      if (isVisibleNow !== visible) {
-        setVisible(isVisibleNow);
-      }
+      setVisible(isVisibleNow);
       lastScroll.current = current;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [visible]);
+  }, []);
 
   return (
     <>

@@ -69,14 +69,12 @@ export function AnnouncementBar() {
     const handleScroll = () => {
       const current = window.scrollY;
       const isVisibleNow = current < lastScroll.current || current < 60;
-      if (isVisibleNow !== headerVisible) {
-        setHeaderVisible(isVisibleNow);
-      }
+      setHeaderVisible(isVisibleNow);
       lastScroll.current = current;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [headerVisible]);
+  }, []);
 
   if (!isVisible || activeAnnouncements.length === 0) return null;
 
