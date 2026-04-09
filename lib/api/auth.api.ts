@@ -5,7 +5,7 @@ const normalizePhone = (phone: string) => {
 };
 
 const getPhoneEmail = (phone: string) => {
-  return `${normalizePhone(phone)}@amouris-user.dz`;
+  return `${normalizePhone(phone)}@amouris-user.com`;
 };
 
 export const authApi = {

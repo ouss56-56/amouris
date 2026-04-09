@@ -11,6 +11,7 @@ import { useCartStore } from '@/store/cart.store';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ProductImage } from '@/components/store/ProductImage';
+import { ChevronRight, Minus, Plus, CheckCircle, ShoppingCart, Info } from 'lucide-react';
 
 interface ProductClientProps {
   slug: string;
@@ -74,7 +75,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
       name_ar: product.name_ar,
       slug: product.slug,
       flacon_variant_id: selectedVariantId || undefined,
-      variant_label: selectedVariant ? `${selectedVariant.size} — ${selectedVariant.color}` : undefined,
+      variant_label: selectedVariant ? `${selectedVariant.size_ml}ml — ${selectedVariant.color_name || selectedVariant.color}` : undefined,
       unit_price: unitPrice,
       quantity_grams: isPerfume ? grams : undefined,
       quantity_units: !isPerfume ? quantity : undefined,
@@ -123,7 +124,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               />
               <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
                  {brand && <div className="bg-white/80 backdrop-blur px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl shadow-sm border border-emerald-950/5">
-                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#C9A84C]">{isAr ? brand.name_ar : brand.name_fr}</p>
+                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#C9A84C]">{isAr ? brand.name_ar : brand.name}</p>
                  </div>}
               </div>
             </motion.div>
@@ -204,7 +205,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
                         >
                           <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                              <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full border border-black/5" style={{ backgroundColor: v.color }} />
-                             <span className={`text-[10px] md:text-xs font-black tracking-widest ${selectedVariantId === v.id ? 'text-emerald-950' : 'text-emerald-950/40'}`}>{v.size}</span>
+                             <span className={`text-[10px] md:text-xs font-black tracking-widest ${selectedVariantId === v.id ? 'text-emerald-950' : 'text-emerald-950/40'}`}>{v.size_ml}ml</span>
                           </div>
                           <p className={`text-[9px] md:text-[10px] uppercase font-bold tracking-tight ${selectedVariantId === v.id ? 'text-[#C9A84C]' : 'text-emerald-950/20'}`}>
                              {v.color_name || v.color} — {v.shape}
@@ -284,7 +285,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
            <div>
               <h4 className="text-[10px] uppercase font-black tracking-widest text-emerald-950/20 mb-3 md:mb-6">Maison / Collection</h4>
               <div className="space-y-2 md:space-y-4">
-                <p className="text-xs md:text-sm font-bold text-emerald-950">{brand?.name_fr || 'Amouris Selection'}</p>
+                <p className="text-xs md:text-sm font-bold text-emerald-950">{brand?.name || 'Amouris Selection'}</p>
                 <p className="text-[10px] md:text-xs text-emerald-950/40 italic">{collection?.name_fr || 'Collection Royale'}</p>
               </div>
            </div>

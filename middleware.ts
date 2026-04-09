@@ -37,8 +37,8 @@ export async function updateSession(request: NextRequest) {
   // Refresh session
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Protect /admin/*
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  // Protect /admin/* (but allow /admin/login)
+  if (request.nextUrl.pathname.startsWith('/admin') && request.nextUrl.pathname !== '/admin/login') {
     if (!user || user.user_metadata?.role !== 'admin') {
       const url = request.nextUrl.clone();
       url.pathname = '/admin/login';
