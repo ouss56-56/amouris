@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from '@/i18n/i18n-context';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 
@@ -16,7 +16,7 @@ export function AnnouncementBar() {
   const [isVisible, setIsVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [lastScroll, setLastScroll] = useState(0);
+  const lastScroll = useRef(0);
 
   // 1. Get and process active announcements
   const activeAnnouncements = useMemo(() => {
@@ -68,12 +68,15 @@ export function AnnouncementBar() {
   useEffect(() => {
     const handleScroll = () => {
       const current = window.scrollY;
-      setHeaderVisible(current < lastScroll || current < 60);
-      setLastScroll(current);
+      const isVisibleNow = current < lastScroll.current || current < 60;
+      if (isVisibleNow !== headerVisible) {
+        setHeaderVisible(isVisibleNow);
+      }
+      lastScroll.current = current;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScroll]);
+  }, [headerVisible]);
 
   if (!isVisible || activeAnnouncements.length === 0) return null;
 

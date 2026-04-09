@@ -32,10 +32,10 @@ export default function AccountLayout({
   }, []);
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
+    if (mounted && !isAuthenticated && !customer) {
       router.replace('/login');
     }
-  }, [mounted, isAuthenticated, router]);
+  }, [mounted, isAuthenticated, customer, router]);
 
   if (!mounted || !customer) return null;
 

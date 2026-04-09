@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { 
   Settings, Save, Globe, Mail, 
-  MapPin, Phone, Instagram, Facebook, 
+  MapPin, Phone, 
   AlertTriangle, CreditCard, Loader2, 
   CheckCircle2, Plus, Trash2, Megaphone,
   LogOut, User, ExternalLink, GripVertical,
@@ -236,7 +236,7 @@ export default function AdminSettingsPage() {
                          <label className="text-[9px] font-black uppercase tracking-widest text-emerald-950/30 px-1">Lien Instagram</label>
                          <div className="flex gap-4">
                             <div className="relative flex-1">
-                              <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-500" size={16} />
+                              <ExternalLink className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-500" size={16} />
                               <input type="url" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="https://instagram.com/..." className="w-full h-12 pl-12 bg-neutral-50 border border-emerald-950/5 rounded-xl text-emerald-950 outline-none focus:border-rose-500 transition-all" />
                             </div>
                             <button 
@@ -252,7 +252,7 @@ export default function AdminSettingsPage() {
                          <label className="text-[9px] font-black uppercase tracking-widest text-emerald-950/30 px-1">Lien Facebook</label>
                          <div className="flex gap-4">
                             <div className="relative flex-1">
-                              <Facebook className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600" size={16} />
+                              <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600" size={16} />
                               <input type="url" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/..." className="w-full h-12 pl-12 bg-neutral-50 border border-emerald-950/5 rounded-xl text-emerald-950 outline-none focus:border-blue-500 transition-all" />
                             </div>
                             <button 

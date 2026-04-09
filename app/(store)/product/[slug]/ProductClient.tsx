@@ -35,9 +35,11 @@ export default function ProductClient({ slug }: ProductClientProps) {
   // Initialize variant for flacons
   useEffect(() => {
     if (product?.product_type === 'flacon' && product.variants && product.variants.length > 0) {
-      setSelectedVariantId(product.variants[0].id);
+      if (!selectedVariantId) {
+        setSelectedVariantId(product.variants[0].id);
+      }
     }
-  }, [product]);
+  }, [product, selectedVariantId]);
 
   const selectedVariant = useMemo(() => {
     return product?.variants?.find(v => v.id === selectedVariantId) || null;

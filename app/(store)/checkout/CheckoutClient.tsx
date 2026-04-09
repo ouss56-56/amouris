@@ -5,9 +5,10 @@ import { useI18n } from '@/i18n/i18n-context';
 import { useCartStore } from '@/store/cart.store';
 import { useCustomerAuthStore } from '@/store/customer-auth.store';
 import { useOrdersStore, OrderItem } from '@/store/orders.store';
+import { useProductsStore } from '@/store/products.store';
 import { WilayaSelector } from '@/components/store/WilayaSelector';
 import { motion } from 'framer-motion';
-import { ShoppingBag, ChevronRight, CheckCircle, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
+import { ShoppingBag, ChevronRight, CheckCircle, ArrowRight, ShieldCheck, Truck, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -15,8 +16,9 @@ export default function CheckoutClient() {
   const router = useRouter();
   const { language } = useI18n();
   const { items, getTotal, clear } = useCartStore();
-  const { customer, isAuthenticated } = useCustomerAuthStore();
+  const { currentCustomer, isAuthenticated } = useCustomerAuthStore();
   const { createOrder } = useOrdersStore();
+  const { updateStockGrams, updateVariantStock } = useProductsStore();
 
   const isAr = language === 'ar';
   const totalAmount = getTotal();
@@ -25,7 +27,8 @@ export default function CheckoutClient() {
     firstName: '',
     lastName: '',
     phone: '',
-    wilaya: ''
+    wilaya: '',
+    commune: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,36 +45,45 @@ export default function CheckoutClient() {
       alert(isAr ? 'يرجى ملء جميع الحقول الضرورية' : 'Veuillez remplir tous les champs obligatoires.');
       return;
     }
-    // Validation for authenticated user
-    if (isAuthenticated && (!customer?.firstName || !customer?.lastName || !customer?.phoneNumber || !customer?.wilaya)) {
-      alert(isAr ? 'يرجى استكمال معلومات ملفك الشخصي قبل الطلب' : 'Veuillez compléter votre profil avant de commander.');
-      return;
-    }
 
     setIsSubmitting(true);
 
     try {
       const orderItems: OrderItem[] = items.map(i => ({
         product_id: i.product_id,
+        product_type: i.product_type,
         flacon_variant_id: i.flacon_variant_id || null,
         product_name_fr: i.name_fr,
         product_name_ar: i.name_ar,
+        variant_label: i.variant_label || null,
         quantity_grams: i.quantity_grams || null,
         quantity_units: i.quantity_units || null,
         unit_price: i.unit_price,
         total_price: i.total_price
       }));
 
-      const order = await createOrder({
-        customer_id: isAuthenticated ? customer!.id : null,
-        guest_first_name: !isAuthenticated ? formData.firstName : undefined,
-        guest_last_name: !isAuthenticated ? formData.lastName : undefined,
-        guest_phone: !isAuthenticated ? formData.phone : undefined,
-        guest_wilaya: !isAuthenticated ? formData.wilaya : undefined,
+      const orderData = {
+        customer_id: isAuthenticated ? currentCustomer!.id : null,
+        is_registered_customer: isAuthenticated,
+        guest_first_name: !isAuthenticated ? formData.firstName : null,
+        guest_last_name: !isAuthenticated ? formData.lastName : null,
+        guest_phone: !isAuthenticated ? formData.phone : null,
+        guest_wilaya: !isAuthenticated ? formData.wilaya : null,
+        guest_commune: !isAuthenticated ? formData.commune : null,
         items: orderItems,
         total_amount: totalAmount,
-        order_status: 'pending'
-      });
+      };
+
+      const order = createOrder(orderData);
+
+      // Deduct stock
+      for (const item of orderItems) {
+        if (item.product_type === 'perfume' && item.quantity_grams) {
+          updateStockGrams(item.product_id, -item.quantity_grams);
+        } else if (item.product_type === 'flacon' && item.flacon_variant_id && item.quantity_units) {
+          updateVariantStock(item.product_id, item.flacon_variant_id, -item.quantity_units);
+        }
+      }
 
       clear();
       router.push(`/checkout/success?order=${order.order_number}`);
@@ -117,60 +129,93 @@ export default function CheckoutClient() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-50 p-6 rounded-2xl border border-emerald-950/5">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الاسم الشخصي' : 'Prénom'}</p>
-                      <p className="font-medium text-emerald-950">{customer?.firstName}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الاسم الكامل' : 'Nom Complet'}</p>
+                      <p className="font-medium text-emerald-950">{currentCustomer?.firstName} {currentCustomer?.lastName}</p>
                     </div>
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الاسم العائلي' : 'Nom'}</p>
-                      <p className="font-medium text-emerald-950">{customer?.lastName}</p>
-                    </div>
+                    {currentCustomer?.storeName && (
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'اسم المتجر' : 'Magasin'}</p>
+                        <p className="font-medium text-emerald-950">{currentCustomer?.storeName}</p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'رقم الهاتف' : 'Numéro de téléphone'}</p>
-                      <p className="font-medium text-emerald-950">{customer?.phoneNumber}</p>
+                      <p className="font-medium text-emerald-950">{currentCustomer?.phoneNumber}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الولاية' : 'Wilaya'}</p>
-                      <p className="font-medium text-emerald-950">{customer?.wilaya}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 mb-1">{isAr ? 'الولاية / البلدية' : 'Wilaya / Commune'}</p>
+                      <p className="font-medium text-emerald-950">{currentCustomer?.wilaya} {currentCustomer?.commune ? `/ ${currentCustomer.commune}` : ''}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <Link href="/account/settings" className="text-xs font-bold text-[#C9A84C] hover:text-emerald-950 transition-colors uppercase tracking-widest">
-                      {isAr ? 'تعديل في ملفي الشخصي' : 'Modifier dans mon profil'}
+                      {isAr ? 'تعديل في ملفي الشخصي ←' : 'Modifier mes informations →'}
                     </Link>
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم الشخصي' : 'Prénom'}</label>
-                    <input 
-                      type="text"
-                      value={formData.firstName}
-                      onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                      className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                    />
+                <div className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم الشخصي' : 'Prénom'} <span className="text-rose-500">*</span></label>
+                      <input 
+                        type="text"
+                        required
+                        value={formData.firstName}
+                        onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                        className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم العائلي' : 'Nom de famille'} <span className="text-rose-500">*</span></label>
+                      <input 
+                        type="text"
+                        required
+                        value={formData.lastName}
+                        onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                        className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'رقم الهاتف' : 'Numéro de téléphone'} <span className="text-rose-500">*</span></label>
+                      <input 
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الولاية' : 'Wilaya'} <span className="text-rose-500">*</span></label>
+                      <WilayaSelector value={formData.wilaya} onValueChange={val => setFormData({ ...formData, wilaya: val })} />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'البلدية (اختياري)' : 'Commune (optionnel)'}</label>
+                      <input 
+                        type="text"
+                        value={formData.commune}
+                        onChange={e => setFormData({ ...formData, commune: e.target.value })}
+                        className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
+                        placeholder="Ex: Bab El Oued"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الاسم العائلي' : 'Nom'}</label>
-                    <input 
-                      type="text"
-                      value={formData.lastName}
-                      onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                      className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                    />
-                  </div>
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'رقم الهاتف' : 'Numéro de téléphone'}</label>
-                    <input 
-                      type="tel"
-                      value={formData.phone}
-                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none focus:border-[#C9A84C] transition-colors font-medium text-emerald-950"
-                    />
-                  </div>
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 ml-1">{isAr ? 'الولاية' : 'Wilaya'}</label>
-                    <WilayaSelector value={formData.wilaya} onValueChange={val => setFormData({ ...formData, wilaya: val })} />
+
+                  <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-emerald-600">
+                        <UserPlus size={20} />
+                      </div>
+                      <p className="text-xs text-emerald-950/60 font-medium">
+                        {isAr ? 'أنشئ حساباً لتتبع طلباتك بسهولة' : 'Créez un compte pour suivre vos commandes facilement'}
+                      </p>
+                    </div>
+                    <Link href="/register">
+                      <button className="whitespace-nowrap text-xs font-bold text-emerald-600 hover:text-emerald-950 transition-colors uppercase tracking-widest">
+                        {isAr ? 'إنشاء حساب' : "S'inscrire"}
+                      </button>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -179,9 +224,9 @@ export default function CheckoutClient() {
             <div className="flex items-start gap-4 p-8 bg-amber-50 rounded-3xl border border-amber-200/50">
                <ShieldCheck className="text-[#C9A84C] shrink-0" size={24} />
                <div>
-                  <h4 className="font-bold text-amber-900 text-sm mb-1">{isAr ? 'دفع آمن عند الاستلام' : 'Paiement à la livraison 100% Sécurisé'}</h4>
+                  <h4 className="font-bold text-amber-900 text-sm mb-1">{isAr ? 'دفع آمن عند الاستلام' : 'Livraison à domicile — Paiement à la livraison'}</h4>
                   <p className="text-amber-900/40 text-xs leading-relaxed">
-                    Chez Amouris, vous payez uniquement lorsque vous recevez vos produits. Vérifiez votre colis à la réception pour une satisfaction totale.
+                    {isAr ? 'في أموريس، تدفع فقط عند استلام منتجاتك. تحقق من طردك عند الاستلام لضمان الرضا التام.' : 'Chez Amouris, vous payez uniquement lorsque vous recevez vos produits. Vérifiez votre colis à la réception pour une satisfaction totale.'}
                   </p>
                </div>
             </div>
@@ -204,6 +249,9 @@ export default function CheckoutClient() {
                           <p className="text-[10px] text-emerald-100/40 uppercase tracking-widest mt-1">
                             {item.product_type === 'perfume' ? `${item.quantity_grams}g` : `${item.quantity_units}x ${item.variant_label}`}
                           </p>
+                          <p className="text-[10px] text-emerald-100/20 mt-1">
+                             {item.unit_price.toLocaleString()} DZD / unit
+                          </p>
                        </div>
                        <p className="text-sm font-bold shrink-0">{item.total_price.toLocaleString()} DZD</p>
                      </div>
@@ -216,14 +264,14 @@ export default function CheckoutClient() {
                       <span>{totalAmount.toLocaleString()} DZD</span>
                    </div>
                    <div className="flex justify-between items-center text-xs text-emerald-100/40 uppercase tracking-widest font-black">
-                      <span>{isAr ? 'تكاليف التوصيل' : 'Livraison'}</span>
-                      <span className="text-amber-400 italic font-normal normal-case">Calculé à la confirmation</span>
+                      <span>{isAr ? 'طريقة التوصيل' : 'Livraison'}</span>
+                      <span className="text-amber-400 font-bold">Paiement à la livraison</span>
                    </div>
                    <div className="h-px bg-white/10 my-4" />
                    <div className="flex justify-between items-end">
-                      <span className="font-serif text-xl">{isAr ? 'المجموع النهائي' : 'Total Final'}</span>
+                      <span className="font-serif text-xl">{isAr ? 'المجموع النهائي' : 'TOTAL'}</span>
                       <div className="text-right">
-                         <p className="font-serif text-4xl text-amber-400 tracking-tighter">{totalAmount.toLocaleString()} <span className="text-sm font-normal italic">DZD</span></p>
+                         <p className="font-serif text-4xl text-emerald-400 tracking-tighter">{totalAmount.toLocaleString()} <span className="text-sm font-normal italic">DZD</span></p>
                       </div>
                    </div>
                  </div>
@@ -237,15 +285,15 @@ export default function CheckoutClient() {
                       <div className="w-5 h-5 border-2 border-emerald-950 border-t-transparent rounded-full animate-spin" />
                    ) : (
                      <>
-                       {isAr ? 'تأكيد الطلبية' : 'Confirmer ma commande'}
+                       {isAr ? 'تأكيد الطلبية' : 'Confirmer la commande'}
                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                      </>
                    )}
                  </button>
 
                  <p className="mt-8 text-center text-[9px] font-black uppercase tracking-[0.2em] text-white/20 leading-relaxed">
-                    En cliquant, vous acceptez nos CGV.<br />
-                    Un conseiller Amouris vous recontactera par téléphone.
+                    {isAr ? 'بالضغط، أنت توافق على شروطنا وأحكامنا.' : 'En cliquant, vous acceptez nos CGV.'}<br />
+                    {isAr ? 'سيتواصل معك مستشار أموريس لتأكيد التوصيل.' : 'Un conseiller Amouris vous recontactera pour confirmer la livraison.'}
                  </p>
                </div>
             </div>

@@ -62,7 +62,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'زيت عطري فاتن بنفحات وردة الطائف والعود الأبيض والمسك النادر.',
     category_id: 'cat-02', brand_id: 'br-01', collection_id: 'col-07',
     tag_ids: ['tag-01', 'tag-02'], price_per_gram: 850, stock_grams: 5000,
-    images: [], status: 'active' as const, created_at: '2026-01-15T10:00:00Z',
+    images: ['/images/products/rose-du-taif.png'], status: 'active' as const, created_at: '2026-01-15T10:00:00Z',
   },
   {
     id: 'prf-02', product_type: 'perfume' as const,
@@ -71,7 +71,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'العود الملكي في كامل روعته. عميق، دافئ، فاخر.',
     category_id: 'cat-01', brand_id: 'br-02', collection_id: 'col-01',
     tag_ids: ['tag-02', 'tag-03'], price_per_gram: 1200, stock_grams: 3000,
-    images: [], status: 'active' as const, created_at: '2026-01-20T10:00:00Z',
+    images: ['/images/products/oud-malaki.png'], status: 'active' as const, created_at: '2026-01-20T10:00:00Z',
   },
   {
     id: 'prf-03', product_type: 'perfume' as const,
@@ -80,7 +80,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'ياسمين أبيض مكثف يُقطف عند الفجر. منعش، زهري، مُدمِن.',
     category_id: 'cat-02', brand_id: 'br-04', collection_id: 'col-02',
     tag_ids: ['tag-01'], price_per_gram: 650, stock_grams: 4500,
-    images: [], status: 'active' as const, created_at: '2026-02-01T10:00:00Z',
+    images: ['/images/products/jasmin-sauvage.png'], status: 'active' as const, created_at: '2026-02-01T10:00:00Z',
   },
   {
     id: 'prf-04', product_type: 'perfume' as const,
@@ -89,7 +89,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'عنبر غامض بمزيج الأخشاب النفيسة والفانيلا السوداء.',
     category_id: 'cat-10', brand_id: 'br-05', collection_id: 'col-03',
     tag_ids: ['tag-03'], price_per_gram: 950, stock_grams: 2500,
-    images: [], status: 'active' as const, created_at: '2026-02-10T10:00:00Z',
+    images: ['/images/products/ambre-noir.png'], status: 'active' as const, created_at: '2026-02-10T10:00:00Z',
   },
   {
     id: 'prf-05', product_type: 'perfume' as const,
@@ -98,7 +98,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'مسك أبيض نقي، رقيق وحريري. نقاء مطلق.',
     category_id: 'cat-06', brand_id: 'br-04', collection_id: 'col-04',
     tag_ids: ['tag-01', 'tag-02'], price_per_gram: 500, stock_grams: 6000,
-    images: [], status: 'active' as const, created_at: '2026-02-15T10:00:00Z',
+    images: ['/images/products/musc-tahara.png'], status: 'active' as const, created_at: '2026-02-15T10:00:00Z',
   },
   {
     id: 'prf-06', product_type: 'perfume' as const,
@@ -107,7 +107,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'جوهر البخور التقليدي في زيت مركّز. رحلة إلى قلب الشرق.',
     category_id: 'cat-01', brand_id: 'br-01', collection_id: 'col-05',
     tag_ids: ['tag-03'], price_per_gram: 1100, stock_grams: 2000,
-    images: [], status: 'active' as const, created_at: '2026-02-20T10:00:00Z',
+    images: ['/images/products/bakhoor-al-majd.png'], status: 'active' as const, created_at: '2026-02-20T10:00:00Z',
   },
   {
     id: 'prf-07', product_type: 'perfume' as const,
@@ -116,7 +116,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'أرز لبنان والإيريس المسحوق. أناقة خشبية خالدة.',
     category_id: 'cat-05', brand_id: 'br-06', collection_id: 'col-04',
     tag_ids: ['tag-02'], price_per_gram: 780, stock_grams: 3500,
-    images: [], status: 'active' as const, created_at: '2026-03-01T10:00:00Z',
+    images: ['https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-03-01T10:00:00Z',
   },
   {
     id: 'prf-08', product_type: 'perfume' as const,
@@ -125,7 +125,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'توابل دافئة وصندل وعود مدخن لليالي الاستثنائية.',
     category_id: 'cat-03', brand_id: 'br-03', collection_id: 'col-03',
     tag_ids: ['tag-01', 'tag-03'], price_per_gram: 1050, stock_grams: 1800,
-    images: [], status: 'active' as const, created_at: '2026-03-05T10:00:00Z',
+    images: ['https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-03-05T10:00:00Z',
   },
   {
     id: 'prf-09', product_type: 'perfume' as const,
@@ -134,7 +134,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'باتشولي داكن، جلد وفانيلا. أثر رائحة يستحق الملوك.',
     category_id: 'cat-07', brand_id: 'br-07', collection_id: 'col-01',
     tag_ids: ['tag-02', 'tag-03'], price_per_gram: 920, stock_grams: 2800,
-    images: [], status: 'active' as const, created_at: '2026-03-10T10:00:00Z',
+    images: ['https://images.unsplash.com/photo-1557170334-a9632e77c6e4?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-03-10T10:00:00Z',
   },
   {
     id: 'prf-10', product_type: 'perfume' as const,
@@ -143,7 +143,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'نفحات بحرية وبرغموت ومسك أبيض. انتعاش البحر الأبيض المتوسط.',
     category_id: 'cat-09', brand_id: 'br-10', collection_id: 'col-02',
     tag_ids: ['tag-01'], price_per_gram: 580, stock_grams: 4000,
-    images: [], status: 'active' as const, created_at: '2026-03-15T10:00:00Z',
+    images: ['https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-03-15T10:00:00Z',
   },
   // 10 FLACONS
   {
@@ -153,7 +153,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'قارورة زجاج سميك، سدادة ذهبية. تصميم خالد وأنيق.',
     category_id: 'cat-01', brand_id: null, collection_id: null,
     tag_ids: ['tag-01'],
-    base_price: 350, images: [], status: 'active' as const, created_at: '2026-01-10T10:00:00Z',
+    base_price: 350, images: ['https://images.unsplash.com/photo-1512203530485-2bc305397457?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-01-10T10:00:00Z',
     variants: [
       { id: 'fv-001', size_ml: 30, color: '#F8F8FF', color_name: 'Transparent', shape: 'Carré', price: 350, stock_units: 200 },
       { id: 'fv-002', size_ml: 50, color: '#F8F8FF', color_name: 'Transparent', shape: 'Carré', price: 450, stock_units: 150 },
@@ -167,7 +167,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'زجاج ملون بالأسود المات مع بخاخ ذهبي. الأناقة المطلقة.',
     category_id: 'cat-01', brand_id: null, collection_id: null,
     tag_ids: ['tag-02', 'tag-03'],
-    base_price: 550, images: [], status: 'active' as const, created_at: '2026-01-12T10:00:00Z',
+    base_price: 550, images: ['https://images.unsplash.com/photo-1627384113743-6bd5a479fffd?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-01-12T10:00:00Z',
     variants: [
       { id: 'fv-004', size_ml: 30, color: '#1A1A1A', color_name: 'Noir Mat', shape: 'Rond', price: 550, stock_units: 80 },
       { id: 'fv-005', size_ml: 50, color: '#1A1A1A', color_name: 'Noir Mat', shape: 'Rond', price: 750, stock_units: 60 },
@@ -182,7 +182,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'زجاج سميك بنقوش شرقية. سدادة معدنية ذهبية منحوتة.',
     category_id: 'cat-01', brand_id: null, collection_id: null,
     tag_ids: ['tag-03'],
-    base_price: 890, images: [], status: 'active' as const, created_at: '2026-01-18T10:00:00Z',
+    base_price: 890, images: ['https://images.unsplash.com/photo-1583445013765-48c218c21a4f?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-01-18T10:00:00Z',
     variants: [
       { id: 'fv-008', size_ml: 50, color: '#C9A84C', color_name: 'Or Ambré', shape: 'Octogonal', price: 890, stock_units: 50 },
       { id: 'fv-009', size_ml: 100, color: '#C9A84C', color_name: 'Or Ambré', shape: 'Octogonal', price: 1200, stock_units: 30 },
@@ -197,7 +197,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'حجم سفر عملي، مثالي للطلبات الصغيرة أو الهدايا.',
     category_id: 'cat-01', brand_id: null, collection_id: null,
     tag_ids: ['tag-01', 'tag-02'],
-    base_price: 180, images: [], status: 'active' as const, created_at: '2026-01-25T10:00:00Z',
+    base_price: 180, images: ['https://images.unsplash.com/photo-1615484477778-ca3b77940c25?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-01-25T10:00:00Z',
     variants: [
       { id: 'fv-012', size_ml: 5, color: '#F8F8FF', color_name: 'Transparent', shape: 'Cylindrique', price: 180, stock_units: 500 },
       { id: 'fv-013', size_ml: 10, color: '#F8F8FF', color_name: 'Transparent', shape: 'Cylindrique', price: 220, stock_units: 400 },
@@ -211,7 +211,7 @@ export const INITIAL_PRODUCTS = [
     description_ar: 'تصميم هندسي راقٍ. متوفر بعدة ألوان عصرية.',
     category_id: 'cat-01', brand_id: null, collection_id: null,
     tag_ids: ['tag-02'],
-    base_price: 420, images: [], status: 'active' as const, created_at: '2026-02-05T10:00:00Z',
+    base_price: 420, images: ['https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1000&auto=format&fit=crop'], status: 'active' as const, created_at: '2026-02-05T10:00:00Z',
     variants: [
       { id: 'fv-015', size_ml: 30, color: '#FFFFFF', color_name: 'Blanc', shape: 'Carré', price: 420, stock_units: 120 },
       { id: 'fv-016', size_ml: 50, color: '#FFFFFF', color_name: 'Blanc', shape: 'Carré', price: 520, stock_units: 100 },

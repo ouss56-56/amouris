@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
 import { Order } from '@/store/orders.store';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, FileText, CheckCircle2, ChevronRight, Package, Receipt, CreditCard } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle2, ChevronRight, Package, Receipt, CreditCard, XCircle } from 'lucide-react';
+import { generateInvoicePDF } from '@/lib/generate-invoice';
 import { motion } from 'framer-motion';
 
 interface OrderDetailClientProps {
@@ -16,7 +17,8 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
   const isAr = language === 'ar';
 
   const statuses = ['pending', 'confirmed', 'preparing', 'shipped', 'delivered'];
-  const currentStatusIndex = statuses.indexOf(order.order_status);
+  const isCancelled = order.order_status === 'cancelled';
+  const currentStatusIndex = isCancelled ? -1 : statuses.indexOf(order.order_status);
 
   const statusLabels: Record<string, { ar: string; fr: string }> = {
     'pending': { ar: 'قيد الانتظار', fr: 'En attente' },
@@ -49,14 +51,14 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
           </div>
         </div>
 
-        {order.invoice_url && (
+        {order.invoice_generated && order.invoice_data && (
           <Button 
             variant="outline" 
             className="rounded-2xl border-emerald-950/10 text-emerald-900 hover:bg-[#0a3d2e] hover:text-white uppercase tracking-widest text-[10px] font-black px-8 py-6 h-auto"
-            onClick={() => window.open(order.invoice_url!, '_blank')}
+            onClick={() => generateInvoicePDF(order.invoice_data!)}
           >
             <FileText className="w-4 h-4 mr-3 rtl:ml-3 rtl:mr-0" />
-            {isAr ? 'تحميل الفاتورة' : 'Télécharger la facture'}
+            {isAr ? 'تحميل الفاتورة (PDF)' : 'Télécharger ma facture PDF'}
           </Button>
         )}
       </div>
@@ -67,10 +69,13 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
           {isAr ? 'تتبع الطلب' : 'Suivi de commande'}
         </h2>
         
-        {order.order_status === 'cancelled' ? (
-          <div className="p-8 bg-rose-50 border border-rose-100 rounded-3xl text-rose-600 font-bold text-center flex items-center justify-center gap-4">
-            <AlertCircle />
-            {isAr ? 'تم إلغاء هذا الطلب' : 'Cette commande a été annulée'}
+        {isCancelled ? (
+          <div className="p-12 bg-rose-50 border border-rose-100 rounded-[2rem] text-rose-600 font-bold text-center flex flex-col items-center justify-center gap-4">
+            <XCircle size={48} className="mb-2" />
+            <h3 className="text-xl">{isAr ? 'تم إلغاء هذا الطلب' : 'Cette commande a été annulée'}</h3>
+            <p className="text-sm font-medium opacity-60 max-w-md">
+              {isAr ? 'نعتذر، لقد تم إلغاء طلبكم. للمزيد من المعلومات يرجى الاتصال بخدمة العملاء.' : "Nous sommes désolés, votre commande a été annulée. Pour plus d'informations, veuillez contacter notre service client."}
+            </p>
           </div>
         ) : (
           <div className="relative">
@@ -87,43 +92,61 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
                 const isCurrent = index === currentStatusIndex;
                 return (
                   <div key={status} className="relative z-10 flex flex-col items-center gap-4 flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500 ${
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500 relative ${
                       isCompleted ? 'bg-emerald-500 border-emerald-100 text-white' : 'bg-white border-neutral-50 text-neutral-200'
                     }`}>
                       {isCompleted ? <CheckCircle2 size={20} /> : <div className="w-2 h-2 bg-current rounded-full" />}
+                      {isCurrent && (
+                        <span className="absolute -inset-2 border-2 border-emerald-500/30 rounded-full animate-ping" />
+                      )}
                     </div>
                     <span className={`text-[10px] font-black uppercase tracking-widest text-center ${
-                      isCurrent ? 'text-emerald-600' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-300'
+                      isCurrent ? 'text-emerald-600 font-black' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-300'
                     }`}>
                       {isAr ? statusLabels[status].ar : statusLabels[status].fr}
                     </span>
+                    {isCurrent && order.status_history?.find(h => h.status === status) && (
+                      <span className="text-[9px] opacity-40 font-medium">
+                        {new Date(order.status_history.filter(h => h.status === status).pop()!.changed_at).toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
                 );
               })}
             </div>
 
             {/* Mobile Timeline */}
-            <div className="md:hidden space-y-8 relative before:absolute before:left-4 before:top-4 before:bottom-4 before:w-[2px] before:bg-neutral-100 rtl:before:left-auto rtl:before:right-4">
+            <div className="md:hidden space-y-12 relative before:absolute before:left-4 before:top-4 before:bottom-4 before:w-[2px] before:bg-neutral-100 rtl:before:left-auto rtl:before:right-4">
               {statuses.map((status, index) => {
                 const isCompleted = index <= currentStatusIndex;
                 const isCurrent = index === currentStatusIndex;
                 return (
                   <div key={status} className="flex gap-6 items-start relative z-10">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 shrink-0 transition-all ${
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 shrink-0 transition-all relative ${
                       isCompleted ? 'bg-emerald-500 border-zinc-50 text-white' : 'bg-white border-neutral-50 text-neutral-200'
                     }`}>
                       {isCompleted ? <CheckCircle2 size={14} /> : <div className="w-1.5 h-1.5 bg-current rounded-full" />}
+                      {isCurrent && (
+                        <span className="absolute -inset-1.5 border border-emerald-500/30 rounded-full animate-ping" />
+                      )}
                     </div>
                     <div>
                       <span className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${
-                        isCurrent ? 'text-emerald-600' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-300'
+                        isCurrent ? 'text-emerald-600 font-black' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-300'
                       }`}>
                         {isAr ? statusLabels[status].ar : statusLabels[status].fr}
                       </span>
                       {isCurrent && (
-                        <p className="text-xs text-emerald-950/40">
-                          {isAr ? 'طلبك قيد المعالجة حالياً' : 'Votre commande est en cours'}
-                        </p>
+                        <div className="space-y-1">
+                          <p className="text-xs text-emerald-950/40">
+                             {isAr ? 'طلبك قيد المعالجة حالياً' : 'Votre commande est en cours'}
+                          </p>
+                          {order.status_history?.find(h => h.status === status) && (
+                             <p className="text-[9px] opacity-40">
+                               {new Date(order.status_history.filter(h => h.status === status).pop()!.changed_at).toLocaleString()}
+                             </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>

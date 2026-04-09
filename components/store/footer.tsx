@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
-import { ChevronDown, Globe, ExternalLink, Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
+import { ChevronDown, Globe, ExternalLink, Phone, Mail, MapPin } from 'lucide-react';
 import { useSettingsStore } from '@/store/settings.store';
 
 export function Footer() {
@@ -54,9 +54,12 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Column 1: Brand & Socials */}
           <div className="space-y-6">
-            <Link href="/" className="font-serif text-2xl tracking-tighter hover:opacity-80 transition-opacity">
-              <span className="text-white">{language === 'ar' ? settings.storeNameAR.split(' ')[0] : settings.storeNameFR.split(' ')[0]}</span>
-              <span className="text-amber-500 font-light ml-1"> {language === 'ar' ? settings.storeNameAR.split(' ').slice(1).join(' ') : settings.storeNameFR.split(' ').slice(1).join(' ')}</span>
+            <Link href="/" className="font-serif text-2xl tracking-tighter hover:opacity-80 transition-opacity flex items-center gap-3">
+              <img src="/logo.png" alt="Amouris Logo" className="w-10 h-10 object-contain" />
+              <div>
+                <span className="text-white">{language === 'ar' ? settings.storeNameAR.split(' ')[0] : settings.storeNameFR.split(' ')[0]}</span>
+                <span className="text-amber-500 font-light ml-1"> {language === 'ar' ? settings.storeNameAR.split(' ').slice(1).join(' ') : settings.storeNameFR.split(' ').slice(1).join(' ')}</span>
+              </div>
             </Link>
             <p className="text-sm text-emerald-100/60 leading-relaxed font-light max-w-xs">
               {language === 'ar' ? settings.sloganAR : settings.sloganFR}
@@ -64,12 +67,12 @@ export function Footer() {
             <div className="flex gap-4">
               {settings.instagram && (
                 <Link href={settings.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-amber-400 hover:text-emerald-950 transition-all duration-300">
-                  <Instagram size={18} />
+                  <ExternalLink size={18} />
                 </Link>
               )}
               {settings.facebook && (
                 <Link href={settings.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-amber-400 hover:text-emerald-950 transition-all duration-300">
-                  <Facebook size={18} />
+                  <Globe size={18} />
                 </Link>
               )}
             </div>

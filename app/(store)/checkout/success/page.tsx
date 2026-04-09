@@ -1,126 +1,182 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useOrdersStore } from '@/store/orders.store';
-import { useCustomerAuthStore } from '@/store/customer-auth.store';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
+import { useOrdersStore, Order } from '@/store/orders.store';
 import { motion } from 'framer-motion';
-import { CheckCircle, ArrowRight, Package, Truck, Phone } from 'lucide-react';
+import { CheckCircle2, Package, Truck, ArrowRight, UserPlus, Home } from 'lucide-react';
 import Link from 'next/link';
-import { Suspense } from 'react';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const orderNumber = searchParams.get('order');
-  const { orders } = useOrdersStore();
-  const { isAuthenticated } = useCustomerAuthStore();
+  const router = useRouter();
   const { language } = useI18n();
+  const { orders } = useOrdersStore();
+  const [order, setOrder] = useState<Order | null>(null);
+
+  const orderNumber = searchParams.get('order');
   const isAr = language === 'ar';
 
-  const order = orders.find(o => o.order_number === orderNumber);
+  useEffect(() => {
+    if (orderNumber) {
+      const found = orders.find(o => o.order_number === orderNumber);
+      if (found) {
+        setOrder(found);
+      }
+    } else {
+      router.push('/shop');
+    }
+  }, [orderNumber, orders, router]);
 
   if (!order) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="font-serif text-3xl text-emerald-950 mb-4">Commande introuvable</h1>
-        <Link href="/shop" className="text-[#C9A84C] font-bold uppercase tracking-widest text-xs">Retour à la boutique</Link>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-emerald-900 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-20 px-6">
-      <div className="max-w-3xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-[3rem] shadow-2xl shadow-emerald-950/5 border border-emerald-950/5 overflow-hidden"
-        >
-          {/* Header Accent */}
-          <div className="bg-[#0a3d2e] py-16 px-8 text-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400 rounded-full blur-[80px]" />
-            </div>
-            <motion.div
-               initial={{ scale: 0 }}
-               animate={{ scale: 1 }}
-               transition={{ type: "spring", damping: 12, delay: 0.2 }}
-               className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center mx-auto mb-6 border border-white/20"
+    <div className="min-h-screen bg-neutral-50/50 py-12 md:py-24">
+      <div className="container mx-auto px-6 max-w-3xl">
+        
+        <div className="bg-white rounded-[3rem] shadow-2xl shadow-emerald-950/5 border border-emerald-950/5 overflow-hidden">
+          
+          {/* Header */}
+          <div className="bg-emerald-900 p-12 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", damping: 12 }}
+              className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-emerald-600 mx-auto mb-8 relative z-10"
             >
-              <CheckCircle size={40} className="text-amber-400" />
+              <CheckCircle2 size={48} />
             </motion.div>
-            <h1 className="font-serif text-3xl md:text-5xl text-white mb-2">
-              {isAr ? 'شكراً لثقتكم في أموريس' : 'Merci pour votre confiance'}
+            <h1 className="font-serif text-3xl md:text-4xl text-white mb-4 relative z-10">
+              {isAr ? 'تم تأكيد طلبك !' : 'Commande confirmée !'}
             </h1>
-            <p className="text-emerald-100/40 text-[10px] font-black uppercase tracking-[0.4em]">
-              {isAr ? 'تم تسجيل طلبيتك بنجاح' : 'Votre commande a été enregistrée'}
+            <p className="text-emerald-100/60 font-black uppercase tracking-[0.3em] text-[10px] relative z-10">
+              {isAr ? 'شكرا لثقتكم' : 'Merci pour votre confiance'}
             </p>
           </div>
 
-          {/* Details */}
-          <div className="p-8 md:p-12 space-y-12">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-emerald-950/5 pb-12">
-               <div className="text-center md:text-left">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 mb-2">Numéro de commande</p>
-                  <p className="font-serif text-3xl text-emerald-950 tracking-tight">{order.order_number}</p>
-               </div>
-               <div className="text-center md:text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 mb-2">Total à régler (Cash)</p>
-                  <p className="font-serif text-3xl text-[#C9A84C] tracking-tight">{order.total_amount.toLocaleString()} DZD</p>
+          <div className="p-8 md:p-12 space-y-10">
+            
+            {/* Order Number */}
+            <div className="text-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-emerald-900/40 mb-2">
+                {isAr ? 'رقم الطلبية' : 'Numéro de commande'}
+              </p>
+              <h2 className="font-serif text-5xl text-emerald-950 tracking-tighter">
+                {order.order_number}
+              </h2>
+            </div>
+
+            <div className="h-px bg-emerald-950/5" />
+
+            {/* Summary */}
+            <div className="space-y-6">
+              <h3 className="font-bold text-emerald-950 flex items-center gap-2">
+                <Package size={18} className="text-emerald-600" />
+                {isAr ? 'ملخص الطلبية' : 'Récapitulatif Articles'}
+              </h3>
+              <div className="space-y-4">
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-sm">
+                    <span className="text-emerald-950 font-medium">
+                      {isAr ? item.product_name_ar : item.product_name_fr}
+                      <span className="text-[10px] text-emerald-900/40 ml-2 uppercase tracking-widest">
+                        {item.product_type === 'perfume' ? `${item.quantity_grams}g` : `${item.quantity_units}x ${item.variant_label}`}
+                      </span>
+                    </span>
+                    <span className="font-bold text-emerald-950">{item.total_price.toLocaleString()} DZD</span>
+                  </div>
+                ))}
+                <div className="pt-4 border-t border-emerald-950/5 flex justify-between items-end">
+                   <span className="font-serif text-lg text-emerald-950">{isAr ? 'المجموع' : 'Total'}</span>
+                   <span className="font-serif text-2xl text-emerald-600 font-bold">{order.total_amount.toLocaleString()} DZD</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Info */}
+            <div className="bg-neutral-50 p-6 rounded-2xl border border-emerald-950/5">
+               <h3 className="font-bold text-emerald-950 flex items-center gap-2 mb-4">
+                  <Truck size={18} className="text-emerald-600" />
+                  {isAr ? 'معلومات التوصيل' : 'Informations de livraison'}
+               </h3>
+               <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <p className="text-emerald-900/40 uppercase tracking-widest font-black text-[9px] mb-1">{isAr ? 'الاسم' : 'Destinataire'}</p>
+                    <p className="font-bold text-emerald-950">
+                      {order.is_registered_customer ? 'Client enregistré' : `${order.guest_first_name} ${order.guest_last_name}`}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-emerald-900/40 uppercase tracking-widest font-black text-[9px] mb-1">{isAr ? 'الهاتف' : 'Téléphone'}</p>
+                    <p className="font-bold text-emerald-950">{order.guest_phone || 'Voir profil'}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-emerald-900/40 uppercase tracking-widest font-black text-[9px] mb-1">{isAr ? 'الولاية' : 'Wilaya'}</p>
+                    <p className="font-bold text-emerald-950">
+                      {order.guest_wilaya || 'Voir profil'} {order.guest_commune ? `(${order.guest_commune})` : ''}
+                    </p>
+                  </div>
                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-               <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-[#0a3d2e] mx-auto md:mx-0">
-                    <Package size={18} />
-                  </div>
-                  <h4 className="text-xs font-black uppercase tracking-widest text-emerald-950">Préparation</h4>
-                  <p className="text-xs text-emerald-950/40 leading-relaxed font-medium">Nos artisans préparent vos parfums avec soin.</p>
-               </div>
-               <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-[#C9A84C] mx-auto md:mx-0">
-                    <Phone size={18} />
-                  </div>
-                  <h4 className="text-xs font-black uppercase tracking-widest text-emerald-950">Confirmation</h4>
-                  <p className="text-xs text-emerald-950/40 leading-relaxed font-medium">Un conseiller va vous appeler pour valider l'adresse.</p>
-               </div>
-               <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-900 mx-auto md:mx-0">
-                    <Truck size={18} />
-                  </div>
-                  <h4 className="text-xs font-black uppercase tracking-widest text-emerald-950">Livraison</h4>
-                  <p className="text-xs text-emerald-950/40 leading-relaxed font-medium">Réception sous 48-72h dans toute l'Algérie.</p>
-               </div>
+            <div className="p-6 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+               <p className="text-xs font-bold text-amber-900">
+                 {isAr ? 'سيتواصل معك مستشار أموريس لتأكيد التوصيل.' : 'Vous serez contacté(e) par un conseiller pour confirmer la livraison.'}
+               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-12 border-t border-emerald-950/5">
-               {isAuthenticated ? (
-                 <Link 
-                   href={`/account/orders/${order.id}`}
-                   className="flex-1 h-16 bg-[#0a3d2e] text-white rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-xl shadow-emerald-900/10 gap-3 group"
-                 >
-                   {isAr ? 'عرض طلبيتي' : 'Voir ma commande'}
-                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                 </Link>
-               ) : (
-                 <Link 
-                   href="/register" 
-                   className="flex-1 h-16 bg-[#0a3d2e] text-white rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-xl shadow-emerald-900/10 gap-3 group px-4 text-center leading-relaxed"
-                 >
-                   {isAr ? 'إنشاء حساب لتتبع طلبياتك' : 'Créer un compte pour suivre'}
-                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
-                 </Link>
-               )}
-               <Link 
-                 href="/shop" 
-                 className="flex-1 h-16 bg-white border border-emerald-950/5 text-emerald-950 rounded-2xl flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-50 transition-all font-bold"
-               >
-                 {isAr ? 'العودة للمتجر' : 'Continuer mes achats'}
-               </Link>
+            {/* Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {order.is_registered_customer ? (
+                <Link href={`/account/orders/${order.id}`} className="w-full">
+                  <button className="w-full h-14 bg-emerald-950 text-white rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-all">
+                    {isAr ? 'تتبع طلبي' : 'Suivre ma commande'}
+                    <ArrowRight size={14} />
+                  </button>
+                </Link>
+              ) : (
+                <div className="space-y-4 md:col-span-2">
+                   <div className="p-6 border-2 border-dashed border-emerald-100 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                          <UserPlus size={24} />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-bold text-emerald-950 text-sm">{isAr ? 'أنشئ حساباً' : 'Créez un compte'}</p>
+                          <p className="text-xs text-emerald-900/40">{isAr ? 'لتتبع جميع طلباتك وتحميل فواتيرك' : 'Pour suivre vos commandes et télécharger vos factures'}</p>
+                        </div>
+                      </div>
+                      <Link href="/register">
+                        <button className="bg-emerald-100 text-emerald-900 px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-200 transition-colors">
+                          {isAr ? 'التسجيل الآن' : "S'inscrire"}
+                        </button>
+                      </Link>
+                   </div>
+                   <div className="p-4 bg-emerald-50 text-emerald-950/40 text-[10px] font-bold text-center uppercase tracking-widest rounded-xl">
+                      {isAr ? `يرجى ملاحظة رقم الطلب: ${order.order_number}` : `Notez bien votre numéro de commande : ${order.order_number}`}
+                   </div>
+                </div>
+              )}
+              
+              <Link href="/" className={order.is_registered_customer ? "w-full" : "w-full md:col-span-2"}>
+                <button className="w-full h-14 bg-white border border-emerald-950/10 text-emerald-950 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-neutral-50 transition-all">
+                  <Home size={14} />
+                  {isAr ? 'العودة للمتجر' : 'Retour à la boutique'}
+                </button>
+              </Link>
             </div>
+
           </div>
-        </motion.div>
+        </div>
+
       </div>
     </div>
   );
@@ -128,7 +184,7 @@ function SuccessContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0a3d2e]"></div></div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <SuccessContent />
     </Suspense>
   );

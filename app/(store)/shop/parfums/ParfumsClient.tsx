@@ -6,6 +6,7 @@ import { useProductsStore } from '@/store/products.store';
 import { useCategoriesStore } from '@/store/categories.store';
 import { useBrandsStore } from '@/store/brands.store';
 import { useTagsStore } from '@/store/tags.store';
+import { useShallow } from 'zustand/react/shallow';
 import { ProductCard } from '@/components/store/product-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
@@ -13,7 +14,7 @@ import { ChevronDown, Filter, X } from 'lucide-react';
 
 export default function ParfumsClient() {
   const { language } = useI18n();
-  const products = useProductsStore(s => s.getActiveByType('perfume'));
+  const products = useProductsStore(useShallow(s => s.getActiveByType('perfume')));
   const categories = useCategoriesStore(s => s.categories);
   const brands = useBrandsStore(s => s.brands);
   const tags = useTagsStore(s => s.tags);

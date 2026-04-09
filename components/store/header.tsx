@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
 import { usePathname } from 'next/navigation';
 import { LanguageToggle } from './language-toggle';
-import { ShoppingBag, User, Shield } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useCartStore } from '@/store/cart.store';
-import { useCustomerAuth } from '@/store/customer-auth.store';
 import { MobileHeader } from './MobileHeader';
+import { useCataloguesStore } from '@/store/catalogues.store';
+import { Download, FileText, ChevronDown, ShoppingBag, User, Shield } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const CartDrawer = dynamic(() => import('./CartDrawer'), { 
@@ -22,10 +20,12 @@ export function Header() {
   const pathname = usePathname();
   const cartCount = useCartStore((state) => state.getCount());
   const { customer: user, logout } = useCustomerAuth();
+  const { catalogues } = useCataloguesStore();
+  const [showCatMenu, setShowCatMenu] = useState(false);
   
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(true);
-  const [lastScroll, setLastScroll] = useState(0);
+  const lastScroll = useRef(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
@@ -37,13 +37,15 @@ export function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const current = window.scrollY;
-      // Show if scrolling up or at the very top
-      setVisible(current < lastScroll || current < 60);
-      setLastScroll(current);
+      const isVisibleNow = current < lastScroll.current || current < 60;
+      if (isVisibleNow !== visible) {
+        setVisible(isVisibleNow);
+      }
+      lastScroll.current = current;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScroll]);
+  }, [visible]);
 
   return (
     <>
@@ -51,7 +53,7 @@ export function Header() {
       
       {/* Desktop/Tablet Header — hidden on mobile */}
       <header 
-        className={`hidden md:block sticky top-0 z-50 w-full transition-all duration-700 ${visible ? 'translate-y-0' : '-translate-y-full'} ${lastScroll > 60 ? 'bg-white/80 backdrop-blur-xl border-b border-emerald-950/5 shadow-luxury py-2' : 'bg-transparent py-4'}`}
+        className={`hidden md:block sticky top-0 z-50 w-full transition-all duration-700 ${visible ? 'translate-y-0' : '-translate-y-full'} ${mounted && window.scrollY > 60 ? 'bg-white/80 backdrop-blur-xl border-b border-emerald-950/5 shadow-luxury py-2' : 'bg-transparent py-4'}`}
       >
         <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
@@ -80,15 +82,47 @@ export function Header() {
                   className={`relative group/nav py-2 transition-all duration-500 ${isActive ? 'text-emerald-950' : 'hover:text-emerald-950'}`}
                 >
                   {item.name}
-                  {/* Subtle hover line */}
                   <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2px] bg-amber-400 transition-all duration-500 ${isActive ? 'w-full' : 'w-0 group-hover/nav:w-full'}`} />
-                  {/* Luxury dot for active */}
                   {isActive && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber-500" />
                   )}
                 </Link>
               );
             })}
+
+            {/* Catalogues Dropdown */}
+            {(catalogues.length > 0) && (
+              <div 
+                className="relative group/cat py-2 cursor-pointer"
+                onMouseEnter={() => setShowCatMenu(true)}
+                onMouseLeave={() => setShowCatMenu(false)}
+              >
+                <div className="flex items-center gap-1 hover:text-emerald-950 transition-colors">
+                  {isAr ? 'الكتالوجات' : 'Catalogues'}
+                  <ChevronDown size={10} className={`transition-transform duration-300 ${showCatMenu ? 'rotate-180' : ''}`} />
+                </div>
+                
+                <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 transition-all duration-300 ${showCatMenu ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+                   <div className="bg-white rounded-2xl shadow-luxury border border-emerald-950/5 p-2 min-w-[180px]">
+                      {catalogues.map(cat => (
+                        <a 
+                          key={cat.id}
+                          href={cat.file_data} 
+                          download={cat.filename}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 rounded-xl transition-colors group/item"
+                        >
+                          <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors">
+                             <Download size={14} />
+                          </div>
+                          <span className="normal-case font-bold text-emerald-950/60 group-hover/item:text-emerald-950 transition-colors">
+                            {cat.type === 'parfums' ? (isAr ? 'عطور' : 'Parfums') : (isAr ? 'قنينات' : 'Flacons')}
+                          </span>
+                        </a>
+                      ))}
+                   </div>
+                </div>
+              </div>
+            )}
           </nav>
 
           {/* Actions */}

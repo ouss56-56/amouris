@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useI18n } from '@/i18n/i18n-context';
 import { useProductsStore } from '@/store/products.store';
+import { useShallow } from 'zustand/react/shallow';
 import { ProductCard } from '@/components/store/product-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
@@ -10,7 +11,7 @@ import { ChevronDown, Filter, X } from 'lucide-react';
 
 export default function FlaconsClient() {
   const { language } = useI18n();
-  const products = useProductsStore(s => s.getActiveByType('flacon'));
+  const products = useProductsStore(useShallow(s => s.getActiveByType('flacon')));
 
   const [selectedSize, setSelectedSize] = useState<string>('all');
   const [selectedColor, setSelectedColor] = useState<string>('all');
