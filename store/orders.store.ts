@@ -249,4 +249,8 @@ export const useOrdersStore = create<OrdersStore>()(
         return [...get().orders].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       },
     }),
+    {
+      name: 'amouris-orders-storage',
+    }
+  )
 )

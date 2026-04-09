@@ -9,7 +9,8 @@ export interface Collection {
   description_fr: string
   cover_url: string | null
 }
-
+export interface CollectionsStore {
+  collections: Collection[]
   _seeded: boolean
   isLoading: boolean
   error: string | null
