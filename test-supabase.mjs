@@ -22,6 +22,14 @@ async function test() {
     const { data: categories, error: cError } = await supabase.from('categories').select('*');
     console.log('Categories count:', categories?.length);
     if (cError) console.error('Categories error:', cError);
+
+    const { data: settings, error: sError } = await supabase.from('settings').select('*');
+    console.log('Settings:', settings);
+    if (sError) console.error('Settings error:', sError);
+
+    const { data: announcements, error: aError } = await supabase.from('announcements').select('*');
+    console.log('Announcements count:', announcements?.length);
+    if (aError) console.error('Announcements error:', aError);
   } catch (error) {
     console.error('Exception:', error);
   }
