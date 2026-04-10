@@ -57,8 +57,8 @@ export function Footer() {
             <Link href="/" className="font-serif text-2xl tracking-tighter hover:opacity-80 transition-opacity flex items-center gap-3">
               <img src="/logo.png" alt="Amouris Logo" className="w-10 h-10 object-contain" />
               <div>
-                <span className="text-white">{language === 'ar' ? settings.storeNameAR.split(' ')[0] : settings.storeNameFR.split(' ')[0]}</span>
-                <span className="text-amber-500 font-light ml-1"> {language === 'ar' ? settings.storeNameAR.split(' ').slice(1).join(' ') : settings.storeNameFR.split(' ').slice(1).join(' ')}</span>
+                <span className="text-white">{language === 'ar' ? settings?.storeNameAR?.split(' ')?.[0] : settings?.storeNameFR?.split(' ')?.[0]}</span>
+                <span className="text-amber-500 font-light ml-1"> {language === 'ar' ? settings?.storeNameAR?.split(' ')?.slice(1).join(' ') : settings?.storeNameFR?.split(' ')?.slice(1).join(' ')}</span>
               </div>
             </Link>
             <p className="text-sm text-emerald-100/60 leading-relaxed font-light max-w-xs">
