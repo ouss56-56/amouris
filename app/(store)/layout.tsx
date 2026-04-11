@@ -9,8 +9,7 @@ export default async function StoreLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = await createClient();
 
   // Fetch announcements & settings
   const [ { data: announcements }, { data: settings } ] = await Promise.all([

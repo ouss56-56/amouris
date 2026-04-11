@@ -1,20 +1,24 @@
-import { fetchAllOrders } from '@/lib/api/orders';
-import { fetchAllCustomers } from '@/lib/api/customers';
-import { fetchAllProducts } from '@/lib/api/products';
+import { createClient } from '@/lib/supabase/server';
 import ReportsClient from './ReportsClient';
 
 export default async function AdminReportsPage() {
-  const [orders, customers, products] = await Promise.all([
-    fetchAllOrders({ status: 'admin' }),
-    fetchAllCustomers(),
-    fetchAllProducts({ status: 'admin' })
+  const supabase = await createClient();
+
+  const [
+    { data: orders },
+    { data: customers },
+    { data: products }
+  ] = await Promise.all([
+    supabase.from('orders').select('*, items:order_items(*), customer:profiles(*)').order('created_at', { ascending: false }),
+    supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+    supabase.from('products').select('*').order('created_at', { ascending: false })
   ]);
 
   return (
     <ReportsClient 
-      orders={orders} 
-      customers={customers} 
-      products={products} 
+      orders={orders || []} 
+      customers={customers || []} 
+      products={products || []} 
     />
   );
 }

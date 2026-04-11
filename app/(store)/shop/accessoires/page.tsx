@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import AccessoiresClient from './AccessoiresClient';
 
 export default async function AccessoiresPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const [
     { data: products },

@@ -1,8 +1,13 @@
-import { fetchAllCustomers } from '@/lib/api/customers';
+import { createClient } from '@/lib/supabase/server';
 import AdminCustomersClient from './AdminCustomersClient';
 
 export default async function AdminCustomersPage() {
-  const customers = await fetchAllCustomers();
+  const supabase = await createClient();
 
-  return <AdminCustomersClient initialCustomers={customers} />;
+  const { data: customers } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  return <AdminCustomersClient initialCustomers={customers || []} />;
 }

@@ -1,17 +1,21 @@
-import { fetchBrands } from '@/lib/api/brands';
-import { fetchAllProducts } from '@/lib/api/products';
+import { createClient } from '@/lib/supabase/server';
 import BrandsClient from './BrandsClient';
 
 export default async function AdminBrandsPage() {
-  const [brands, products] = await Promise.all([
-    fetchBrands(),
-    fetchAllProducts({ status: 'admin' })
+  const supabase = await createClient();
+
+  const [
+    { data: brands },
+    { data: products }
+  ] = await Promise.all([
+    supabase.from('brands').select('*').order('name', { ascending: true }),
+    supabase.from('products').select('id, brand_id')
   ]);
 
   // Enrich brands with product counts
-  const brandsWithCounts = brands.map((brand: any) => ({
+  const brandsWithCounts = (brands || []).map((brand: any) => ({
     ...brand,
-    product_count: products.filter((p: any) => p.brand_id === brand.id).length
+    product_count: (products || []).filter((p: any) => p.brand_id === brand.id).length
   }));
 
   return <BrandsClient initialBrands={brandsWithCounts} />;

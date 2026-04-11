@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 // --- Generic Helpers (internal, not exported) ---
 
 const fetchAll = async (table: string, orderCol = 'name_fr') => {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase.from(table).select('*').order(orderCol);
   if (error) throw error;
   return data;
