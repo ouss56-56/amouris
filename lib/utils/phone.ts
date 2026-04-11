@@ -3,5 +3,5 @@ export function normalizePhone(phone: string): string {
 }
 
 export function phoneToEmail(phone: string): string {
-  return `${normalizePhone(phone)}@amouris.app`
+  return `user_${normalizePhone(phone)}@amouris.app`
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 import Link from 'next/link'
-import { loginAdmin } from '@/lib/api/auth'
+import { useAdminAuth } from '@/store/admin-auth.store'
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
@@ -13,6 +13,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const login = useAdminAuth((state) => state.login)
 
   // Detect error from middleware redirect
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function AdminLoginPage() {
     setLoading(true)
 
     try {
-      const { ok, error: loginError } = await loginAdmin(email, password)
+      const { ok, error: loginError } = await login(email, password)
       
       if (!ok) {
         throw new Error(loginError || 'Identifiants invalides')
