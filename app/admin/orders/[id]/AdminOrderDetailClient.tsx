@@ -15,7 +15,8 @@ import {
   History,
   XCircle,
   Clock,
-  Download
+  Download,
+  Banknote
 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -126,7 +127,24 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
               <ArrowLeft size={20} className="rtl:rotate-180" />
             </button>
           </Link>
-          <motion.div \n            initial={{ opacity: 0, x: -20 }}\n            animate={{ opacity: 1, x: 0 }}\n          >\n            <div className=\"flex items-center gap-3 mb-1\">\n               <h1 className=\"text-4xl font-bold font-serif text-emerald-950\">{t('admin.orders.id_label')} {order.order_number}</h1>\n               {order.is_registered_customer ? (\n                 <span className=\"px-4 py-1.5 bg-emerald-100/50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 border border-emerald-200/50\">\n                   <UserCheck size={12} /> {t('admin.orders.customer_registered')}\n                 </span>\n               ) : (\n                 <span className=\"px-4 py-1.5 bg-neutral-100 text-neutral-500 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 border border-neutral-200/50\">\n                   <User size={12} /> {t('admin.orders.customer_guest')}\n                 </span>\n               )}\n            </div>\n            <p className=\"text-emerald-950/60 font-semibold text-sm tracking-wide\">{new Date(order.created_at).toLocaleString(language === 'ar' ? 'ar-DZ' : 'fr-FR')}</p>\n          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="flex items-center gap-3 mb-1">
+               <h1 className="text-4xl font-bold font-serif text-emerald-950">{t('admin.orders.id_label')} {order.order_number}</h1>
+               {order.is_registered_customer ? (
+                 <span className="px-4 py-1.5 bg-emerald-100/50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 border border-emerald-200/50">
+                   <UserCheck size={12} /> {t('admin.orders.customer_registered')}
+                 </span>
+               ) : (
+                 <span className="px-4 py-1.5 bg-neutral-100 text-neutral-500 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 border border-neutral-200/50">
+                   <User size={12} /> {t('admin.orders.customer_guest')}
+                 </span>
+               )}
+            </div>
+            <p className="text-emerald-950/60 font-semibold text-sm tracking-wide">{new Date(order.created_at).toLocaleString(language === 'ar' ? 'ar-DZ' : 'fr-FR')}</p>
+          </motion.div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -151,7 +169,63 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-8">
-          <section className=\"luxury-card p-10\">\n            <h2 className=\"text-2xl font-bold font-serif text-emerald-950 mb-12 flex items-center gap-3\">\n              <Clock size={24} className=\"text-[#C9A84C]\" />\n              {t('admin.orders.tracking_title')}\n            </h2>\n            \n            {order.order_status === 'cancelled' ? (\n              <div className=\"p-12 bg-rose-50 border border-rose-100 rounded-[2.5rem] text-rose-600 font-bold text-center space-y-4 shadow-inner\">\n                 <XCircle size={48} className=\"mx-auto mb-2 opacity-50\" />\n                 <p className=\"text-xl\">{t('admin.orders.cancelled_status')}</p>\n                 <button \n                   onClick={() => handleStatusChange('pending')}\n                   className=\"bg-rose-600 text-white px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest font-black shadow-lg shadow-rose-950/20 hover:scale-[1.05] transition-all\"\n                 >\n                   {t('admin.orders.restore_pending')}\n                 </button>\n              </div>\n            ) : (\n              <div className=\"relative px-4 pb-4\">\n                <div className=\"absolute top-[22px] left-0 right-0 h-1.5 bg-neutral-50 rounded-full\" />\n                <div \n                  className=\"absolute top-[22px] left-0 h-1.5 bg-emerald-500 transition-all duration-1000 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.3)]\" \n                  style={{ width: `${(Math.max(0, currentStatusIndex) / (STATUSES.length - 1)) * 100}%` }}\n                />\n                \n                <div className=\"relative z-10 flex justify-between\">\n                  {STATUSES.map((status, idx) => {\n                    const isCompleted = idx <= currentStatusIndex\n                    const isCurrent = idx === currentStatusIndex\n                    return (\n                      <div \n                        key={status} \n                        className=\"flex flex-col items-center gap-5 cursor-pointer group flex-1\"\n                        onClick={() => handleStatusChange(status)}\n                      >\n                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all relative duration-500\n                          ${isCompleted ? 'bg-emerald-500 border-emerald-100 text-white' : 'bg-white border-white text-neutral-200 shadow-sm'}\n                          ${isCurrent ? 'scale-125 shadow-2xl shadow-emerald-500/30 ring-4 ring-emerald-500/10' : ''}\n                          ${isCompleted && !isCurrent ? 'hover:scale-110' : ''}\n                        `}>\n                          {isCompleted ? <CheckCircle2 size={24} /> : <span className=\"text-xs font-black\">{idx + 1}</span>}\n                          {isCurrent && <span className=\"absolute -inset-3 border-2 border-emerald-500/20 rounded-full animate-ping\" />}\n                        </div>\n                        <div className=\"flex flex-col items-center gap-1\">\n                          <span className={`text-[10px] font-black uppercase tracking-widest text-center transition-all duration-500\n                            ${isCurrent ? 'text-emerald-950 scale-110' : isCompleted ? 'text-emerald-900/60' : 'text-neutral-300'}\n                          `}>\n                            {getOrderStatusLabel(status, language)}\n                          </span>\n                          {isCurrent && <motion.div layoutId=\"active-dot\" className=\"w-1 h-1 bg-[#C9A84C] rounded-full mt-1\" />}\n                        </div>\n                      </div>\n                    )\n                  })}\n                </div>\n              </div>\n            )}
+          <section className="luxury-card p-10">
+            <h2 className="text-2xl font-bold font-serif text-emerald-950 mb-12 flex items-center gap-3">
+              <Clock size={24} className="text-[#C9A84C]" />
+              {t('admin.orders.tracking_title')}
+            </h2>
+            
+            {order.order_status === 'cancelled' ? (
+              <div className="p-12 bg-rose-50 border border-rose-100 rounded-[2.5rem] text-rose-600 font-bold text-center space-y-4 shadow-inner">
+                 <XCircle size={48} className="mx-auto mb-2 opacity-50" />
+                 <p className="text-xl">{t('admin.orders.cancelled_status')}</p>
+                 <button 
+                   onClick={() => handleStatusChange('pending')}
+                   className="bg-rose-600 text-white px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest font-black shadow-lg shadow-rose-950/20 hover:scale-[1.05] transition-all"
+                 >
+                   {t('admin.orders.restore_pending')}
+                 </button>
+              </div>
+            ) : (
+              <div className="relative px-4 pb-4">
+                <div className="absolute top-[22px] left-0 right-0 h-1.5 bg-neutral-50 rounded-full" />
+                <div 
+                  className="absolute top-[22px] left-0 h-1.5 bg-emerald-500 transition-all duration-1000 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.3)]" 
+                  style={{ width: `${(Math.max(0, currentStatusIndex) / (STATUSES.length - 1)) * 100}%` }}
+                />
+                
+                <div className="relative z-10 flex justify-between">
+                  {STATUSES.map((status, idx) => {
+                    const isCompleted = idx <= currentStatusIndex
+                    const isCurrent = idx === currentStatusIndex
+                    return (
+                      <div 
+                        key={status} 
+                        className="flex flex-col items-center gap-5 cursor-pointer group flex-1"
+                        onClick={() => handleStatusChange(status)}
+                      >
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all relative duration-500
+                          ${isCompleted ? 'bg-emerald-500 border-emerald-100 text-white' : 'bg-white border-white text-neutral-200 shadow-sm'}
+                          ${isCurrent ? 'scale-125 shadow-2xl shadow-emerald-500/30 ring-4 ring-emerald-500/10' : ''}
+                          ${isCompleted && !isCurrent ? 'hover:scale-110' : ''}
+                        `}>
+                          {isCompleted ? <CheckCircle2 size={24} /> : <span className="text-xs font-black">{idx + 1}</span>}
+                          {isCurrent && <span className="absolute -inset-3 border-2 border-emerald-500/20 rounded-full animate-ping" />}
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`text-[10px] font-black uppercase tracking-widest text-center transition-all duration-500
+                            ${isCurrent ? 'text-emerald-950 scale-110' : isCompleted ? 'text-emerald-900/60' : 'text-neutral-300'}
+                          `}>
+                            {getOrderStatusLabel(status, language)}
+                          </span>
+                          {isCurrent && <motion.div layoutId="active-dot" className="w-1 h-1 bg-[#C9A84C] rounded-full mt-1" />}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             {order.order_status !== 'cancelled' && (
                <div className="mt-12 pt-8 border-t border-emerald-950/5 flex justify-end">
@@ -165,8 +239,25 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
             )}
           </section>
 
-          <section className=\"luxury-card overflow-hidden\">\n             <div className=\"p-8 border-b border-emerald-950/5 flex items-center justify-between bg-neutral-50/30\">\n                <h2 className=\"text-xl font-bold font-serif text-emerald-950 flex items-center gap-3\">\n                  <Package size={24} className=\"text-[#C9A84C]\" />\n                  {t('admin.orders.items_title')}\n                </h2>\n                <span className=\"px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-xl text-[10px] font-black text-emerald-700 uppercase tracking-widest\">\n                  {order.items.length} {t('admin.orders.items_count')}\n                </span>\n             </div>\n             <table className=\"w-full text-left rtl:text-right\">
-                <thead>\n                   <tr className=\"bg-neutral-50/50\">\n                      <th className=\"luxury-table-header px-8 py-5\">{t('admin.orders.item_name')}</th>\n                      <th className=\"luxury-table-header px-8 py-5\">{t('product.quantity')}</th>\n                      <th className=\"luxury-table-header px-8 py-5\">{t('admin.orders.item_price')}</th>\n                      <th className=\"luxury-table-header px-8 py-5 text-right rtl:text-left\">{t('common.total')}</th>\n                   </tr>\n                </thead>
+          <section className="luxury-card overflow-hidden">
+             <div className="p-8 border-b border-emerald-950/5 flex items-center justify-between bg-neutral-50/30">
+                <h2 className="text-xl font-bold font-serif text-emerald-950 flex items-center gap-3">
+                  <Package size={24} className="text-[#C9A84C]" />
+                  {t('admin.orders.items_title')}
+                </h2>
+                <span className="px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-xl text-[10px] font-black text-emerald-700 uppercase tracking-widest">
+                  {order.items.length} {t('admin.orders.items_count')}
+                </span>
+             </div>
+             <table className="w-full text-left rtl:text-right">
+                <thead>
+                   <tr className="bg-neutral-50/50">
+                      <th className="luxury-table-header px-8 py-5">{t('admin.orders.item_name')}</th>
+                      <th className="luxury-table-header px-8 py-5">{t('product.quantity')}</th>
+                      <th className="luxury-table-header px-8 py-5">{t('admin.orders.item_price')}</th>
+                      <th className="luxury-table-header px-8 py-5 text-right rtl:text-left">{t('common.total')}</th>
+                   </tr>
+                </thead>
                 <tbody className="divide-y divide-emerald-950/5">
                    {order.items.map((item: any, idx: number) => (
                      <tr key={idx} className="hover:bg-neutral-50/30 transition-colors">
