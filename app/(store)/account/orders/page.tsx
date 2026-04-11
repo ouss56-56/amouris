@@ -21,7 +21,7 @@ export default async function AccountOrdersPage() {
     redirect('/login');
   }
 
-  const orders = await fetchCustomerOrders(session.profile.id);
+  const orders = await fetchCustomerOrders(profile.id);
 
   return <AccountOrdersListClient initialOrders={orders} />;
 }

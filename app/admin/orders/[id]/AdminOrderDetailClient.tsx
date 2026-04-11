@@ -126,21 +126,7 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
               <ArrowLeft size={20} className="rtl:rotate-180" />
             </button>
           </Link>
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-               <h1 className="text-3xl font-bold font-serif text-emerald-950">{t('admin.orders.id_label')} {order.order_number}</h1>
-               {order.is_registered_customer ? (
-                 <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest rounded-full flex items-center gap-1">
-                   <UserCheck size={10} /> {t('admin.orders.customer_registered')}
-                 </span>
-               ) : (
-                 <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-[9px] font-black uppercase tracking-widest rounded-full flex items-center gap-1">
-                   <User size={10} /> {t('admin.orders.customer_guest')}
-                 </span>
-               )}
-            </div>
-            <p className="text-emerald-950/40 text-xs">{new Date(order.created_at).toLocaleString(language === 'ar' ? 'ar-DZ' : 'fr-FR')}</p>
-          </div>
+          <motion.div \n            initial={{ opacity: 0, x: -20 }}\n            animate={{ opacity: 1, x: 0 }}\n          >\n            <div className=\"flex items-center gap-3 mb-1\">\n               <h1 className=\"text-4xl font-bold font-serif text-emerald-950\">{t('admin.orders.id_label')} {order.order_number}</h1>\n               {order.is_registered_customer ? (\n                 <span className=\"px-4 py-1.5 bg-emerald-100/50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 border border-emerald-200/50\">\n                   <UserCheck size={12} /> {t('admin.orders.customer_registered')}\n                 </span>\n               ) : (\n                 <span className=\"px-4 py-1.5 bg-neutral-100 text-neutral-500 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 border border-neutral-200/50\">\n                   <User size={12} /> {t('admin.orders.customer_guest')}\n                 </span>\n               )}\n            </div>\n            <p className=\"text-emerald-950/60 font-semibold text-sm tracking-wide\">{new Date(order.created_at).toLocaleString(language === 'ar' ? 'ar-DZ' : 'fr-FR')}</p>\n          </motion.div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -165,59 +151,7 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-8">
-          <section className="bg-white p-10 rounded-[2.5rem] border border-emerald-950/5 shadow-sm">
-            <h2 className="text-xl font-bold font-serif text-emerald-950 mb-10 flex items-center gap-3">
-              <Clock size={20} className="text-emerald-600" />
-              {t('admin.orders.tracking_title')}
-            </h2>
-            
-            {order.order_status === 'cancelled' ? (
-              <div className="p-10 bg-rose-50 border border-rose-100 rounded-[2rem] text-rose-600 font-bold text-center space-y-2">
-                 <XCircle size={40} className="mx-auto mb-2" />
-                 <p className="text-lg">{t('admin.orders.cancelled_status')}</p>
-                 <button 
-                   onClick={() => handleStatusChange('pending')}
-                   className="text-[10px] uppercase tracking-widest font-black underline opacity-60 hover:opacity-100"
-                 >
-                   {t('admin.orders.restore_pending')}
-                 </button>
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="absolute top-5 left-0 right-0 h-1 bg-neutral-50 rounded-full" />
-                <div 
-                  className="absolute top-5 left-0 h-1 bg-emerald-500 transition-all duration-700 rounded-full" 
-                  style={{ width: `${(Math.max(0, currentStatusIndex) / (STATUSES.length - 1)) * 100}%` }}
-                />
-                
-                <div className="relative z-10 flex justify-between">
-                  {STATUSES.map((status, idx) => {
-                    const isCompleted = idx <= currentStatusIndex
-                    const isCurrent = idx === currentStatusIndex
-                    return (
-                      <div 
-                        key={status} 
-                        className="flex flex-col items-center gap-4 cursor-pointer group flex-1"
-                        onClick={() => handleStatusChange(status)}
-                      >
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all relative
-                          ${isCompleted ? 'bg-emerald-500 border-emerald-100 text-white' : 'bg-white border-neutral-50 text-neutral-200'}
-                          ${isCurrent ? 'scale-110 shadow-lg shadow-emerald-500/20' : ''}
-                        `}>
-                          {isCompleted ? <CheckCircle2 size={18} /> : <span className="text-[10px] font-black">{idx + 1}</span>}
-                          {isCurrent && <span className="absolute -inset-2 border-2 border-emerald-500/20 rounded-full animate-ping" />}
-                        </div>
-                        <span className={`text-[9px] font-black uppercase tracking-widest text-center transition-colors
-                          ${isCurrent ? 'text-emerald-950' : isCompleted ? 'text-emerald-950/60' : 'text-neutral-200'}
-                        `}>
-                          {getOrderStatusLabel(status, language)}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
+          <section className=\"luxury-card p-10\">\n            <h2 className=\"text-2xl font-bold font-serif text-emerald-950 mb-12 flex items-center gap-3\">\n              <Clock size={24} className=\"text-[#C9A84C]\" />\n              {t('admin.orders.tracking_title')}\n            </h2>\n            \n            {order.order_status === 'cancelled' ? (\n              <div className=\"p-12 bg-rose-50 border border-rose-100 rounded-[2.5rem] text-rose-600 font-bold text-center space-y-4 shadow-inner\">\n                 <XCircle size={48} className=\"mx-auto mb-2 opacity-50\" />\n                 <p className=\"text-xl\">{t('admin.orders.cancelled_status')}</p>\n                 <button \n                   onClick={() => handleStatusChange('pending')}\n                   className=\"bg-rose-600 text-white px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest font-black shadow-lg shadow-rose-950/20 hover:scale-[1.05] transition-all\"\n                 >\n                   {t('admin.orders.restore_pending')}\n                 </button>\n              </div>\n            ) : (\n              <div className=\"relative px-4 pb-4\">\n                <div className=\"absolute top-[22px] left-0 right-0 h-1.5 bg-neutral-50 rounded-full\" />\n                <div \n                  className=\"absolute top-[22px] left-0 h-1.5 bg-emerald-500 transition-all duration-1000 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.3)]\" \n                  style={{ width: `${(Math.max(0, currentStatusIndex) / (STATUSES.length - 1)) * 100}%` }}\n                />\n                \n                <div className=\"relative z-10 flex justify-between\">\n                  {STATUSES.map((status, idx) => {\n                    const isCompleted = idx <= currentStatusIndex\n                    const isCurrent = idx === currentStatusIndex\n                    return (\n                      <div \n                        key={status} \n                        className=\"flex flex-col items-center gap-5 cursor-pointer group flex-1\"\n                        onClick={() => handleStatusChange(status)}\n                      >\n                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all relative duration-500\n                          ${isCompleted ? 'bg-emerald-500 border-emerald-100 text-white' : 'bg-white border-white text-neutral-200 shadow-sm'}\n                          ${isCurrent ? 'scale-125 shadow-2xl shadow-emerald-500/30 ring-4 ring-emerald-500/10' : ''}\n                          ${isCompleted && !isCurrent ? 'hover:scale-110' : ''}\n                        `}>\n                          {isCompleted ? <CheckCircle2 size={24} /> : <span className=\"text-xs font-black\">{idx + 1}</span>}\n                          {isCurrent && <span className=\"absolute -inset-3 border-2 border-emerald-500/20 rounded-full animate-ping\" />}\n                        </div>\n                        <div className=\"flex flex-col items-center gap-1\">\n                          <span className={`text-[10px] font-black uppercase tracking-widest text-center transition-all duration-500\n                            ${isCurrent ? 'text-emerald-950 scale-110' : isCompleted ? 'text-emerald-900/60' : 'text-neutral-300'}\n                          `}>\n                            {getOrderStatusLabel(status, language)}\n                          </span>\n                          {isCurrent && <motion.div layoutId=\"active-dot\" className=\"w-1 h-1 bg-[#C9A84C] rounded-full mt-1\" />}\n                        </div>\n                      </div>\n                    )\n                  })}\n                </div>\n              </div>\n            )}
 
             {order.order_status !== 'cancelled' && (
                <div className="mt-12 pt-8 border-t border-emerald-950/5 flex justify-end">
@@ -231,25 +165,8 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
             )}
           </section>
 
-          <section className="bg-white rounded-[2.5rem] border border-emerald-950/5 shadow-sm overflow-hidden">
-             <div className="p-8 border-b border-emerald-950/5 flex items-center justify-between">
-                <h2 className="text-xl font-bold font-serif text-emerald-950 flex items-center gap-3">
-                  <Package size={20} className="text-emerald-600" />
-                  {t('admin.orders.items_title')}
-                </h2>
-                <span className="px-3 py-1 bg-neutral-100 rounded-lg text-[10px] font-black text-neutral-400">
-                  {order.items.length} {t('admin.orders.items_count')}
-                </span>
-             </div>
-             <table className="w-full text-left rtl:text-right">
-                <thead className="bg-neutral-50/50 text-[10px] font-black uppercase tracking-widest text-emerald-950/30">
-                   <tr>
-                      <th className="px-8 py-5 text-left rtl:text-right">{t('admin.orders.item_name')}</th>
-                      <th className="px-8 py-5 text-left rtl:text-right">{t('product.quantity')}</th>
-                      <th className="px-8 py-5 text-left rtl:text-right">{t('admin.orders.item_price')}</th>
-                      <th className="px-8 py-5 text-right rtl:text-left">{t('common.total')}</th>
-                   </tr>
-                </thead>
+          <section className=\"luxury-card overflow-hidden\">\n             <div className=\"p-8 border-b border-emerald-950/5 flex items-center justify-between bg-neutral-50/30\">\n                <h2 className=\"text-xl font-bold font-serif text-emerald-950 flex items-center gap-3\">\n                  <Package size={24} className=\"text-[#C9A84C]\" />\n                  {t('admin.orders.items_title')}\n                </h2>\n                <span className=\"px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-xl text-[10px] font-black text-emerald-700 uppercase tracking-widest\">\n                  {order.items.length} {t('admin.orders.items_count')}\n                </span>\n             </div>\n             <table className=\"w-full text-left rtl:text-right\">
+                <thead>\n                   <tr className=\"bg-neutral-50/50\">\n                      <th className=\"luxury-table-header px-8 py-5\">{t('admin.orders.item_name')}</th>\n                      <th className=\"luxury-table-header px-8 py-5\">{t('product.quantity')}</th>\n                      <th className=\"luxury-table-header px-8 py-5\">{t('admin.orders.item_price')}</th>\n                      <th className=\"luxury-table-header px-8 py-5 text-right rtl:text-left\">{t('common.total')}</th>\n                   </tr>\n                </thead>
                 <tbody className="divide-y divide-emerald-950/5">
                    {order.items.map((item: any, idx: number) => (
                      <tr key={idx} className="hover:bg-neutral-50/30 transition-colors">
@@ -274,18 +191,19 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                    ))}
                 </tbody>
              </table>
-             <div className="p-8 bg-neutral-50/50 flex justify-end items-center gap-12 border-t border-emerald-950/5">
+              <div className="p-10 bg-neutral-50/80 backdrop-blur-sm flex justify-end items-center gap-12 border-t border-emerald-950/5">
                 <div className="text-right rtl:text-left">
-                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-950/30 mb-1">{t('admin.orders.total_label')}</p>
-                   <p className="text-3xl font-serif text-emerald-950 font-bold">{order.total_amount.toLocaleString()} <span className="text-xs font-sans font-medium text-emerald-950/40">{t('common.dzd')}</span></p>
+                   <p className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-950/50 mb-2">{t('admin.orders.total_label')}</p>
+                   <p className="text-4xl font-serif text-emerald-950 font-bold">{order.total_amount.toLocaleString()} <span className="text-sm font-sans font-medium text-emerald-950/50">{t('common.dzd')}</span></p>
                 </div>
-             </div>
+              </div>
           </section>
         </div>
 
         <div className="lg:col-span-4 space-y-8">
           <section className="bg-white p-8 rounded-[2.5rem] border border-emerald-950/5 shadow-sm">
-             <h2 className="text-lg font-bold font-serif text-emerald-950 mb-8 border-b border-emerald-950/5 pb-4">
+             <h2 className="text-xl font-bold font-serif text-emerald-950 mb-8 border-b border-emerald-950/5 pb-6 flex items-center gap-3">
+                <User size={20} className="text-[#C9A84C]" />
                 {t('admin.customers.profile_title')}
              </h2>
              
@@ -295,10 +213,10 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                       <User size={18} />
                    </div>
                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-900/30 mb-0.5">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] mb-1">
                         {t('admin.customers.full_name')}
                       </p>
-                      <p className="font-bold text-emerald-950">
+                      <p className="text-lg font-bold text-emerald-950">
                         {order.is_registered_customer ? t('admin.orders.customer_registered') : `${order.guest_first_name} ${order.guest_last_name}`}
                       </p>
                       {order.is_registered_customer && (
@@ -312,18 +230,20 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                       <Phone size={18} />
                    </div>
                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-900/30 mb-0.5">{t('common.contact')}</p>
-                      <p className="font-bold text-emerald-950">{order.guest_phone || t('admin.customers.view_profile')}</p>
+                      <div>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-blue-500/80 mb-1">{t('common.contact')}</p>
+                         <p className="font-bold text-emerald-950 tracking-wide">{order.guest_phone || t('admin.customers.view_profile')}</p>
+                      </div>
                    </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                   <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                   <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
                       <MapPin size={18} />
                    </div>
                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-900/30 mb-0.5">{t('admin.orders.destination')}</p>
-                      <p className="font-bold text-emerald-950 lowercase first-letter:uppercase">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-500/80 mb-1">{t('admin.orders.destination')}</p>
+                      <p className="font-bold text-emerald-950 lowercase first-letter:uppercase tracking-wide">
                         {order.guest_wilaya || t('admin.customers.view_profile_short')} {order.guest_commune ? `- ${order.guest_commune}` : ''}
                       </p>
                    </div>
@@ -339,15 +259,18 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
              )}
           </section>
 
-          <section className="bg-white p-8 rounded-[2.5rem] border border-emerald-950/5 shadow-sm">
-             <h2 className="text-lg font-bold font-serif text-emerald-950 mb-8 border-b border-emerald-950/5 pb-4">{t('admin.orders.transaction_title')}</h2>
+          <section className="luxury-card p-8">
+             <h2 className="text-xl font-bold font-serif text-emerald-950 mb-8 border-b border-emerald-950/5 pb-6 flex items-center gap-3">
+                <Banknote size={20} className="text-[#C9A84C]" />
+                {t('admin.orders.transaction_title')}
+             </h2>
              
              <div className="space-y-8">
                 <div>
                    <div className="flex justify-between items-end mb-4">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-900/30">{t('admin.orders.filter_payment')}</p>
-                      <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-                        order.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50">{t('admin.orders.filter_payment')}</p>
+                      <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                        order.payment_status === 'paid' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'
                       }`}>
                         {getPaymentStatusLabel(order.payment_status, language)}
                       </span>
@@ -373,7 +296,7 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                    </div>
                    <button 
                       onClick={() => handlePaymentUpdate('unpaid')}
-                      className="w-full mt-3 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-neutral-50 text-neutral-300 hover:bg-rose-50 hover:text-rose-500 transition-all font-bold"
+                      className="w-full mt-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-neutral-50 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 transition-all border border-transparent hover:border-rose-100"
                    >
                       {t('admin.orders.payment_reset')}
                    </button>
@@ -394,9 +317,9 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
              </div>
           </section>
 
-          <section className="bg-white p-8 rounded-[2.5rem] border border-emerald-950/5 shadow-sm">
-             <h2 className="text-lg font-bold font-serif text-emerald-950 mb-6 flex items-center gap-2">
-                <History size={18} className="text-emerald-600" />
+          <section className="luxury-card p-8">
+             <h2 className="text-xl font-bold font-serif text-emerald-950 mb-8 flex items-center gap-3 border-b border-emerald-950/5 pb-6">
+                <History size={20} className="text-[#C9A84C]" />
                 {t('admin.orders.history_title')}
              </h2>
              <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2 no-scrollbar">

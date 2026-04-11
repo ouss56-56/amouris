@@ -27,7 +27,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     const order = await fetchOrderById(id);
 
     // Security: verify the order belongs to this customer
-    if (order.customer_id && order.customer_id !== session.profile.id) {
+    if (order.customer_id && order.customer_id !== profile.id) {
       notFound();
     }
 

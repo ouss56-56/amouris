@@ -32,12 +32,17 @@ export default function CheckoutClient() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+
 
   useEffect(() => {
-    if (items.length === 0 && !isSubmitting) {
+    // Only redirect to shop if the cart is truly empty and we are NOT in the middle of a checkout
+    // or haven't just successfully completed one.
+    if (items.length === 0 && !isSubmitting && !isCompleted) {
       router.push('/shop');
     }
-  }, [items, router, isSubmitting]);
+  }, [items, router, isSubmitting, isCompleted]);
+
 
   const handleConfirm = async () => {
     // Validation for guest
@@ -85,8 +90,10 @@ export default function CheckoutClient() {
         }
       }
 
+      setIsCompleted(true);
       clear();
       router.push(`/checkout/success?order=${order.order_number}`);
+
     } catch (err) {
       console.error('Order creation failed:', err);
       alert(t('checkout.order_error'));

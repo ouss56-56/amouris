@@ -58,10 +58,13 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
   return (
     <div className="space-y-12 pb-20">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
-           <h1 className="font-serif text-4xl text-emerald-950 mb-2 font-bolditalic">{t('admin.customers.title')}</h1>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">{t('admin.customers.subtitle')}</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+           <h1 className="font-serif text-5xl text-emerald-950 mb-2 font-bold italic">{t('admin.customers.title')}</h1>
+           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#C9A84C]/80">{t('admin.customers.subtitle')}</p>
+        </motion.div>
       </header>
 
       <section className="space-y-6">
@@ -87,22 +90,22 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
         <AnimatePresence>
           {showFilters && (
             <motion.div 
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8 bg-neutral-100 rounded-3xl"
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 bg-neutral-100/80 backdrop-blur-md rounded-[2.5rem] border border-emerald-950/5"
             >
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-emerald-950/30 px-1">{t('admin.customers.filter_status')}</label>
-                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 text-[10px] font-bold uppercase outline-none">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">{t('admin.customers.filter_status')}</label>
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full h-14 px-6 rounded-2xl bg-white border border-emerald-950/10 text-[11px] font-bold uppercase outline-none focus:border-[#C9A84C] transition-all">
                   <option value="all">{t('admin.customers.status_all')}</option>
                   <option value="active">{t('admin.customers.status_active')}</option>
                   <option value="frozen">{t('admin.customers.status_frozen')}</option>
                 </select>
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-emerald-950/30 px-1">{t('admin.customers.filter_wilaya')}</label>
-                <select value={wilayaFilter} onChange={e => setWilayaFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 text-[10px] font-bold uppercase outline-none">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">{t('admin.customers.filter_wilaya')}</label>
+                <select value={wilayaFilter} onChange={e => setWilayaFilter(e.target.value)} className="w-full h-14 px-6 rounded-2xl bg-white border border-emerald-950/10 text-[11px] font-bold uppercase outline-none focus:border-[#C9A84C] transition-all">
                   <option value="all">{t('admin.orders.wilaya_all')}</option>
                   {Array.from(new Set(customers.map(c => c.wilaya).filter(Boolean))).map(w => <option key={w} value={w!}>{w}</option>)}
                 </select>
@@ -112,16 +115,16 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
         </AnimatePresence>
       </section>
 
-      <div className="bg-white rounded-[3rem] border border-emerald-950/5 shadow-2xl shadow-emerald-950/5 overflow-hidden">
+      <div className="luxury-card overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-emerald-950/5 bg-neutral-50/50">
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.customers.table.partner')}</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.customers.table.location')}</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30 text-center">{t('admin.customers.table.volume')}</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.customers.table.status')}</th>
-                <th className="px-10 py-6 text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.customers.table.controls')}</th>
+                <th className="luxury-table-header">{t('admin.customers.table.partner')}</th>
+                <th className="luxury-table-header">{t('admin.customers.table.location')}</th>
+                <th className="luxury-table-header text-center">{t('admin.customers.table.volume')}</th>
+                <th className="luxury-table-header">{t('admin.customers.table.status')}</th>
+                <th className="luxury-table-header text-right">{t('admin.customers.table.controls')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-emerald-950/5">
@@ -139,12 +142,12 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                     >
                       <td className="px-10 py-8">
                         <div className="flex items-center gap-6">
-                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-serif shadow-sm transition-all ${isFrozen ? 'bg-rose-50 text-rose-300' : 'bg-amber-100 text-amber-700'}`}>
+                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-serif shadow-xl transition-all ${isFrozen ? 'bg-rose-50 text-rose-300' : 'bg-[#C9A84C]/10 text-[#C9A84C]'}`}>
                              {(customer.first_name || 'C').charAt(0)}
                           </div>
                           <div>
                             <p className="text-base font-bold text-emerald-950">{customer.first_name} {customer.last_name}</p>
-                            <p className="text-[10px] text-emerald-950/30 font-black uppercase tracking-widest mt-0.5">{customer.phone_number}</p>
+                            <p className="text-[10px] text-emerald-950/50 font-black uppercase tracking-widest mt-0.5">{customer.phone_number}</p>
                           </div>
                         </div>
                       </td>
@@ -153,14 +156,14 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                            <MapPin size={14} className="text-emerald-900/20" />
                            <div>
                              <p className="text-sm font-bold text-emerald-950">{customer.wilaya}</p>
-                             <p className="text-[10px] text-emerald-950/30 font-medium uppercase tracking-widest">{customer.commune || t('common.center')}</p>
+                             <p className="text-[10px] text-emerald-950/50 font-medium uppercase tracking-widest">{customer.commune || t('common.center')}</p>
                            </div>
                         </div>
                       </td>
                       <td className="px-10 py-8">
                          <div className="text-center">
-                            <div className="font-serif text-lg font-bold text-emerald-950">{customer.order_count} <span className="text-[10px] font-normal opacity-30 italic">Cmd</span></div>
-                            <div className="text-[10px] text-emerald-700 font-black uppercase tracking-widest mt-1">{(customer.total_spent || 0).toLocaleString()} {t('common.dzd')}</div>
+                             <div className="font-serif text-lg font-bold text-emerald-950">{customer.order_count} <span className="text-[10px] font-normal opacity-40 italic">Cmd</span></div>
+                             <div className="text-[10px] text-emerald-700/80 font-black uppercase tracking-widest mt-1">{(customer.total_spent || 0).toLocaleString()} {t('common.dzd')}</div>
                          </div>
                       </td>
                       <td className="px-10 py-8">

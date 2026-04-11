@@ -20,5 +20,5 @@ export default async function SettingsPage() {
     redirect('/login');
   }
 
-  return <SettingsClient initialCustomer={session.profile} />;
+  return <SettingsClient initialCustomer={profile} />;
 }

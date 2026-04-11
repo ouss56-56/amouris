@@ -100,16 +100,21 @@ export default function AdminProductsClient({
   return (
     <div className="space-y-12 pb-20">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
-           <h1 className="font-serif text-4xl text-gray-900 mb-2">Catalogue Maître</h1>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">Gestion de l&apos;inventaire Amouris</p>
-        </div>
-        <button 
-          onClick={handleAdd}
-          className="bg-[#0a3d2e] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3"
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
         >
-          <Plus size={16} /> Ajouter une référence
-        </button>
+           <h1 className="font-serif text-5xl text-emerald-950 mb-2 font-bold italic">Catalogue Maître</h1>
+           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#C9A84C]/80">Gestion de l&apos;inventaire Amouris</p>
+        </motion.div>
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleAdd}
+          className="bg-[#0a3d2e] text-white px-8 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/30 hover:shadow-emerald-900/40 transition-all flex items-center gap-3"
+        >
+          <Plus size={18} /> Ajouter une référence
+        </motion.button>
       </header>
 
       {/* Filters & Search */}
@@ -141,33 +146,33 @@ export default function AdminProductsClient({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-8 bg-neutral-100/50 rounded-3xl border border-emerald-950/5">
-                <div className="space-y-2">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/40 px-1">Type de Produit</label>
-                  <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as any)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 outline-none text-[10px] font-black uppercase tracking-widest text-emerald-950">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 p-10 bg-neutral-100/80 backdrop-blur-md rounded-[2.5rem] border border-emerald-950/5">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">Type de Produit</label>
+                  <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as any)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 outline-none text-[11px] font-bold uppercase text-emerald-950 focus:border-[#C9A84C] transition-all">
                     <option value="all">Tous les types</option>
                     <option value="perfume">Parfums (Huiles)</option>
                     <option value="flacon">Flacons (Vides)</option>
                     <option value="accessory">Accessoires & Autres</option>
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/40 px-1">Catégorie</label>
-                  <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 outline-none text-[10px] font-black uppercase tracking-widest text-emerald-950">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">Catégorie</label>
+                  <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 outline-none text-[11px] font-bold uppercase text-emerald-950 focus:border-[#C9A84C] transition-all">
                     <option value="all">Toutes les catégories</option>
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name_fr}</option>)}
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/40 px-1">Marque</label>
-                  <select value={brandFilter} onChange={e => setBrandFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 outline-none text-[10px] font-black uppercase tracking-widest text-emerald-950">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">Marque</label>
+                  <select value={brandFilter} onChange={e => setBrandFilter(e.target.value)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 outline-none text-[11px] font-bold uppercase text-emerald-950 focus:border-[#C9A84C] transition-all">
                     <option value="all">Toutes les marques</option>
                     {brands.map(b => <option key={b.id} value={b.id}>{b.name_fr}</option>)}
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/40 px-1">Statut</label>
-                  <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 outline-none text-[10px] font-black uppercase tracking-widest text-emerald-950">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">Statut</label>
+                  <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 outline-none text-[11px] font-bold uppercase text-emerald-950 focus:border-[#C9A84C] transition-all">
                     <option value="all">Tous les statuts</option>
                     <option value="active">Actif</option>
                     <option value="draft">Brouillon</option>
@@ -179,17 +184,17 @@ export default function AdminProductsClient({
         </AnimatePresence>
       </section>
 
-      <div className="bg-white rounded-[3rem] border border-emerald-950/5 shadow-2xl shadow-emerald-950/5 overflow-hidden">
+      <div className="luxury-card overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-emerald-950/5 bg-neutral-50/50">
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Réf / Visuel</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Classification</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Inventaire</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Prix</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Statut</th>
-                <th className="px-10 py-6 text-right text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Contrôles</th>
+                <th className="luxury-table-header">Réf / Visuel</th>
+                <th className="luxury-table-header">Classification</th>
+                <th className="luxury-table-header">Inventaire</th>
+                <th className="luxury-table-header">Prix</th>
+                <th className="luxury-table-header">Statut</th>
+                <th className="luxury-table-header text-right">Contrôles</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-emerald-950/5">
@@ -220,8 +225,8 @@ export default function AdminProductsClient({
                              />
                           </div>
                           <div>
-                            <p className="font-serif text-xl text-gray-900 mb-0.5">{product.name_fr}</p>
-                            <p className="text-[10px] uppercase font-black tracking-widest text-[#C9A84C]/60 italic">/{product.slug}</p>
+                            <p className="font-serif text-2xl text-emerald-950 font-bold mb-0.5">{product.name_fr}</p>
+                            <p className="text-[10px] uppercase font-black tracking-widest text-[#C9A84C] italic">/{product.slug}</p>
                           </div>
                         </div>
                       </td>
@@ -231,7 +236,7 @@ export default function AdminProductsClient({
                              {isPerfume ? <Droplets size={10} /> : product.product_type === 'accessory' ? <Plus size={10} /> : <Box size={10} />}
                              {isPerfume ? 'Huile' : product.product_type === 'accessory' ? 'Accessoire' : 'Flacon'}
                            </span>
-                           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{cat?.name_fr || 'Sans catégorie'} / {brand?.name_fr || 'Sans marque'}</p>
+                           <p className="text-[10px] font-bold text-emerald-950/60 uppercase tracking-widest">{cat?.name_fr || 'Sans catégorie'} / {brand?.name_fr || 'Sans marque'}</p>
                         </div>
                       </td>
                       <td className="px-10 py-6 font-mono">

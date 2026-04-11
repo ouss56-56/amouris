@@ -94,6 +94,22 @@
   .shadow-luxury {
     box-shadow: var(--shadow-luxury);
   }
+
+  .text-luxury-label {
+    @apply text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/60;
+  }
+
+  .text-luxury-secondary {
+    @apply text-xs text-emerald-950/50 leading-relaxed font-medium;
+  }
+
+  .luxury-card {
+    @apply bg-white rounded-[2.5rem] border border-emerald-950/5 shadow-luxury hover:shadow-2xl hover:shadow-emerald-950/10 transition-all duration-500;
+  }
+
+  .luxury-table-header {
+    @apply px-10 py-6 text-left rtl:text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/50 bg-neutral-50/50;
+  }
 }
 
 /* Luxury Marquee Fade Mask */

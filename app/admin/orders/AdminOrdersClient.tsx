@@ -92,10 +92,13 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
   return (
     <div className="space-y-12 pb-20">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
-           <h1 className="font-serif text-4xl text-emerald-950 mb-2 font-bolditalic">{t('admin.orders.title')}</h1>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">{t('admin.orders.subtitle')}</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+           <h1 className="font-serif text-5xl text-emerald-950 mb-2 font-bold italic">{t('admin.orders.title')}</h1>
+           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#C9A84C]/80">{t('admin.orders.subtitle')}</p>
+        </motion.div>
       </header>
 
       <section className="space-y-6">
@@ -121,30 +124,30 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
         <AnimatePresence>
           {showFilters && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 bg-neutral-100 rounded-3xl"
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 p-10 bg-neutral-100/80 backdrop-blur-md rounded-[2.5rem] border border-emerald-950/5"
             >
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-gray-500 px-1">{t('admin.orders.filter_status')}</label>
-                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 text-[10px] font-bold uppercase outline-none">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">{t('admin.orders.filter_status')}</label>
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 text-[11px] font-bold uppercase outline-none focus:border-[#C9A84C] transition-all">
                   <option value="all">{t('admin.orders.status_all')}</option>
                   {STATUS_ORDER.map((k) => <option key={k} value={k}>{getOrderStatusLabel(k, language)}</option>)}
                 </select>
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-emerald-950/30 px-1">{t('admin.orders.filter_payment')}</label>
-                <select value={paymentFilter} onChange={e => setPaymentFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 text-[10px] font-bold uppercase outline-none">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">{t('admin.orders.filter_payment')}</label>
+                <select value={paymentFilter} onChange={e => setPaymentFilter(e.target.value)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 text-[11px] font-bold uppercase outline-none focus:border-[#C9A84C] transition-all">
                   <option value="all">{t('admin.orders.payment_all')}</option>
                   <option value="unpaid">{t('admin.orders.payment_unpaid')}</option>
                   <option value="partial">{t('admin.orders.payment_partial')}</option>
                   <option value="paid">{t('admin.orders.payment_paid')}</option>
                 </select>
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-emerald-950/30 px-1">{t('admin.orders.filter_wilaya')}</label>
-                <select value={wilayaFilter} onChange={e => setWilayaFilter(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-white border border-emerald-950/5 text-[10px] font-bold uppercase outline-none">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">{t('admin.orders.filter_wilaya')}</label>
+                <select value={wilayaFilter} onChange={e => setWilayaFilter(e.target.value)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 text-[11px] font-bold uppercase outline-none focus:border-[#C9A84C] transition-all">
                   <option value="all">{t('admin.orders.wilaya_all')}</option>
                   {Array.from(new Set(orders.map(o => o.guest_wilaya).filter(Boolean))).map(w => <option key={w} value={w!}>{w}</option>)}
                 </select>
@@ -154,16 +157,16 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
         </AnimatePresence>
       </section>
 
-      <div className="bg-white rounded-[3rem] border border-emerald-950/5 shadow-2xl shadow-emerald-950/5 overflow-hidden">
+      <div className="luxury-card overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-emerald-950/5 bg-neutral-50/50">
-                <th className="px-10 py-6 text-left rtl:text-right text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">{t('admin.orders.table.id_date')}</th>
-                <th className="px-10 py-6 text-left rtl:text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.orders.table.customer')}</th>
-                <th className="px-10 py-6 text-left rtl:text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.orders.table.amount_payment')}</th>
-                <th className="px-10 py-6 text-left rtl:text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.orders.table.progress')}</th>
-                <th className="px-10 py-6 text-right rtl:text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">{t('admin.orders.table.actions')}</th>
+                <th className="luxury-table-header">{t('admin.orders.table.id_date')}</th>
+                <th className="luxury-table-header">{t('admin.orders.table.customer')}</th>
+                <th className="luxury-table-header">{t('admin.orders.table.amount_payment')}</th>
+                <th className="luxury-table-header">{t('admin.orders.table.progress')}</th>
+                <th className="luxury-table-header text-right rtl:text-left">{t('admin.orders.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-emerald-950/5">
@@ -183,8 +186,8 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
                     >
                       <td className="px-10 py-8">
                         <div>
-                          <p className="font-serif text-xl text-emerald-950 font-bold">{order.order_number}</p>
-                          <p className="text-[10px] font-black tracking-widest text-emerald-950/20 uppercase mt-1">
+                          <p className="font-serif text-2xl text-emerald-950 font-bold">{order.order_number}</p>
+                          <p className="text-[10px] font-black tracking-widest text-[#C9A84C] uppercase mt-1">
                             {new Date(order.created_at).toLocaleDateString(language === 'ar' ? 'ar-DZ' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </p>
                         </div>
@@ -208,7 +211,7 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
                                 placeholder={t('admin.orders.table.amount_payment')}
                                 defaultValue={order.amount_paid}
                                 onBlur={(e) => handleUpdatePayment(order.id, e.target.value)}
-                                className="w-24 h-8 px-2 bg-neutral-50 border border-emerald-950/5 rounded text-[10px] font-bold outline-none focus:border-amber-500 transition-colors"
+                                className="w-24 h-9 px-3 bg-neutral-50 border border-emerald-950/10 rounded-lg text-[11px] font-bold outline-none focus:border-[#C9A84C] transition-all"
                               />
                               {reste > 0 && <span className="text-[9px] font-bold text-rose-500">(-{reste.toLocaleString()})</span>}
                            </div>

@@ -57,16 +57,21 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
   return (
     <div className="space-y-12 pb-20 font-sans">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
-           <h1 className="font-serif text-4xl text-emerald-950 mb-2 font-bold italic">Structure du Catalogue</h1>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">Organisation des Collections</p>
-        </div>
-        <button 
-          onClick={handleAdd}
-          className="bg-[#0a3d2e] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3"
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
         >
-          <Plus size={16} /> Nouvelle Catégorie
-        </button>
+           <h1 className="font-serif text-5xl text-emerald-950 mb-2 font-bold italic">Structure du Catalogue</h1>
+           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#C9A84C]/80">Organisation des Collections</p>
+        </motion.div>
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleAdd}
+          className="bg-[#0a3d2e] text-white px-8 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/30 hover:shadow-emerald-900/40 transition-all flex items-center gap-3"
+        >
+          <Plus size={18} /> Nouvelle Catégorie
+        </motion.button>
       </header>
 
       <section className="flex flex-col md:flex-row gap-6">
@@ -82,15 +87,15 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
         </div>
       </section>
 
-      <div className="bg-white rounded-[3rem] border border-emerald-950/5 shadow-2xl shadow-emerald-950/5 overflow-hidden">
+      <div className="luxury-card overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-emerald-950/5 bg-neutral-50/50">
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Désignation</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Lien URL (Slug)</th>
-                <th className="px-10 py-6 text-left text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30 text-center">Produits Liés</th>
-                <th className="px-10 py-6 text-right text-[9px] font-black uppercase tracking-[0.3em] text-emerald-950/30">Actions</th>
+                <th className="luxury-table-header">Désignation</th>
+                <th className="luxury-table-header">Lien URL (Slug)</th>
+                <th className="luxury-table-header text-center">Produits Liés</th>
+                <th className="luxury-table-header text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-emerald-950/5">
@@ -111,13 +116,13 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
                              <Tag size={20} />
                           </div>
                           <div>
-                            <p className="font-serif text-lg text-emerald-950 font-bold">{category.name_fr}</p>
-                            <p className="text-xs font-arabic text-emerald-950/30 text-right" dir="rtl">{category.name_ar}</p>
+                            <p className="font-serif text-xl text-emerald-950 font-bold">{category.name_fr}</p>
+                            <p className="text-sm font-arabic text-emerald-950/50 text-right" dir="rtl">{category.name_ar}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-10 py-6">
-                        <code className="text-[10px] font-mono bg-neutral-50 px-3 py-1.5 rounded-lg text-emerald-950/50 border border-emerald-950/5">
+                        <code className="text-[10px] font-mono bg-neutral-50 px-3 py-1.5 rounded-lg text-emerald-950/60 border border-emerald-950/5">
                           /{category.slug}
                         </code>
                       </td>

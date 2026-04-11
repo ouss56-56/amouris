@@ -56,16 +56,21 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
   return (
     <div className="space-y-12 pb-20 font-sans">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
-           <h1 className="font-serif text-4xl text-emerald-950 mb-2 font-bold italic">Éditions Limitées</h1>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A84C]">Gestion des collections thématiques</p>
-        </div>
-        <button 
-          onClick={handleAdd}
-          className="bg-amber-950 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-amber-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3 font-sans"
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
         >
-          <Plus size={16} /> Nouvelle Collection
-        </button>
+           <h1 className="font-serif text-5xl text-emerald-950 mb-2 font-bold italic">Editions Limitées</h1>
+           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#C9A84C]/80">Gestion des collections thématiques</p>
+        </motion.div>
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleAdd}
+          className="bg-amber-950 text-white px-8 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-amber-900/30 hover:shadow-amber-900/40 transition-all flex items-center gap-3 font-sans"
+        >
+          <Plus size={18} /> Nouvelle Collection
+        </motion.button>
       </header>
 
       <section className="relative group">
@@ -86,10 +91,10 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
               <motion.div 
                 layout
                 key={collection.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="group bg-white rounded-[3rem] border border-emerald-950/5 shadow-xl shadow-emerald-950/5 hover:shadow-2xl hover:shadow-emerald-950/10 transition-all overflow-hidden"
+                className="group luxury-card overflow-hidden"
               >
                 <div className="aspect-[21/9] relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-700">
                   {collection.cover_url ? (
@@ -107,15 +112,15 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
                 </div>
 
                 <div className="p-8 space-y-6">
-                  <p className="text-xs text-emerald-950/60 leading-relaxed font-medium line-clamp-2">
+                  <p className="text-sm text-emerald-950/70 leading-relaxed font-medium line-clamp-2">
                      {collection.description_fr || "Découvrez une sélection exclusive de produits Amouris."}
                   </p>
                   
                   <div className="flex items-center justify-between pt-6 border-t border-emerald-950/5">
-                    <div className="px-4 py-2 bg-amber-50 rounded-xl flex items-center gap-2">
-                       <Box size={12} className="text-amber-600" />
-                       <span className="text-[10px] font-bold text-amber-900 uppercase tracking-widest">{collection.product_count} RÉFÉRENCES</span>
-                    </div>
+                     <div className="px-5 py-2.5 bg-amber-50 rounded-[1rem] flex items-center gap-2 border border-amber-100/50">
+                        <Box size={14} className="text-amber-600" />
+                        <span className="text-[11px] font-black text-amber-900 uppercase tracking-widest">{collection.product_count} RÉFÉRENCES</span>
+                     </div>
 
                     <div className="flex gap-2">
                       <button onClick={() => handleEdit(collection)} className="w-12 h-12 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/40 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm">
