@@ -35,18 +35,28 @@ export function ShopContent({ initialProducts, categories, brands, initialType }
   const [selectedTag, setSelectedTag] = useState<string>(
     searchParams.get('tag') || 'all'
   );
+  const searchQuery = searchParams.get('search') || '';
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   
   // Filtering logic
   const filteredProducts = useMemo(() => {
     return initialProducts.filter(p => {
+      // Search logic
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesName = 
+          p.name_fr.toLowerCase().includes(query) || 
+          p.name_ar.includes(query);
+        if (!matchesName) return false;
+      }
+
       if (selectedType !== 'all' && p.product_type !== selectedType) return false;
       if (selectedCategory !== 'all' && p.category_id !== selectedCategory) return false;
       if (selectedBrand !== 'all' && p.brand_id !== selectedBrand) return false;
       if (selectedTag !== 'all' && !p.tag_ids?.includes(selectedTag)) return false;
       return true;
     });
-  }, [initialProducts, selectedType, selectedCategory, selectedBrand, selectedTag]);
+  }, [initialProducts, selectedType, selectedCategory, selectedBrand, selectedTag, searchQuery]);
 
   // Count active filters
   const activeFilterCount = [selectedType !== 'all', selectedCategory !== 'all', selectedBrand !== 'all', selectedTag !== 'all'].filter(Boolean).length;

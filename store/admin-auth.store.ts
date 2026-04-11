@@ -15,6 +15,8 @@ interface AdminAuthStore {
   setSession: (session: Session | null) => Promise<void>
   logout: () => Promise<void>
   checkSession: () => Promise<void>
+  _hasHydrated: boolean
+  setHasHydrated: (state: boolean) => void
 }
 
 export const useAdminAuthStore = create<AdminAuthStore>()(
@@ -26,6 +28,8 @@ export const useAdminAuthStore = create<AdminAuthStore>()(
       isLoading: false,
       error: null,
       session: null,
+      _hasHydrated: false,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
 
       login: async (email, password) => {
         set({ isLoading: true, error: null })
@@ -85,6 +89,9 @@ export const useAdminAuthStore = create<AdminAuthStore>()(
     {
       name: 'amouris_admin_session',
       partialize: (s) => ({ isAuthenticated: s.isAuthenticated, email: s.email }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      }
     }
   )
 )

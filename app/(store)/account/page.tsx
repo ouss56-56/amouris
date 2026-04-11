@@ -21,7 +21,7 @@ export default async function AccountPage() {
     redirect('/login');
   }
 
-  const orders = await fetchCustomerOrders(profile.id);
+  const orders = await fetchCustomerOrders(profile.id, supabase);
 
   return (
     <AccountOverviewClient 

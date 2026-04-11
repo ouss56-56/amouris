@@ -19,10 +19,8 @@ export const fetchAllOrders = async () => {
   return data;
 };
 
-export const fetchCustomerOrders = async (customerId: string) => {
-  
-  // Customers read own orders (via RLS if client, admin if server component with admin client)
-  const supabase = createClient();
+export const fetchCustomerOrders = async (customerId: string, client?: any) => {
+  const supabase = client || createClient();
   
   const { data, error } = await supabase
     .from('orders')
@@ -37,9 +35,8 @@ export const fetchCustomerOrders = async (customerId: string) => {
   return data;
 };
 
-export const fetchOrderById = async (id: string) => {
-  
-  const supabase = createClient();
+export const fetchOrderById = async (id: string, client?: any) => {
+  const supabase = client || createClient();
 
   const { data, error } = await supabase
     .from('orders')

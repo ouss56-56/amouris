@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Menu, ShoppingBag, User } from 'lucide-react'
+import { X, Menu, ShoppingBag, User, Search } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCartStore } from '@/store/cart.store'
 import { useCustomerAuthStore } from '@/store/customer-auth.store'
@@ -20,6 +21,7 @@ export function MobileHeader() {
   const cartCount = useCartStore((state) => state.getCount())
   const { currentCustomer: user, logout } = useCustomerAuthStore()
   const { t, language, dir } = useI18n()
+  const router = useRouter()
   const isAr = language === 'ar'
   
   const [mounted, setMounted] = useState(false)
@@ -117,6 +119,25 @@ export function MobileHeader() {
             >
               <X size={20} />
             </button>
+          </div>
+
+          {/* Search Bar - Mobile */}
+          <div className="p-4 border-b border-gray-100">
+            <div className="relative">
+              <input 
+                type="text"
+                placeholder={t('common.search')}
+                onChange={(e) => {
+                  const q = e.target.value;
+                  if (q.length > 2) {
+                    router.push(`/shop?search=${encodeURIComponent(q)}`);
+                    setIsOpen(false);
+                  }
+                }}
+                className="w-full h-12 bg-neutral-50 border border-emerald-950/5 rounded-xl px-4 pl-10 text-sm font-medium focus:outline-none focus:border-[#C9A84C] transition-all"
+              />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            </div>
           </div>
           
           {/* Nav links */}

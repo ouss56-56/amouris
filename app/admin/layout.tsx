@@ -8,18 +8,13 @@ import { AdminHeader } from '@/components/admin/header'
 import { useI18n } from '@/i18n/i18n-context'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAdminAuth()
-  const router = useRouter()
-  const pathname = usePathname()
-  const { dir } = useI18n()
-
-  const isLoginPage = pathname === '/admin/login'
+  const { isAuthenticated, _hasHydrated } = useAdminAuth();
 
   useEffect(() => {
-    if (!isLoginPage && !isAuthenticated) {
-      router.replace('/admin/login')
+    if (_hasHydrated && !isLoginPage && !isAuthenticated) {
+      router.replace('/admin/login');
     }
-  }, [isAuthenticated, isLoginPage, router])
+  }, [_hasHydrated, isAuthenticated, isLoginPage, router]);
 
   // Page login → pas de layout
   if (isLoginPage) return <>{children}</>

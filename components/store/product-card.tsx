@@ -7,6 +7,9 @@ import { useI18n } from '@/i18n/i18n-context'
 import Link from 'next/link'
 import { ProductImage } from './ProductImage'
 import { useCartStore } from '@/store/cart.store'
+import { useWishlistStore } from '@/store/wishlist.store'
+import { useCustomerAuth } from '@/store/customer-auth.store'
+import { toast } from 'sonner'
 
 interface ProductCardProps {
   product: Product & { in_stock?: boolean; variants?: any[] }
@@ -16,7 +19,10 @@ interface ProductCardProps {
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { t, language } = useI18n()
   const addItem = useCartStore(s => s.addItem)
+  const { items: wishlistItems, toggleItem } = useWishlistStore()
+  const { customer } = useCustomerAuth()
   const isAr = language === 'ar'
+  const isFavorite = wishlistItems.includes(product.id)
 
   const price = product.product_type === 'perfume' 
     ? product.price_per_gram 
@@ -47,6 +53,26 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
     // so we let the user go to the detail page.
   }
 
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (!customer) {
+      toast.error(isAr ? 'يرجى تسجيل الدخول للإضافة إلى المفضلة' : 'Veuillez vous connecter pour ajouter aux favoris')
+      return
+    }
+
+    try {
+      await toggleItem(product.id)
+      toast.success(isFavorite 
+        ? (isAr ? 'تمت الإزالة من المفضلة' : 'Retiré des favoris') 
+        : (isAr ? 'تمت الإضافة إلى المفضلة' : 'Ajouté aux favoris')
+      )
+    } catch (err) {
+      toast.error(isAr ? 'حدث خطأ ما' : 'Une erreur est survenue')
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -74,9 +100,16 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           </div>
 
           <div className="absolute top-4 right-4 z-10">
-             <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 hover:bg-emerald-800">
-               <Heart size={14} />
-             </div>
+             <button 
+               onClick={handleToggleFavorite}
+               className={`w-8 h-8 rounded-full backdrop-blur-md border flex items-center justify-center transition-all duration-500 scale-90 group-hover:scale-100 opacity-0 group-hover:opacity-100 ${
+                 isFavorite 
+                   ? 'bg-rose-500 border-rose-500 text-white shadow-lg shadow-rose-500/20' 
+                   : 'bg-white/10 border-white/20 text-white hover:bg-emerald-800'
+               }`}
+             >
+               <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+             </button>
           </div>
 
           {/* Quick Add (Only for perfumes) */}

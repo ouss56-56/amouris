@@ -1,39 +1,56 @@
-'use client';
+"use client";
 
+import { Product } from '@/lib/types';
+import { ProductCard } from '@/components/store/product-card';
 import { useI18n } from '@/i18n/i18n-context';
-import { Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HeartOff } from 'lucide-react';
+import Link from 'next/link';
 
-export default function FavoritesClient() {
-  const { language } = useI18n();
+interface FavoritesClientProps {
+  initialProducts: any[];
+}
+
+export default function FavoritesClient({ initialProducts }: FavoritesClientProps) {
+  const { t, language } = useI18n();
   const isAr = language === 'ar';
 
-  return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-8 font-sans">
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="w-24 h-24 bg-rose-50 rounded-[2rem] flex items-center justify-center text-rose-500 shadow-xl shadow-rose-950/5"
-      >
-        <Heart size={40} fill="currentColor" className="opacity-20" />
-      </motion.div>
-      
-      <div className="text-center space-y-4 max-w-md mx-auto">
-        <h1 className="font-serif text-3xl text-emerald-950 font-bold italic">
-          {isAr ? 'قائمة المفضلة' : 'Mes Favoris'}
-        </h1>
-        <p className="text-emerald-950/40 text-sm leading-relaxed">
-          {isAr 
-            ? 'هذه الميزة ستكون متوفرة قريباً. ستتمكن من حفظ أفضل مقتنياتك هنا.' 
-            : 'Cette fonctionnalité sera bientôt disponible. Vous pourrez sauvegarder vos essences favorites ici.'}
+  if (initialProducts.length === 0) {
+    return (
+      <div className="bg-white p-12 md:p-24 rounded-[3rem] text-center border border-emerald-950/5">
+        <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-300 mx-auto mb-6">
+          <HeartOff size={40} />
+        </div>
+        <h2 className="font-serif text-2xl text-emerald-950 mb-4">
+          {isAr ? 'قائمة المفضلة فارغة' : 'Votre liste de favoris est vide'}
+        </h2>
+        <p className="text-gray-500 mb-8 max-w-md mx-auto">
+          {isAr ? 'لم تقم بإضافة أي منتجات إلى المفضلة بعد. استكشف متجرنا وابحث عن منتجاتك المفضلة!' : "Vous n'avez pas encore ajouté de produits à vos favoris. Explorez notre boutique et trouvez vos coups de cœur !"}
         </p>
+        <Link href="/shop">
+          <button className="bg-emerald-900 text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-800 transition-colors">
+            {isAr ? 'استكشف المتجر' : 'Explorer la boutique'}
+          </button>
+        </Link>
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full opacity-10 grayscale pointer-events-none">
-         {[1,2,3,4].map(i => (
-           <div key={i} className="aspect-square bg-emerald-900 rounded-3xl" />
-         ))}
-      </div>
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      <AnimatePresence mode="popLayout">
+        {initialProducts.map((product, i) => (
+          <motion.div
+            key={product.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.4, delay: i * 0.05 }}
+          >
+            <ProductCard product={product} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

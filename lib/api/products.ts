@@ -222,5 +222,29 @@ export const updateVariantStock = async (variantId: string, delta: number) => {
   return newStock;
 };
 
+export const fetchWishlistProducts = async (ids: string[]) => {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('products')
+    .select(`
+      *,
+      category:categories(*),
+      brand:brands(*),
+      collection:collections(*),
+      variants:flacon_variants(*),
+      tags:product_tags(tag:tags(*))
+    `)
+    .in('id', ids);
+
+  if (error) throw error;
+  
+  return data.map(p => ({
+    ...p,
+    tag_ids: p.tags?.map((t: any) => t.tag?.id).filter(Boolean) || [],
+    in_stock: (p.stock_grams || 0) > 0 || p.variants?.some((v: any) => (v.stock_units || 0) > 0)
+  }));
+};
+
 // Alias used by ProductModal
 export const addProduct = createProduct;

@@ -5,7 +5,9 @@ import { useI18n } from '@/i18n/i18n-context';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, FileText, CheckCircle2, ChevronRight, Package, Receipt, CreditCard, XCircle } from 'lucide-react';
 import { generateInvoicePDF } from '@/lib/generate-invoice';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import OrderInvoice from '@/components/store/OrderInvoice';
 
 interface OrderDetailClientProps {
   order: any;
@@ -13,6 +15,7 @@ interface OrderDetailClientProps {
 
 export default function OrderDetailClient({ order }: OrderDetailClientProps) {
   const { language } = useI18n();
+  const [showInvoice, setShowInvoice] = useState(false);
   const isAr = language === 'ar';
 
   const statuses = ['pending', 'confirmed', 'preparing', 'shipped', 'delivered'];
@@ -51,16 +54,39 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
         </div>
 
         {order.invoice_generated && order.invoice_data && (
-          <Button 
-            variant="outline" 
-            className="rounded-2xl border-emerald-950/10 text-emerald-900 hover:bg-[#0a3d2e] hover:text-white uppercase tracking-widest text-[10px] font-black px-8 py-6 h-auto"
-            onClick={() => generateInvoicePDF(order.invoice_data!)}
-          >
-            <FileText className="w-4 h-4 mr-3 rtl:ml-3 rtl:mr-0" />
-            {isAr ? 'تحميل الفاتورة (PDF)' : 'Télécharger ma facture PDF'}
-          </Button>
+          <div className="flex gap-4">
+            <Button 
+              variant="outline" 
+              className="rounded-2xl border-emerald-950/10 text-emerald-900 hover:bg-[#0a3d2e] hover:text-white uppercase tracking-widest text-[10px] font-black px-8 py-6 h-auto"
+              onClick={() => setShowInvoice(!showInvoice)}
+            >
+              <Receipt className="w-4 h-4 mr-3 rtl:ml-3 rtl:mr-0" />
+              {showInvoice ? (isAr ? 'إخفاء الفاتورة' : 'Masquer la facture') : (isAr ? 'عرض الفاتورة' : 'Afficher la facture')}
+            </Button>
+            <Button 
+              variant="outline" 
+              className="rounded-2xl border-emerald-950/10 text-emerald-900 hover:bg-[#0a3d2e] hover:text-white uppercase tracking-widest text-[10px] font-black px-8 py-6 h-auto"
+              onClick={() => generateInvoicePDF(order.invoice_data!)}
+            >
+              <FileText className="w-4 h-4 mr-3 rtl:ml-3 rtl:mr-0" />
+              {isAr ? 'تحميل (PDF)' : 'Télécharger PDF'}
+            </Button>
+          </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showInvoice && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <OrderInvoice order={order} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Timeline */}
       <section className="bg-white p-8 md:p-12 rounded-[3rem] border border-emerald-950/5 shadow-sm">

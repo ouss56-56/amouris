@@ -1,5 +1,5 @@
 -- ============================================================
--- FINAL FIX: ORDER PERSISTENCE AND ADMIN VISIBILITY
+-- FINAL FIX (v2): ORDER PERSISTENCE AND ADMIN VISIBILITY
 -- Run this in Supabase SQL Editor to ensure orders work correctly.
 -- ============================================================
 
@@ -59,6 +59,8 @@ DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
 DROP POLICY IF EXISTS "customer_read_own_orders" ON public.orders;
 DROP POLICY IF EXISTS "Admins can view all orders" ON public.orders;
 DROP POLICY IF EXISTS "Admins can update orders" ON public.orders;
+DROP POLICY IF EXISTS "select_orders_policy" ON public.orders;
+DROP POLICY IF EXISTS "update_orders_policy" ON public.orders;
 
 -- 4. NEW POLICIES
 
@@ -69,6 +71,7 @@ CREATE POLICY "allow_insert_orders"
   WITH CHECK (true);
 
 -- ALLOW SELECT (Admins see all, Customers see own)
+-- Updated to use 'role' column instead of 'is_admin'
 CREATE POLICY "select_orders_policy"
   ON public.orders FOR SELECT
   TO authenticated
@@ -76,7 +79,7 @@ CREATE POLICY "select_orders_policy"
     customer_id = auth.uid()
     OR EXISTS (
         SELECT 1 FROM public.profiles 
-        WHERE id = auth.uid() AND (role = 'admin' OR is_admin = true)
+        WHERE id = auth.uid() AND (role = 'admin')
     )
   );
 
@@ -87,13 +90,14 @@ CREATE POLICY "update_orders_policy"
   USING (
     EXISTS (
         SELECT 1 FROM public.profiles 
-        WHERE id = auth.uid() AND (role = 'admin' OR is_admin = true)
+        WHERE id = auth.uid() AND (role = 'admin')
     )
   );
 
 -- ORDER ITEMS POLICIES
 DROP POLICY IF EXISTS "allow_insert_order_items" ON public.order_items;
 DROP POLICY IF EXISTS "read_order_items" ON public.order_items;
+DROP POLICY IF EXISTS "select_order_items_policy" ON public.order_items;
 
 CREATE POLICY "allow_insert_order_items"
   ON public.order_items FOR INSERT
@@ -109,7 +113,7 @@ CREATE POLICY "select_order_items_policy"
       WHERE orders.id = order_items.order_id
       AND (
         orders.customer_id = auth.uid()
-        OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (role = 'admin' OR is_admin = true))
+        OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (role = 'admin'))
       )
     )
   );
@@ -117,6 +121,7 @@ CREATE POLICY "select_order_items_policy"
 -- HISTORY POLICIES
 DROP POLICY IF EXISTS "allow_insert_status_history" ON public.order_status_history;
 DROP POLICY IF EXISTS "read_status_history" ON public.order_status_history;
+DROP POLICY IF EXISTS "select_status_history_policy" ON public.order_status_history;
 
 CREATE POLICY "allow_insert_status_history"
   ON public.order_status_history FOR INSERT
@@ -132,14 +137,9 @@ CREATE POLICY "select_status_history_policy"
       WHERE orders.id = order_status_history.order_id
       AND (
         orders.customer_id = auth.uid()
-        OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (role = 'admin' OR is_admin = true))
+        OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (role = 'admin'))
       )
     )
   );
-
--- 5. ENSURE ADMIN ACCESS
--- In some versions of the code, 'role' is used, in others 'is_admin'. We check both in policies above.
--- To be absolutely sure, let's make sure the admin user exists in profiles.
--- (This part is informational, actual update would depend on the user's admin email)
 
 -- DONE!
