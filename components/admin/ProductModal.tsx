@@ -206,14 +206,14 @@ export function ProductModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-[2rem] p-0 border-none shadow-2xl">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-[2rem] p-0 border-none shadow-2xl">
         <div className="bg-[#0a3d2e] p-8 text-white relative overflow-hidden">
            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-[80px]" />
            <DialogHeader className="relative z-10">
               <DialogTitle className="font-serif text-3xl">
                 {product ? 'Modifier l\'essence' : 'Nouvelle création'}
               </DialogTitle>
-              <p className="text-emerald-100/40 text-[10px] font-black uppercase tracking-[0.4em]">Administration Catalogue</p>
+              <p className="text-emerald-100/40 text-xs font-black uppercase tracking-[0.4em]">Administration Catalogue</p>
            </DialogHeader>
         </div>
 
@@ -223,21 +223,21 @@ export function ProductModal({
               <button 
                 type="button" 
                 onClick={() => setType('perfume')}
-                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${type === 'perfume' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+                className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${type === 'perfume' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'text-emerald-950/70 hover:text-emerald-950'}`}
               >
                 <Droplets size={14} /> Parfum
               </button>
               <button 
                 type="button" 
                 onClick={() => setType('flacon')}
-                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${type === 'flacon' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+                className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${type === 'flacon' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'text-emerald-950/70 hover:text-emerald-950'}`}
               >
                 <Box size={14} /> Flacon
               </button>
               <button 
                 type="button" 
                 onClick={() => setType('accessory')}
-                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${type === 'accessory' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+                className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${type === 'accessory' ? 'bg-[#0a3d2e] text-white shadow-lg' : 'text-emerald-950/70 hover:text-emerald-950'}`}
               >
                 <Pipette size={14} /> Accessoire
               </button>
@@ -247,14 +247,14 @@ export function ProductModal({
               <button 
                 type="button" 
                 onClick={() => setFormData({ ...formData, status: 'active' })}
-                className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${formData.status === 'active' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+                className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${formData.status === 'active' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-950/70 hover:text-emerald-950'}`}
               >
                 <Eye size={12} /> Actif
               </button>
               <button 
                 type="button" 
                 onClick={() => setFormData({ ...formData, status: 'draft' })}
-                className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${formData.status === 'draft' ? 'bg-amber-600 text-white shadow-md' : 'text-emerald-950/40 hover:text-emerald-950'}`}
+                className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${formData.status === 'draft' ? 'bg-amber-600 text-white shadow-md' : 'text-emerald-950/70 hover:text-emerald-950'}`}
               >
                 <EyeOff size={12} /> Brouillon
               </button>
@@ -264,7 +264,7 @@ export function ProductModal({
            <section className="space-y-8">
               {/* Image Management */}
               <div className="space-y-4">
-                 <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Gestion des Visuels</label>
+                 <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Gestion des Visuels</label>
                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {formData.images?.map((img, idx) => (
                        <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-emerald-950/5 group/img">
@@ -294,8 +294,8 @@ export function ProductModal({
                       onClick={() => fileInputRef.current?.click()}
                       className="aspect-square rounded-2xl border-2 border-dashed border-emerald-950/10 flex flex-col items-center justify-center gap-3 bg-neutral-50/50 hover:bg-neutral-50 transition-colors relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                       {isUploading ? <Loader2 className="animate-spin text-emerald-950/20" size={20} /> : <Upload size={20} className="text-emerald-950/20" />}
-                       <span className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">
+                       {isUploading ? <Loader2 className="animate-spin text-emerald-950/60" size={20} /> : <Upload size={20} className="text-emerald-950/60" />}
+                       <span className="text-xs font-black uppercase tracking-widest text-emerald-950/60">
                          {isUploading ? 'Chargement...' : (formData.images?.length || 0) >= 3 ? 'Limite atteinte' : 'Ajouter'}
                        </span>
                     </button>
@@ -304,27 +304,27 @@ export function ProductModal({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Nom Français</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Nom Français</label>
                     <input required value={formData.name_fr} onChange={e => setFormData({ ...formData, name_fr: e.target.value })} className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-medium text-emerald-950 transition-colors" />
                  </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Nom Arabe</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Nom Arabe</label>
                     <input required value={formData.name_ar} onChange={e => setFormData({ ...formData, name_ar: e.target.value })} dir="rtl" className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-medium text-emerald-950 transition-colors font-arabic" />
                  </div>
               </div>
 
               <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Slug (URL)</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Slug (URL)</label>
                   <input value={slug} onChange={e => setSlug(e.target.value)} className="w-full h-12 px-6 rounded-2xl bg-neutral-100 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-mono text-xs text-emerald-950/50 transition-colors" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Description FR</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Description FR</label>
                     <textarea value={formData.description_fr} onChange={e => setFormData({ ...formData, description_fr: e.target.value })} rows={3} className="w-full p-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-medium text-emerald-950 transition-colors resize-none" />
                  </div>
                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Description AR</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Description AR</label>
                     <textarea value={formData.description_ar} onChange={e => setFormData({ ...formData, description_ar: e.target.value })} rows={3} dir="rtl" className="w-full p-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 focus:border-[#C9A84C] outline-none font-medium text-emerald-950 transition-colors font-arabic resize-none" />
                  </div>
               </div>
@@ -334,14 +334,14 @@ export function ProductModal({
            <section className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div className="space-y-8">
                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Classification Boutique</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Classification Boutique</label>
                     <select value={formData.category_id} onChange={e => setFormData({ ...formData, category_id: e.target.value })} className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none text-sm font-bold text-emerald-950">
                        <option value="">Sélectionner une catégorie</option>
                        {categories.map(c => <option key={c.id} value={c.id}>{c.name_fr}</option>)}
                     </select>
                  </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Maison / Marque</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Maison / Marque</label>
                     <select value={formData.brand_id || ''} onChange={e => setFormData({ ...formData, brand_id: e.target.value })} className="w-full h-14 px-6 rounded-2xl bg-neutral-50 border border-emerald-950/5 outline-none text-sm font-bold text-emerald-950">
                        <option value="">Sélectionner une marque (Optionnel)</option>
                        {brands.map(b => <option key={b.id} value={b.id}>{b.name_fr}</option>)}
@@ -350,14 +350,14 @@ export function ProductModal({
               </div>
 
               <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Tags & Attributs</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Tags & Attributs</label>
                   <div className="flex flex-wrap gap-2">
                      {tags.map(t => (
                         <button 
                            key={t.id} 
                            type="button" 
                            onClick={() => toggleTag(t.id)}
-                           className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.tag_ids?.includes(t.id) ? 'bg-[#C9A84C] border-[#C9A84C] text-emerald-950' : 'bg-neutral-50 border-emerald-950/5 text-emerald-950/40'}`}
+                           className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest border transition-all ${formData.tag_ids?.includes(t.id) ? 'bg-[#C9A84C] border-[#C9A84C] text-emerald-950' : 'bg-neutral-50 border-emerald-950/5 text-emerald-950/70'}`}
                         >
                            {t.name_fr}
                         </button>
@@ -371,11 +371,11 @@ export function ProductModal({
               {type === 'perfume' ? (
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="space-y-3">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Prix par Gramme (DZD)</label>
+                       <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Prix par Gramme (DZD)</label>
                        <input type="number" step={0.01} value={pricePerGram} onChange={e => setPricePerGram(+e.target.value)} className="w-full h-16 px-8 rounded-2xl bg-white border border-emerald-950/5 text-2xl font-serif text-emerald-950 outline-none" />
                     </div>
                     <div className="space-y-3">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/20 px-1">Stock en Grammes</label>
+                       <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60 px-1">Stock en Grammes</label>
                        <input type="number" value={stockGrams} onChange={e => setStockGrams(+e.target.value)} className="w-full h-16 px-8 rounded-2xl bg-white border border-emerald-950/5 text-2xl font-serif text-emerald-950 outline-none" />
                     </div>
                  </div>
@@ -383,7 +383,7 @@ export function ProductModal({
                  <div className="space-y-8">
                     <div className="flex justify-between items-center mb-4">
                        <h3 className="font-serif text-xl text-emerald-950">Variantes {type === 'accessory' ? 'Options' : 'Taille/Couleur'}</h3>
-                       <button type="button" onClick={handleAddVariant} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors">
+                       <button type="button" onClick={handleAddVariant} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors">
                           <Plus size={14} /> Ajouter une option
                        </button>
                     </div>
@@ -393,38 +393,38 @@ export function ProductModal({
                           <div key={v.id} className="grid grid-cols-2 md:grid-cols-6 gap-4 p-6 bg-white border border-emerald-950/5 rounded-[2rem] items-end">
                              {type !== 'accessory' && (
                                <div className="space-y-2 col-span-1">
-                                  <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">Contenance ml</label>
+                                  <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60">Contenance ml</label>
                                   <input type="number" value={v.size_ml} onChange={e => handeUpdateVariant(v.id, { size_ml: +e.target.value })} className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-xs font-bold" />
                                </div>
                              )}
                              <div className="space-y-2 col-span-1">
                                 {type !== 'accessory' ? (
                                   <>
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">Teinte</label>
+                                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60">Teinte</label>
                                     <div className="flex gap-2">
                                        <input type="color" value={v.color} onChange={e => handeUpdateVariant(v.id, { color: e.target.value })} className="w-10 h-10 p-0 border-none bg-transparent cursor-pointer" />
-                                       <input type="text" value={v.color_name} onChange={e => handeUpdateVariant(v.id, { color_name: e.target.value })} placeholder="Nom" className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-[10px] font-bold" />
+                                       <input type="text" value={v.color_name} onChange={e => handeUpdateVariant(v.id, { color_name: e.target.value })} placeholder="Nom" className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-xs font-bold" />
                                     </div>
                                   </>
                                 ) : (
                                   <>
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">Référence / Modèle</label>
-                                    <input type="text" value={v.color_name} onChange={e => handeUpdateVariant(v.id, { color_name: e.target.value })} placeholder="Ex: Grand modèle" className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-[10px] font-bold" />
+                                    <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60">Référence / Modèle</label>
+                                    <input type="text" value={v.color_name} onChange={e => handeUpdateVariant(v.id, { color_name: e.target.value })} placeholder="Ex: Grand modèle" className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-xs font-bold" />
                                   </>
                                 )}
                              </div>
                              {type !== 'accessory' && (
                                <div className="space-y-2 col-span-1">
-                                  <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">Forme</label>
+                                  <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60">Forme</label>
                                   <input type="text" value={v.shape} onChange={e => handeUpdateVariant(v.id, { shape: e.target.value })} className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-xs font-bold" />
                                </div>
                              )}
                              <div className="space-y-2 col-span-1">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">Prix (DZD)</label>
+                                <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60">Prix (DZD)</label>
                                 <input type="number" value={v.price} onChange={e => handeUpdateVariant(v.id, { price: +e.target.value })} className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-xs font-bold text-amber-600" />
                              </div>
                              <div className="space-y-2 col-span-1">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20">Unités Stock</label>
+                                <label className="text-xs font-black uppercase tracking-widest text-emerald-950/60">Unités Stock</label>
                                 <input type="number" value={v.stock_units} onChange={e => handeUpdateVariant(v.id, { stock_units: +e.target.value })} className="w-full h-10 px-3 bg-neutral-50 rounded-lg text-xs font-bold" />
                              </div>
                              <div className="flex justify-end p-2">
@@ -441,14 +441,14 @@ export function ProductModal({
               <button 
                 type="button" 
                 onClick={onClose}
-                className="flex-1 h-16 rounded-2xl border border-emerald-950/5 text-emerald-950/40 text-[10px] font-black uppercase tracking-widest hover:bg-neutral-50 transition-colors"
+                className="flex-1 h-16 rounded-2xl border border-emerald-950/5 text-emerald-950/70 text-xs font-black uppercase tracking-widest hover:bg-neutral-50 transition-colors"
               >
                 Annuler
               </button>
               <button 
                 type="submit" 
                 disabled={isLoading}
-                className="flex-[2] h-16 rounded-2xl bg-[#0a3d2e] text-white text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                className="flex-[2] h-16 rounded-2xl bg-[#0a3d2e] text-white text-xs font-black uppercase tracking-widest shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
               >
                 {isLoading ? <Loader2 className="animate-spin" size={16} /> : (product ? 'Enregistrer les modifications' : 'Créer la référence boutique')}
               </button>

@@ -119,6 +119,9 @@ export const createProduct = async (productData: any) => {
   
   const { tag_ids, variants, ...baseProduct } = productData;
 
+  if (baseProduct.brand_id === '') baseProduct.brand_id = null;
+  if (baseProduct.collection_id === '') baseProduct.collection_id = null;
+
   const { data: newProduct, error } = await supabase
     .from('products')
     .insert([baseProduct])
@@ -141,6 +144,9 @@ export const createProduct = async (productData: any) => {
 export const updateProduct = async (id: string, updates: any) => {
   const supabase = createClient();
   const { tag_ids, variants, ...baseData } = updates;
+
+  if (baseData.brand_id === '') baseData.brand_id = null;
+  if (baseData.collection_id === '') baseData.collection_id = null;
 
   if (Object.keys(baseData).length > 0) {
     const { error: updateError } = await supabase

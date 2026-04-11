@@ -291,7 +291,7 @@ export default function AdminProductsClient({
 
       <ProductModal 
         isOpen={modalOpen} 
-        onClose={() => setModalOpen(true)} // Note: logic in modal handles onClose
+        onClose={() => setModalOpen(false)}
         product={editingProduct}
         categories={categories}
         brands={brands}

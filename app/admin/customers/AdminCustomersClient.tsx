@@ -160,7 +160,7 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                       <td className="px-10 py-8">
                          <div className="text-center">
                             <div className="font-serif text-lg font-bold text-emerald-950">{customer.order_count} <span className="text-[10px] font-normal opacity-30 italic">Cmd</span></div>
-                            <div className="text-[10px] text-emerald-700 font-black uppercase tracking-widest mt-1">{customer.total_spent.toLocaleString()} {t('common.dzd')}</div>
+                            <div className="text-[10px] text-emerald-700 font-black uppercase tracking-widest mt-1">{(customer.total_spent || 0).toLocaleString()} {t('common.dzd')}</div>
                          </div>
                       </td>
                       <td className="px-10 py-8">
