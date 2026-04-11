@@ -9,6 +9,11 @@ import { useI18n } from '@/i18n/i18n-context'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, _hasHydrated } = useAdminAuth();
+  const router = useRouter()
+  const pathname = usePathname()
+  const { dir } = useI18n()
+
+  const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
     if (_hasHydrated && !isLoginPage && !isAuthenticated) {
