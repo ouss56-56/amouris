@@ -1,12 +1,14 @@
 import { fetchCustomerById } from '@/lib/api/customers';
 import AdminCustomerDetailClient from './AdminCustomerDetailClient';
 import { notFound } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const supabase = await createClient();
 
   try {
-    const customer = await fetchCustomerById(id);
+    const customer = await fetchCustomerById(id, supabase);
 
     if (!customer) {
       notFound();

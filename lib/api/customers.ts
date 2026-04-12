@@ -1,17 +1,23 @@
 import { createClient } from '@/lib/supabase/client';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-export const fetchAllCustomers = async () => {
-  const supabase = createClient();
+export const fetchAllCustomers = async (client?: any) => {
+  const supabase = client || createClient();
   const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching customers:', error);
+    return [];
+  }
   return data;
 };
 
-export const fetchCustomerById = async (id: string) => {
-  const supabase = createClient();
+export const fetchCustomerById = async (id: string, client?: any) => {
+  const supabase = client || createClient();
   const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
-  if (error) throw error;
+  if (error) {
+    console.error(`Error fetching customer ${id}:`, error);
+    return null;
+  }
   return data;
 };
 

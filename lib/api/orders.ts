@@ -2,9 +2,8 @@ import { createClient } from '@/lib/supabase/client';
 
 import { createAdminClient } from '@/lib/supabase/admin';
 
-export const fetchAllOrders = async () => {
-  
-  const supabase = createClient();
+export const fetchAllOrders = async (client?: any) => {
+  const supabase = client || createClient();
   
   const { data, error } = await supabase
     .from('orders')
@@ -15,7 +14,10 @@ export const fetchAllOrders = async () => {
     `)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching all orders:', error);
+    return [];
+  }
   return data;
 };
 
@@ -31,7 +33,10 @@ export const fetchCustomerOrders = async (customerId: string, client?: any) => {
     .eq('customer_id', customerId)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error(`Error fetching orders for customer ${customerId}:`, error);
+    return [];
+  }
   return data;
 };
 
