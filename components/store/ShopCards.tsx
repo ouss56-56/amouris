@@ -3,9 +3,9 @@ import { Pipette, FlaskConical, Sparkles } from 'lucide-react';
 
 export function ShopCards({ parfumsCount, flaconsCount, accessoiresCount }: { parfumsCount: number, flaconsCount: number, accessoiresCount: number }) {
   const cards = [
-    { title: 'Parfums', count: parfumsCount, href: '/shop/parfums', icon: Sparkles, color: 'bg-emerald-50 text-emerald-900 border-emerald-100' },
-    { title: 'Flacons', count: flaconsCount, href: '/shop/flacons', icon: FlaskConical, color: 'bg-amber-50 text-amber-900 border-amber-100' },
-    { title: 'Accessoires', count: accessoiresCount, href: '/shop/accessoires', icon: Pipette, color: 'bg-rose-50 text-rose-900 border-rose-100' },
+    { title: 'Parfums', count: parfumsCount, href: '/shop?type=perfume', icon: Sparkles, color: 'bg-emerald-50 text-emerald-900 border-emerald-100' },
+    { title: 'Flacons', count: flaconsCount, href: '/shop?type=flacon', icon: FlaskConical, color: 'bg-amber-50 text-amber-900 border-amber-100' },
+    { title: 'Accessoires', count: accessoiresCount, href: '/shop?type=accessory', icon: Pipette, color: 'bg-rose-50 text-rose-900 border-rose-100' },
   ];
 
   return (

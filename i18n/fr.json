@@ -40,7 +40,9 @@
     "step2_title": "Confirmez votre commande",
     "step2_desc": "Renseignez vos coordonnées. Aucun compte requis pour commander.",
     "step3_title": "Livraison dans toute l'Algérie",
-    "step3_desc": "Paiement à la livraison. Suivi de commande en temps réel."
+    "step3_desc": "Paiement à la livraison. Suivi de commande en temps réel.",
+    "categories": "Univers Olfactifs",
+    "categories_subtitle": "Explorez nos familles de parfums"
   },
   "common": {
     "no_products_found": "Aucun produit disponible pour le moment",
@@ -75,7 +77,18 @@
     "cart": "Panier",
     "login": "Connexion",
     "brand_suffix": "Parfums",
-    "menu": "Menu"
+    "menu": "Menu",
+    "center": "Centre-ville",
+    "no_data": "Aucune donnée",
+    "active": "Actif",
+    "frozen": "Suspendu",
+    "add": "Ajouter",
+    "filters": "Filtres",
+    "close_filters": "Fermer les filtres",
+    "no_category": "Sans catégorie",
+    "no_brand": "Sans marque",
+    "references": "références",
+    "models": "modèles"
   },
   "product": {
     "description": "Description",
@@ -250,7 +263,6 @@
     "brands": "Marques de luxe",
     "rights": "Tous droits réservés.",
     "admin_link": "Administration",
-    "links": "Liens",
     "privacy": "Confidentialité",
     "terms": "Conditions"
   },
@@ -378,7 +390,15 @@
       "payment_reset": "Réinitialiser à 0 DZD",
       "payment_received": "Déjà versé",
       "payment_remaining": "Reste à percevoir",
-      "history_title": "Historique"
+      "history_title": "Historique",
+      "status_pending": "En attente",
+      "status_confirmed": "Confirmé",
+      "status_preparing": "En préparation",
+      "status_shipped": "Expédié",
+      "status_delivered": "Livré",
+      "status_cancelled": "Annulé",
+      "registered_customer": "Client enregistré",
+      "guest_customer": "Client invité"
     },
     "customers": {
       "title": "Gestion des clients",
@@ -393,7 +413,132 @@
       "full_name": "Nom complet",
       "view_profile": "Voir profil client",
       "view_profile_short": "Voir profil",
-      "view_full_profile": "Voir le profil complet"
+      "view_full_profile": "Voir le profil complet",
+      "total_partners": "Total partenaires",
+      "total_volume": "Volume d'affaires",
+      "table": {
+        "partner": "Partenaire",
+        "location": "Localisation",
+        "volume": "Volume",
+        "status": "Statut"
+      },
+      "status_active_label": "Actif",
+      "status_frozen_label": "Suspendu",
+      "orders_count": "commandes",
+      "freeze_account": "Suspendre le compte",
+      "unfreeze_account": "Réactiver le compte",
+      "reset_password": "Réinitialiser le mot de passe",
+      "delete_account": "Supprimer le compte",
+      "view_orders": "Voir les commandes",
+      "no_customers": "Aucun client inscrit"
+    },
+    "products": {
+      "title": "Catalogue Maître",
+      "subtitle": "Gestion de l'inventaire Amouris",
+      "add_button": "Ajouter une référence",
+      "search_placeholder": "Rechercher par nom (FR/AR)...",
+      "advanced_filters": "Filtres avancés",
+      "close_filters": "Fermer filtres",
+      "all_types": "Tous les types",
+      "all_categories": "Toutes les catégories",
+      "all_brands": "Toutes les marques",
+      "all_statuses": "Tous les statuts",
+      "table": {
+        "ref": "Réf / Visuel",
+        "classification": "Classification",
+        "inventory": "Inventaire",
+        "price": "Prix",
+        "status": "Statut",
+        "controls": "Contrôles"
+      },
+      "status_active": "Actif",
+      "status_draft": "Brouillon",
+      "type_perfume": "Huile",
+      "type_flacon": "Flacon",
+      "type_accessory": "Accessoire",
+      "no_category": "Sans catégorie",
+      "no_brand": "Sans marque",
+      "grams": "gr",
+      "units_models": "modèles",
+      "from_price": "Dès",
+      "per_gram": "DZD/g",
+      "edit_modal_title": "Modification Boutique",
+      "edit_modal_subtitle": "Saisissez les détails de vos essences et articles",
+      "tab_details": "Détails de l'essence",
+      "tab_taxonomy": "Taxonomie",
+      "tab_inventory": "Inventaire",
+      "tab_media": "Médias",
+      "conseil": "Conseil Amouris",
+      "conseil_text": "Privilégiez des photos haute résolution sur fond neutre pour sublimer vos produits."
+    },
+    "categories": {
+      "title": "Structure du Catalogue",
+      "subtitle": "Organisation des collections",
+      "add_button": "Nouvelle catégorie",
+      "search_placeholder": "Rechercher une catégorie...",
+      "table": {
+        "name": "Désignation",
+        "products": "Produits liés",
+        "actions": "Actions"
+      },
+      "edit_modal_title": "Modifier la Collection",
+      "edit_modal_subtitle": "Structure du catalogue maître",
+      "add_modal_title": "Nouvelle Catégorie",
+      "field_name_fr": "Nom de la catégorie (FR)",
+      "field_name_ar": "الاسم بالعربية",
+      "field_slug": "Identifiant URL (automatique)",
+      "save_button": "Enregistrer les modifications",
+      "create_button": "Créer la catégorie",
+      "references_count": "références"
+    },
+    "collections": {
+      "title": "Éditions Limitées",
+      "subtitle": "Gestion des collections thématiques",
+      "add_button": "Nouvelle collection",
+      "edit_modal_title": "Éditer l'Édition",
+      "edit_modal_subtitle": "Curation collective Amouris",
+      "field_cover": "Visuel de collection",
+      "field_cover_import": "Importer une couverture",
+      "field_name_fr": "Titre de l'édition (FR)",
+      "field_name_ar": "عنوان المجموعة",
+      "field_description": "Description narrative",
+      "save_button": "Sauvegarder"
+    },
+    "brands": {
+      "title": "Les Maisons",
+      "subtitle": "Gestion des marques et partenaires",
+      "add_button": "Ajouter une maison",
+      "search_placeholder": "Rechercher une marque...",
+      "edit_modal_title": "Éditer la Maison",
+      "edit_modal_subtitle": "Gestion des partenaires de luxe",
+      "field_logo": "Identité visuelle",
+      "field_logo_import": "Import logo",
+      "field_name_fr": "Nom commercial (FR)",
+      "field_name_ar": "الاسم بالعربية",
+      "field_description": "Notes de la maison (interne)",
+      "references_count": "références"
+    },
+    "inventory": {
+      "title": "Chambre Translucide",
+      "subtitle": "Gestion temps réel des stocks",
+      "all_stock": "Tout le stock",
+      "low_stock": "Stock faible",
+      "search_placeholder": "Rechercher une référence...",
+      "all_categories": "Toutes les catégories",
+      "table": {
+        "product": "Produit / Type",
+        "volume": "Volume / Modèle",
+        "alerts": "Alertes",
+        "update": "Mise à jour"
+      },
+      "optimal_level": "Niveau optimal",
+      "low_level": "Stock faible",
+      "critical_level": "Stock critique",
+      "grams": "grammes",
+      "units": "unités",
+      "type_perfume": "Parfum / Huile essentielle",
+      "type_flacon": "Flacon",
+      "variant_system": "Système de variantes"
     }
   }
 }

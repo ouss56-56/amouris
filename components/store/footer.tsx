@@ -21,11 +21,11 @@ export function Footer() {
       id: 'shop',
       title: t('nav.shop'),
       links: [
-        { label: t('nav.perfumes'), href: '/shop/parfums' },
-        { label: t('nav.flacons'), href: '/shop/flacons' },
-        { label: t('nav.accessoires'), href: '/shop/accessoires' },
-        { label: t('nav.brands'), href: '/brands' },
-        { label: t('nav.collections'), href: '/collections' },
+        { label: t('nav.perfumes'), href: '/shop?type=perfume' },
+        { label: t('nav.flacons'), href: '/shop?type=flacon' },
+        { label: t('nav.accessoires'), href: '/shop?type=accessory' },
+        { label: t('nav.brands'), href: '/shop' },
+        { label: t('nav.collections'), href: '/shop' },
       ]
     },
     {

@@ -16,15 +16,15 @@ interface ShopContentProps {
   initialProducts: Product[];
   categories: Category[];
   brands: Brand[];
-  initialType?: 'all' | 'perfume' | 'flacon';
+  initialType?: 'all' | 'perfume' | 'flacon' | 'accessory';
 }
 
 export function ShopContent({ initialProducts, categories, brands, initialType }: ShopContentProps) {
   const { t, language } = useI18n();
   const searchParams = useSearchParams();
   
-  const [selectedType, setSelectedType] = useState<'all' | 'perfume' | 'flacon'>(
-    (searchParams.get('type') as 'all' | 'perfume' | 'flacon') || initialType || 'all'
+   const [selectedType, setSelectedType] = useState<'all' | 'perfume' | 'flacon' | 'accessory'>(
+    (searchParams.get('type') as 'all' | 'perfume' | 'flacon' | 'accessory') || initialType || 'all'
   );
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get('category') || 'all'
@@ -76,6 +76,13 @@ export function ShopContent({ initialProducts, categories, brands, initialType }
           desc: t('shop.flacons_desc'),
           bg: "bg-[#1a202c]",
           accent: "text-amber-500"
+        };
+      case 'accessory':
+        return {
+          title: t('shop.accessoires_title'),
+          desc: t('shop.accessoires_desc'),
+          bg: "bg-[#3d1a1a]",
+          accent: "text-orange-300"
         };
       default:
         return {
@@ -154,14 +161,14 @@ export function ShopContent({ initialProducts, categories, brands, initialType }
             {t('shop.filter_type')}
           </h3>
         </div>
-        <div className="flex flex-col gap-2">
-          {(['all', 'perfume', 'flacon'] as const).map(type => (
+          {(['all', 'perfume', 'flacon', 'accessory'] as const).map(type => (
             <FilterChip 
               key={type}
               label={
                 type === 'all' ? t('shop.all_universes') : 
                 type === 'perfume' ? t('nav.perfumes') : 
-                t('nav.flacons')
+                type === 'flacon' ? t('nav.flacons') :
+                t('nav.accessoires')
               } 
               active={selectedType === type} 
               onClick={() => setSelectedType(type)} 

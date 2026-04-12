@@ -10,7 +10,9 @@ declare module 'jspdf' {
   }
 }
 
-export const generateInvoicePDF = (order: Order, settings: StoreSettings) => {
+export const generateInvoicePDF = async (order: Order, settings: StoreSettings) => {
+  const { jsPDF } = await import('jspdf')
+  await import('jspdf-autotable')
   const doc = new jsPDF()
   
   // Header - Logo / Store Name

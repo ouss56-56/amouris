@@ -3,8 +3,8 @@ import { fetchSettings } from '@/lib/api/settings';
 import AdminOrderDetailClient from './AdminOrderDetailClient';
 import { notFound } from 'next/navigation';
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   if (!id) {
     console.error('No ID provided to OrderDetailPage');

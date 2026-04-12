@@ -6,6 +6,7 @@ import { Brand } from '@/store/brands.store'
 import { Upload, X, Loader2, Store, ChevronRight, Info, Sparkles, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { createBrand, updateBrand } from '@/lib/api/brands'
+import { uploadImage } from '@/lib/actions/storage'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -54,19 +55,12 @@ export function BrandModal({ brand, isOpen, onClose }: BrandModalProps) {
 
     setIsUploading(true)
     try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      const filePath = `brands/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('brands')
-        .upload(filePath, file)
-
-      if (uploadError) throw uploadError
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('brands')
-        .getPublicUrl(filePath)
+      const buffer = await file.arrayBuffer()
+      const publicUrl = await uploadImage({
+        name: file.name,
+        type: file.type,
+        buffer: buffer
+      }, 'brands')
 
       setFormData(prev => ({ ...prev, logo_url: publicUrl }))
       toast.success('Logo téléchargé avec succès')

@@ -11,7 +11,7 @@ export default async function AdminReportsPage() {
   ] = await Promise.all([
     supabase.from('orders').select('*, items:order_items(*), customer:profiles(*)').order('created_at', { ascending: false }),
     supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-    supabase.from('products').select('*').order('created_at', { ascending: false })
+    supabase.from('products').select('*, variants:flacon_variants(*)').order('created_at', { ascending: false })
   ]);
 
   return (

@@ -83,13 +83,13 @@ export default function ReportsClient({ orders, customers, products }: ReportsCl
         const data = customers.map(c => ({
             "Nom": c.last_name,
             "Prénom": c.first_name,
-            "Téléphone": c.phone_number,
+            "Téléphone": c.phone,
             "Email": c.email || '-',
             "Magasin": c.shop_name || '-',
             "Wilaya": c.wilaya,
             "Commune": c.commune || '-',
             "Inscrit le": new Date(c.created_at || '').toLocaleDateString(),
-            "Statut": c.status === 'frozen' ? 'Suspendu' : 'Actif'
+            "Statut": c.is_frozen ? 'Suspendu' : 'Actif'
         }))
         downloadExcel(data, 'Amouris_Clients')
         setLoading(null)

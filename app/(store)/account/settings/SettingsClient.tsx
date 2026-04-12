@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { wilayas } from '@/lib/wilayas';
 import { toast } from 'sonner';
 import { Save, ShieldCheck, Lock, UserCircle } from 'lucide-react';
-import { updateCustomerProfile, resetCustomerPassword } from '@/lib/api/customers';
+import { updateCustomerProfile } from '@/lib/api/customers';
+import { resetPasswordAction } from '@/app/actions/customers';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
@@ -68,7 +69,7 @@ export default function SettingsClient({ initialCustomer }: SettingsClientProps)
     }
 
     try {
-      await resetCustomerPassword(customer.id, passwordData.newPassword);
+      await resetPasswordAction(customer.id, passwordData.newPassword);
       toast.success(isAr ? 'تم تغيير كلمة المرور' : 'Mot de passe modifié');
       setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
       router.refresh();

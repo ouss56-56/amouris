@@ -167,7 +167,7 @@ export default function AdminProductsClient({
                   <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/50 px-2">Marque</label>
                   <select value={brandFilter} onChange={e => setBrandFilter(e.target.value)} className="w-full h-14 px-5 rounded-2xl bg-white border border-emerald-950/10 outline-none text-[11px] font-bold uppercase text-emerald-950 focus:border-[#C9A84C] transition-all">
                     <option value="all">Toutes les marques</option>
-                    {brands.map(b => <option key={b.id} value={b.id}>{b.name_fr}</option>)}
+                    {brands.map(b => <option key={b.id} value={b.id}>{b.name || b.name_fr}</option>)}
                   </select>
                 </div>
                 <div className="space-y-3">
@@ -236,7 +236,9 @@ export default function AdminProductsClient({
                              {isPerfume ? <Droplets size={10} /> : product.product_type === 'accessory' ? <Plus size={10} /> : <Box size={10} />}
                              {isPerfume ? 'Huile' : product.product_type === 'accessory' ? 'Accessoire' : 'Flacon'}
                            </span>
-                           <p className="text-[10px] font-bold text-emerald-950/60 uppercase tracking-widest">{cat?.name_fr || 'Sans catégorie'} / {brand?.name_fr || 'Sans marque'}</p>
+                           <p className="text-[10px] font-bold text-emerald-950/60 uppercase tracking-widest">
+                             {product.categories?.name_fr || 'Sans catégorie'} / {product.brands?.name || product.brands?.name_fr || 'Sans marque'}
+                           </p>
                         </div>
                       </td>
                       <td className="px-10 py-6 font-mono">
@@ -248,12 +250,18 @@ export default function AdminProductsClient({
                               </div>
                            </div>
                          ) : (
-                           <p className="text-sm font-bold text-emerald-950">{product.variants?.length || 0} <span className="text-[10px] font-black opacity-30">MODÈLES</span></p>
+                          <p className="text-sm font-bold text-emerald-950">
+                            {(product.flacon_variants?.length || 0)} <span className="text-[10px] font-black opacity-30">MODÈLES</span>
+                          </p>
                          )}
                       </td>
                       <td className="px-10 py-6 font-mono">
                          <p className="text-sm font-black text-[#C9A84C]">
-                           {isPerfume ? `${product.price_per_gram} DZD/g` : `Dès ${Math.min(...(product.variants?.map((v: any) => v.price) || [0]))} DZD`}
+                           {isPerfume ? `${product.price_per_gram} DZD/g` : (
+                             (product.flacon_variants?.length > 0) 
+                               ? `Dès ${Math.min(...product.flacon_variants.map((v: any) => v.price)).toLocaleString()} DZD`
+                               : `${(product.base_price || 0).toLocaleString()} DZD`
+                           )}
                          </p>
                       </td>
                       <td className="px-10 py-6">

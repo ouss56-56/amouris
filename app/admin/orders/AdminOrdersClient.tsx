@@ -64,10 +64,15 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
     });
   }, [orders, search, statusFilter, paymentFilter, wilayaFilter, t]);
 
-  const handlePrint = (order: any) => {
-    const doc = generateInvoicePDF(order, settings)
-    const filename = language === 'ar' ? `فاتورة_${order.order_number}.pdf` : `Facture_${order.order_number}.pdf`
-    doc.save(filename)
+  const handlePrint = async (order: any) => {
+    try {
+      const doc = await generateInvoicePDF(order, settings)
+      const filename = language === 'ar' ? `فاتورة_${order.order_number}.pdf` : `Facture_${order.order_number}.pdf`
+      doc.save(filename)
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      alert('Erreur lors de la génération du PDF')
+    }
   };
 
   const handleUpdatePayment = async (orderId: string, amount: string) => {

@@ -17,11 +17,12 @@ export default async function AdminProductsPage() {
       .from('products')
       .select(`
         id, name_fr, name_ar, slug, product_type, status,
-        price_per_gram, stock_grams, base_price,
-        categories ( id, name_fr ),
-        brands ( id, name ),
-        product_tags ( tag_id ),
-        flacon_variants ( id, size_ml, color_name, price, stock_units )
+        price_per_gram, stock_grams, base_price, images, created_at,
+        category_id, brand_id, collection_id,
+        categories ( id, name_fr, name_ar ),
+        brands ( id, name, name_ar ),
+        product_tags ( tag_id, tags ( id, name_fr, name_ar ) ),
+        flacon_variants ( id, size_ml, color_name, shape, price, stock_units )
       `)
       .order('created_at', { ascending: false }),
     supabase.from('categories').select('id, name_fr, name_ar'),
