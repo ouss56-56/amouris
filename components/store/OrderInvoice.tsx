@@ -145,6 +145,3 @@ export default function OrderInvoice({ order, settings }: OrderInvoiceProps) {
     </div>
   );
 }
-    </div>
-  );
-}

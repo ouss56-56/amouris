@@ -260,6 +260,3 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
 
   return doc
 }
-
-  return doc
-}

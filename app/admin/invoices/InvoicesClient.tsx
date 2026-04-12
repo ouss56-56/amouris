@@ -217,7 +217,3 @@ export default function InvoicesClient({ initialOrders, settings }: InvoicesClie
     </div>
   );
 }
-v>
-    </div>
-  );
-}
