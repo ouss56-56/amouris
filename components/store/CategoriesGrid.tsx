@@ -69,8 +69,12 @@ export function CategoriesGrid({ categories }: { categories: any[] }) {
                 
                 <div className="relative z-10 h-full flex flex-col justify-between">
                   <div className="flex justify-between items-start">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border border-emerald-50">
-                      <span className="text-3xl font-serif text-gray-900">{(cat.name_fr || cat.id).charAt(0)}</span>
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border border-emerald-50 overflow-hidden">
+                      {cat.image_url ? (
+                        <img src={cat.image_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-3xl font-serif text-gray-900">{(cat.name_fr || cat.id).charAt(0)}</span>
+                      )}
                     </div>
                     <motion.div 
                       whileHover={{ scale: 1.2, rotate: 45 }}

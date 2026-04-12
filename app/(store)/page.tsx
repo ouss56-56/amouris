@@ -33,7 +33,7 @@ export default async function HomePage() {
       .select('id, name, name_ar, logo_url'),
     supabase
       .from('categories')
-      .select('id, name_fr, name_ar, slug')
+      .select('id, name_fr, name_ar, slug, image_url')
   ])
 
   // Pour chaque tag, charger les produits associés

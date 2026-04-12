@@ -116,8 +116,12 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
                     >
                       <td className="px-10 py-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-neutral-50 rounded-xl flex items-center justify-center text-emerald-950/10 group-hover:text-[#C9A84C] transition-colors">
-                             <Tag size={20} />
+                          <div className="w-12 h-12 bg-neutral-50 rounded-xl flex items-center justify-center text-emerald-950/10 group-hover:text-[#C9A84C] transition-colors overflow-hidden">
+                             {category.image_url ? (
+                               <img src={category.image_url} alt="" className="w-full h-full object-cover" />
+                             ) : (
+                               <Tag size={20} />
+                             )}
                           </div>
                           <div>
                             <p className="font-serif text-xl text-emerald-950 font-bold">{category.name_fr}</p>
