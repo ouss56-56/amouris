@@ -5,7 +5,7 @@ import { Brand } from '@/store/brands.store'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Search, Edit2, Trash2, Store, Loader2 } from 'lucide-react'
 import { BrandModal } from '@/components/admin/BrandModal'
-import { deleteBrand as apiDeleteBrand } from '@/lib/api/brands'
+import { deleteBrandAction } from '@/lib/actions/brands'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -46,9 +46,13 @@ export default function BrandsClient({ initialBrands }: BrandsClientProps) {
     }
     if (confirm('Voulez-vous vraiment supprimer cette marque ?')) {
       try {
-        await apiDeleteBrand(brand.id)
-        router.refresh()
-        toast.success('Maison supprimée')
+        const result = await deleteBrandAction(brand.id)
+        if (result.success) {
+          router.refresh()
+          toast.success('Maison supprimée')
+        } else {
+          toast.error('Erreur: ' + result.error)
+        }
       } catch (err: any) {
         toast.error('Erreur: ' + err.message)
       }

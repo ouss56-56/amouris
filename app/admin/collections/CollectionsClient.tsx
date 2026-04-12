@@ -5,7 +5,7 @@ import { Collection } from '@/store/collections.store'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Search, Edit2, Trash2, Layers, Box } from 'lucide-react'
 import { CollectionModal } from '@/components/admin/CollectionModal'
-import { removeCollection } from '@/lib/api/catalogue'
+import { deleteCollectionAction } from '@/lib/actions/collections'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -45,9 +45,13 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
     }
     if (confirm('Voulez-vous vraiment supprimer cette collection ?')) {
       try {
-        await removeCollection(col.id)
-        router.refresh()
-        toast.success('Collection supprimée')
+        const result = await deleteCollectionAction(col.id)
+        if (result.success) {
+          router.refresh()
+          toast.success('Collection supprimée')
+        } else {
+          toast.error('Erreur: ' + result.error)
+        }
       } catch (err: any) {
         toast.error('Erreur: ' + err.message)
       }

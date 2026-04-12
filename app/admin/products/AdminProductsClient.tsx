@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { ProductModal } from '@/components/admin/ProductModal';
 import { ProductImage } from '@/components/store/ProductImage';
-import { deleteProduct, updateProduct } from '@/lib/api/products';
+import { deleteProductAction, updateProductAction } from '@/lib/actions/products.actions';
 import { useRouter } from 'next/navigation';
 
 interface AdminProductsClientProps {
@@ -79,8 +79,12 @@ export default function AdminProductsClient({
   const handleDelete = async (id: string) => {
     if (confirm('Voulez-vous vraiment retirer ce produit du catalogue ?')) {
       try {
-        await deleteProduct(id);
-        router.refresh();
+        const result = await deleteProductAction(id);
+        if (result.success) {
+          router.refresh();
+        } else {
+          alert('Erreur lors de la suppression: ' + result.error);
+        }
       } catch (err) {
         alert('Erreur lors de la suppression');
       }
@@ -90,8 +94,12 @@ export default function AdminProductsClient({
   const toggleStatus = async (product: any) => {
     const newStatus = product.status === 'active' ? 'draft' : 'active';
     try {
-      await updateProduct(product.id, { status: newStatus });
-      router.refresh();
+      const result = await updateProductAction(product.id, { status: newStatus });
+      if (result.success) {
+        router.refresh();
+      } else {
+        alert('Erreur lors du changement de statut: ' + result.error);
+      }
     } catch (err) {
       alert('Erreur lors du changement de statut');
     }

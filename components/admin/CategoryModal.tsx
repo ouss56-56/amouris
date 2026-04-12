@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { updateCategory, createCategory } from '@/lib/api/catalogue';
+import { createCategoryAction, updateCategoryAction } from '@/lib/actions/categories';
 import { createClient } from '@/lib/supabase/client';
 import { 
   X, Loader2, Sparkles, ChevronRight, Info, Type, Globe, Hash, ImageIcon, Upload, Trash2
@@ -116,20 +116,20 @@ export function CategoryModal({ category, isOpen, onClose }: CategoryModalProps)
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      if (category?.id) {
-        await updateCategory(category.id, formData);
-        toast.success('Catégorie mise à jour');
-      } else {
-        await createCategory(formData as any);
-        toast.success('Nouvelle Catégorie créée');
-      }
-      onClose();
-    } catch (err: any) {
-      toast.error('Erreur: ' + err.message);
-    } finally {
-      setIsSubmitting(false);
+    let result;
+    if (category?.id) {
+      result = await updateCategoryAction(category.id, formData);
+    } else {
+      result = await createCategoryAction(formData);
     }
+    
+    if (result.success) {
+      toast.success(category?.id ? 'Catégorie mise à jour' : 'Nouvelle Catégorie créée');
+      onClose();
+    } else {
+      toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));
+    }
+    setIsSubmitting(false);
   };
 
   return (

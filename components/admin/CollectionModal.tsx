@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { createClient } from '@/lib/supabase/client';
-import { createCollection, updateCollection } from '@/lib/api/catalogue';
+import { createCollectionAction, updateCollectionAction } from '@/lib/actions/collections';
 import { 
   X, Loader2, Sparkles, ChevronRight, Info, Type, Globe, ImageIcon, Upload, Trash2
 } from 'lucide-react';
@@ -102,20 +102,20 @@ export function CollectionModal({ collection, isOpen, onClose }: CollectionModal
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      if (collection?.id) {
-        await updateCollection(collection.id, formData);
-        toast.success('Collection mise à jour');
-      } else {
-        await createCollection(formData as any);
-        toast.success('Nouvelle Collection créée');
-      }
-      onClose();
-    } catch (err: any) {
-      toast.error('Erreur: ' + err.message);
-    } finally {
-      setIsSubmitting(false);
+    let result;
+    if (collection?.id) {
+      result = await updateCollectionAction(collection.id, formData);
+    } else {
+      result = await createCollectionAction(formData);
     }
+    
+    if (result.success) {
+      toast.success(collection?.id ? 'Collection mise à jour' : 'Nouvelle Collection créée');
+      onClose();
+    } else {
+      toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));
+    }
+    setIsSubmitting(false);
   };
 
   return (

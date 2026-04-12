@@ -5,7 +5,7 @@ import { Category } from '@/store/categories.store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, Tag, FolderTree } from 'lucide-react';
 import { CategoryModal } from '@/components/admin/CategoryModal';
-import { deleteCategory as apiDeleteCategory } from '@/lib/api/categories';
+import { deleteCategoryAction } from '@/lib/actions/categories';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -45,9 +45,13 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
     }
     if (confirm('Voulez-vous vraiment supprimer cette catégorie ?')) {
       try {
-        await apiDeleteCategory(cat.id);
-        router.refresh();
-        toast.success('Catégorie supprimée');
+        const result = await deleteCategoryAction(cat.id);
+        if (result.success) {
+          router.refresh();
+          toast.success('Catégorie supprimée');
+        } else {
+          toast.error('Erreur: ' + result.error);
+        }
       } catch (err: any) {
         toast.error('Erreur: ' + err.message);
       }

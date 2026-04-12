@@ -308,7 +308,7 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
           <section className="bg-white p-8 rounded-[2.5rem] border border-emerald-950/5 shadow-sm">
              <h2 className="text-xl font-bold font-serif text-emerald-950 mb-8 border-b border-emerald-950/5 pb-6 flex items-center gap-3">
                 <User size={20} className="text-[#C9A84C]" />
-                {t('admin.customers.profile_title')}
+                Profile Client
              </h2>
              
              <div className="space-y-6">
@@ -318,13 +318,17 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                    </div>
                    <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] mb-1">
-                        {t('admin.customers.full_name')}
+                        Nom complet
                       </p>
-                      <p className="text-lg font-bold text-emerald-950">
-                        {order.is_registered_customer ? t('admin.orders.customer_registered') : `${order.guest_first_name} ${order.guest_last_name}`}
+                       <p className="text-lg font-bold text-emerald-950">
+                        {order.is_registered_customer && order.customer 
+                          ? `${order.customer.first_name} ${order.customer.last_name}` 
+                          : `${order.guest_first_name} ${order.guest_last_name}`}
                       </p>
                       {order.is_registered_customer && (
-                        <p className="text-[10px] text-emerald-500 font-bold mt-1">ID: {order.customer_id?.slice(0, 8)}</p>
+                        <p className="text-[10px] text-emerald-500 font-bold mt-1">
+                          ID: {order.customer_id?.slice(0, 8)}
+                        </p>
                       )}
                    </div>
                 </div>
@@ -335,8 +339,12 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                    </div>
                    <div>
                       <div>
-                         <p className="text-[10px] font-black uppercase tracking-widest text-blue-500/80 mb-1">{t('common.contact')}</p>
-                         <p className="font-bold text-emerald-950 tracking-wide">{order.guest_phone || t('admin.customers.view_profile')}</p>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-blue-500/80 mb-1">Contact</p>
+                         <p className="font-bold text-emerald-950 tracking-wide">
+                            {order.is_registered_customer && order.customer 
+                              ? order.customer.phone 
+                              : order.guest_phone || 'N/A'}
+                         </p>
                       </div>
                    </div>
                 </div>
@@ -346,9 +354,11 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
                       <MapPin size={18} />
                    </div>
                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-500/80 mb-1">{t('admin.orders.destination')}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-500/80 mb-1">Destination</p>
                       <p className="font-bold text-emerald-950 lowercase first-letter:uppercase tracking-wide">
-                        {order.guest_wilaya || t('admin.customers.view_profile_short')} {order.guest_commune ? `- ${order.guest_commune}` : ''}
+                        {order.is_registered_customer && order.customer 
+                          ? `${order.customer.wilaya} ${order.customer.commune ? `- ${order.customer.commune}` : ''}` 
+                          : `${order.guest_wilaya || ''} ${order.guest_commune ? `- ${order.guest_commune}` : ''}`}
                       </p>
                    </div>
                 </div>
@@ -357,7 +367,7 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
              {order.is_registered_customer && (
                <Link href={`/admin/customers/${order.customer_id}`} className="block mt-8">
                   <button className="w-full py-3 bg-neutral-50 text-emerald-950/60 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 hover:text-emerald-950 transition-colors">
-                     {t('admin.customers.view_full_profile')}
+                     Voir le profil complet
                   </button>
                </Link>
              )}

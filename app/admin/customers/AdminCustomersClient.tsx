@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation'
 import { useI18n } from '@/i18n/i18n-context'
 import { toggleFreezeAction } from '@/app/actions/customers'
 import { toast } from 'sonner'
+import * as XLSX from 'xlsx'
 
 interface AdminCustomersClientProps {
   initialCustomers: any[]
@@ -86,6 +87,33 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
       toast.error('Erreur: ' + err.message)
     } finally {
       setIsUpdating(null)
+    }
+  }
+
+  const handleExportToExcel = () => {
+    try {
+      const exportData = filtered.map(c => ({
+        'Nom': c.last_name || '',
+        'Prénom': c.first_name || '',
+        'Email': c.email || '',
+        'Téléphone': c.phone || '',
+        'Wilaya': c.wilaya || '',
+        'Commune': c.commune || '',
+        'Boutique': c.shop_name || '',
+        'Commandes': c.order_count || 0,
+        'Dépenses (DZD)': c.total_spent || 0,
+        'Statut': c.is_frozen ? 'Suspendu' : 'Actif',
+        "Date d'inscription": new Date(c.created_at).toLocaleDateString()
+      }))
+      
+      const worksheet = XLSX.utils.json_to_sheet(exportData)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Clients')
+      
+      XLSX.writeFile(workbook, `Amouris_Clients_${new Date().toISOString().split('T')[0]}.xlsx`)
+      toast.success('Fichier Excel généré avec succès')
+    } catch (err: any) {
+      toast.error('Erreur lors de l\\'export: ' + err.message)
     }
   }
 
@@ -377,7 +405,7 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
             </div>
             <h3 className="font-serif text-2xl font-bold mb-4 text-emerald-950">Réseau Amouris</h3>
             <p className="text-emerald-950/40 text-sm leading-relaxed mb-8 italic">Votre réseau couvre actuellement 58 wilayas avec une croissance constante.</p>
-            <button className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C9A84C] hover:text-emerald-900 transition-colors">
+            <button onClick={handleExportToExcel} className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C9A84C] hover:text-emerald-900 transition-colors">
                Exporter la Liste <ArrowUpRight size={14} className="inline ml-2" />
             </button>
          </div>

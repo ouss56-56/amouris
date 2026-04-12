@@ -137,3 +137,14 @@ export async function adminRegisterCustomer(email: string, password: string, use
   
   return { user: data.user }
 }
+export async function updatePasswordAction(password: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password })
+  
+  if (error) {
+    console.error('Update password error:', error)
+    return { success: false, error: error.message }
+  }
+  
+  return { success: true }
+}

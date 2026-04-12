@@ -82,3 +82,68 @@ export async function getProductsByTag(tagId: string, limit = 8) {
   return (data || []).map((item: { product: any }) => mapDbProductToFrontend(item.product));
 }
 
+import { createAdminClient } from '@/lib/supabase/admin';
+import { revalidatePath } from 'next/cache';
+
+export async function createTagAction(tag: any) {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from('tags')
+      .insert([{ 
+        name_fr: tag.name_fr, 
+        name_ar: tag.name_ar, 
+        slug: tag.slug,
+        show_on_homepage: tag.show_on_homepage,
+        homepage_order: tag.homepage_order
+      }])
+      .select()
+      .single();
+
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/admin/tags');
+    revalidatePath('/shop');
+    return { success: true, data };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}
+
+export async function updateTagAction(id: string, tag: any) {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from('tags')
+      .update({ 
+        name_fr: tag.name_fr, 
+        name_ar: tag.name_ar, 
+        slug: tag.slug,
+        show_on_homepage: tag.show_on_homepage,
+        homepage_order: tag.homepage_order
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/admin/tags');
+    revalidatePath('/shop');
+    return { success: true, data };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}
+
+export async function deleteTagAction(id: string) {
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from('tags').delete().eq('id', id);
+
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/admin/tags');
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}

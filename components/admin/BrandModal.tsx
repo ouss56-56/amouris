@@ -103,20 +103,20 @@ export function BrandModal({ brand, isOpen, onClose }: BrandModalProps) {
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      if (brand?.id) {
-        await updateBrand(brand.id, formData);
-        toast.success('Informations de la maison mises à jour');
-      } else {
-        await createBrand(formData as any);
-        toast.success('Nouvelle Maison de Parfum établie');
-      }
-      onClose();
-    } catch (err: any) {
-      toast.error('Erreur: ' + err.message);
-    } finally {
-      setIsSubmitting(false);
+    let result;
+    if (brand?.id) {
+      result = await updateBrand(brand.id, formData);
+    } else {
+      result = await createBrand(formData);
     }
+    
+    if (result.success) {
+      toast.success(brand?.id ? 'Informations de la maison mises à jour' : 'Nouvelle Maison de Parfum établie');
+      onClose();
+    } else {
+      toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));
+    }
+    setIsSubmitting(false);
   };
 
   return (

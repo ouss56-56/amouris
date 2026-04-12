@@ -7,19 +7,50 @@ import Link from 'next/link';
 
 
 
+import { createClient } from '@/lib/supabase/client';
+
 export function AnnouncementBar({ initialAnnouncements = [], settings }: { initialAnnouncements?: any[], settings?: any }) {
   const { language } = useI18n();
   const freeDeliveryThreshold = settings?.free_shipping_threshold || 50000;
-  const announcements = initialAnnouncements;
   
+  const [announcements, setAnnouncements] = useState(initialAnnouncements);
   const [isVisible, setIsVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [headerVisible, setHeaderVisible] = useState(true);
   const lastScroll = useRef(0);
 
-  // 1. Get and process active announcements
+  // 1. Realtime Subscription
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const channel = supabase
+      .channel('public:announcements')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'announcements' 
+      }, async () => {
+        // Fetch fresh data when something changes
+        const { data } = await supabase
+          .from('announcements')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
+        
+        if (data) setAnnouncements(data);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // 2. Get and process active announcements
   const activeAnnouncements = useMemo(() => {
-    if (announcements.length === 0) {
+    const activeOnes = announcements.filter((a: any) => a.is_active !== false);
+    
+    if (activeOnes.length === 0) {
       // Fallback if no announcements are configured
       return [{
         fr: `Livraison gratuite dès ${freeDeliveryThreshold.toLocaleString()} DZD`,
@@ -28,7 +59,7 @@ export function AnnouncementBar({ initialAnnouncements = [], settings }: { initi
       }];
     }
 
-    return announcements.map(ann => ({
+    return activeOnes.map((ann: any) => ({
       fr: (ann.text_fr || '').replace('{{threshold}}', freeDeliveryThreshold.toLocaleString()),
       ar: (ann.text_ar || '').replace('{{threshold}}', freeDeliveryThreshold.toLocaleString()),
       link: null 

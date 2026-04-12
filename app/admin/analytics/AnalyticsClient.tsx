@@ -465,20 +465,23 @@ export default function AnalyticsClient({ initialOrders, initialCustomers, initi
               <div className="bg-[#C9A84C] text-emerald-950 p-8 rounded-[3rem] shadow-lg shadow-amber-900/10">
                 <h3 className="text-emerald-950/60 text-[10px] font-black uppercase tracking-widest mb-6">Top 5 Clients VIP (Dépenses)</h3>
                 <div className="space-y-4">
-                   {stats.customers.topSpent.map((c, i) => (
-                     <div key={i} className="flex items-center justify-between bg-white/30 p-4 rounded-2xl border border-white/40">
-                        <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-full bg-emerald-900 text-[#C9A84C] flex items-center justify-center font-black text-xs">
-                             {c.first_name?.[0]}{c.last_name?.[0]}
-                           </div>
-                           <div className="flex flex-col">
-                              <span className="text-sm font-black uppercase">{c.first_name} {c.last_name}</span>
-                              <span className="text-[8px] font-black opacity-50">{c.wilaya}</span>
-                           </div>
-                        </div>
-                        <span className="text-xs font-black">{formatDZD(c.total_spent || 0)}</span>
-                     </div>
-                   ))}
+                   {stats.customers.topSpent.map((c, i) => {
+                     const initials = c.name ? c.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'CL';
+                     return (
+                       <div key={i} className="flex items-center justify-between bg-white/30 p-4 rounded-2xl border border-white/40">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-full bg-emerald-900 text-[#C9A84C] flex items-center justify-center font-black text-xs">
+                               {initials.toUpperCase()}
+                             </div>
+                             <div className="flex flex-col">
+                                <span className="text-sm font-black uppercase text-emerald-950">{c.name}</span>
+                                <span className="text-[8px] font-black opacity-80 text-emerald-900">{c.wilaya || 'Inconnue'}</span>
+                             </div>
+                          </div>
+                          <span className="text-xs font-black text-emerald-950">{formatDZD(c.spent || 0)}</span>
+                       </div>
+                     );
+                   })}
                 </div>
               </div>
            </div>

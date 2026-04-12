@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { createClient } from '@/lib/supabase/client';
-import { createProduct as apiAddProduct, updateProduct as apiUpdateProduct } from '@/lib/api/products';
+import { createProductAction, updateProductAction } from '@/lib/actions/products.actions';
 import { 
   Upload, X, Plus, Trash2, Loader2, Sparkles, 
   Box, Droplets, Pipette, Eye, EyeOff, 
@@ -188,32 +188,34 @@ export function ProductModal({
     setIsSubmitting(true);
     setError(null);
 
-    try {
-      const payload = {
-        ...formData,
-        name_fr: formData.name_fr.trim(),
-        name_ar: formData.name_ar.trim(),
-        description_fr: formData.description_fr.trim(),
-        description_ar: formData.description_ar.trim(),
-        price_per_gram: formData.product_type === 'perfume' ? Number(formData.price_per_gram) : null,
-        stock_grams: formData.product_type === 'perfume' ? Number(formData.stock_grams) : null,
-        base_price: formData.product_type !== 'perfume' ? Number(formData.base_price || 0) : null,
-        variants: formData.product_type !== 'perfume' ? formData.variants : [],
-      };
+    const payload = {
+      ...formData,
+      name_fr: formData.name_fr.trim(),
+      name_ar: formData.name_ar.trim(),
+      description_fr: formData.description_fr.trim(),
+      description_ar: formData.description_ar.trim(),
+      price_per_gram: formData.product_type === 'perfume' ? Number(formData.price_per_gram) : null,
+      stock_grams: formData.product_type === 'perfume' ? Number(formData.stock_grams) : null,
+      base_price: formData.product_type !== 'perfume' ? Number(formData.base_price || 0) : null,
+      variants: formData.product_type !== 'perfume' ? formData.variants : [],
+    };
 
-      if (product) {
-        await apiUpdateProduct(product.id, payload);
-      } else {
-        await apiAddProduct(payload);
-      }
+    let result;
+    if (product) {
+      result = await updateProductAction(product.id, payload);
+    } else {
+      result = await createProductAction(payload);
+    }
+
+    if (result.success) {
       toast.success(product ? 'Produit mis à jour avec succès' : 'Produit créé avec succès');
       onSave();
       onClose();
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setError(result.error || 'Erreur inconnue');
     }
+    
+    setIsSubmitting(false);
   };
 
   return (

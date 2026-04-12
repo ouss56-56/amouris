@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { updateTag, createTag } from '@/lib/api/catalogue';
+import { createTagAction, updateTagAction } from '@/lib/actions/tags';
 import { 
   X, Loader2, Sparkles, ChevronRight, Info, Type, Globe, Tag as TagIcon, Eye, EyeOff, Hash
 } from 'lucide-react';
@@ -61,20 +61,20 @@ export function TagModal({ tag, isOpen, onClose }: TagModalProps) {
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      if (tag?.id) {
-        await updateTag(tag.id, formData);
-        toast.success('Tag mis à jour');
-      } else {
-        await createTag(formData as any);
-        toast.success('Nouveau Tag créé');
-      }
-      onClose();
-    } catch (err: any) {
-      toast.error('Erreur: ' + err.message);
-    } finally {
-      setIsSubmitting(false);
+    let result;
+    if (tag?.id) {
+      result = await updateTagAction(tag.id, formData);
+    } else {
+      result = await createTagAction(formData);
     }
+    
+    if (result.success) {
+      toast.success(tag?.id ? 'Tag mis à jour' : 'Nouveau Tag créé');
+      onClose();
+    } else {
+      toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));
+    }
+    setIsSubmitting(false);
   };
 
   return (

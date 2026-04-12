@@ -29,37 +29,65 @@ export async function getBrands() {
 import { createAdminClient } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 
-export async function createBrand(brand: Partial<Brand>) {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from('brands')
-    .insert([{ name: brand.nameFR, name_ar: brand.nameAR, logo_url: brand.logo }])
-    .select()
-    .single();
+export async function createBrand(brand: any) {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from('brands')
+      .insert([{ 
+        name: brand.name || brand.nameFR, 
+        name_ar: brand.name_ar || brand.nameAR, 
+        logo_url: brand.logo_url || brand.logo,
+        description_fr: brand.description_fr,
+        description_ar: brand.description_ar
+      }])
+      .select()
+      .single();
 
-  if (error) throw new Error(error.message);
-  revalidatePath('/admin/brands');
-  return data;
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/admin/brands');
+    revalidatePath('/shop');
+    return { success: true, data };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
 }
 
-export async function updateBrand(id: string, brand: Partial<Brand>) {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from('brands')
-    .update({ name: brand.nameFR, name_ar: brand.nameAR, logo_url: brand.logo })
-    .eq('id', id)
-    .select()
-    .single();
+export async function updateBrand(id: string, brand: any) {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from('brands')
+      .update({ 
+        name: brand.name || brand.nameFR, 
+        name_ar: brand.name_ar || brand.nameAR, 
+        logo_url: brand.logo_url || brand.logo,
+        description_fr: brand.description_fr,
+        description_ar: brand.description_ar
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
-  if (error) throw new Error(error.message);
-  revalidatePath('/admin/brands');
-  return data;
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/admin/brands');
+    revalidatePath('/shop');
+    return { success: true, data };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
 }
 
 export async function deleteBrand(id: string) {
-  const supabase = createAdminClient();
-  const { error } = await supabase.from('brands').delete().eq('id', id);
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from('brands').delete().eq('id', id);
 
-  if (error) throw new Error(error.message);
-  revalidatePath('/admin/brands');
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/admin/brands');
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
 }

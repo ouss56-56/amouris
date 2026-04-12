@@ -15,7 +15,7 @@ import {
 import { TagModal } from '@/components/admin/TagModal'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { removeTag, updateTag } from '@/lib/api/catalogue'
+import { deleteTagAction, updateTagAction } from '@/lib/actions/tags'
 
 interface TagsClientProps {
   initialTags: any[]
@@ -46,9 +46,13 @@ export default function TagsClient({ initialTags, initialProducts }: TagsClientP
   const handleDelete = async (id: string) => {
     if (confirm('Voulez-vous vraiment supprimer ce tag ?')) {
       try {
-        await removeTag(id)
-        router.refresh()
-        toast.success('Tag supprimé')
+        const result = await deleteTagAction(id)
+        if (result.success) {
+          router.refresh()
+          toast.success('Tag supprimé')
+        } else {
+          toast.error('Erreur: ' + result.error)
+        }
       } catch (err: any) {
         toast.error('Erreur: ' + err.message)
       }
@@ -57,9 +61,13 @@ export default function TagsClient({ initialTags, initialProducts }: TagsClientP
 
   const toggleHomepage = async (tag: any) => {
     try {
-      await updateTag(tag.id, { show_on_homepage: !tag.show_on_homepage })
-      router.refresh()
-      toast.success('Statut mis à jour')
+      const result = await updateTagAction(tag.id, { show_on_homepage: !tag.show_on_homepage })
+      if (result.success) {
+        router.refresh()
+        toast.success('Statut mis à jour')
+      } else {
+        toast.error('Erreur: ' + result.error)
+      }
     } catch (err: any) {
       toast.error('Erreur: ' + err.message)
     }
