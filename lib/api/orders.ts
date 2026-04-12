@@ -49,7 +49,10 @@ export const fetchOrderById = async (id: string, client?: any) => {
     .eq('id', id)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error(`Error fetching order ${id}:`, error);
+    return null;
+  }
   return data;
 };
 

@@ -38,6 +38,7 @@ export function ProductModal({
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'taxonomy' | 'inventory' | 'media'>('details');
+  const [type, setType] = useState<'perfume' | 'flacon' | 'accessory'>('perfume');
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<any>({

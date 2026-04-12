@@ -1,10 +1,13 @@
 import { createClient } from '@/lib/supabase/client';
 
 
-export const fetchSettings = async () => {
-  const supabase = createClient();
+export const fetchSettings = async (client?: any) => {
+  const supabase = client || createClient();
   const { data, error } = await supabase.from('settings').select('*').limit(1).maybeSingle();
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching settings:', error);
+    return null;
+  }
   return data;
 };
 
