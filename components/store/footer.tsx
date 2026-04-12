@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
-import { ChevronDown, Globe, ExternalLink, Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
+import { ChevronDown, Globe, ExternalLink, Phone, Mail, MapPin, Camera } from 'lucide-react';
 import { useSettingsStore } from '@/store/settings.store';
 
 export function Footer() {
@@ -68,12 +68,12 @@ export function Footer() {
             <div className="flex gap-4">
               {settings.instagram && (
                 <Link href={settings.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-amber-400 hover:text-emerald-950 transition-all duration-300">
-                  <Instagram size={18} />
+                  <Camera size={18} />
                 </Link>
               )}
               {settings.facebook && (
                 <Link href={settings.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-amber-400 hover:text-emerald-950 transition-all duration-300">
-                  <Facebook size={18} />
+                  <Globe size={18} />
                 </Link>
               )}
             </div>
