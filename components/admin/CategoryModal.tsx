@@ -14,9 +14,10 @@ interface CategoryModalProps {
   category?: any | null;
   isOpen: boolean;
   onClose: () => void;
+  onSave: () => void;
 }
 
-export function CategoryModal({ category, isOpen, onClose }: CategoryModalProps) {
+export function CategoryModal({ category, isOpen, onClose, onSave }: CategoryModalProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -125,6 +126,7 @@ export function CategoryModal({ category, isOpen, onClose }: CategoryModalProps)
     
     if (result.success) {
       toast.success(category?.id ? 'Catégorie mise à jour' : 'Nouvelle Catégorie créée');
+      onSave();
       onClose();
     } else {
       toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));

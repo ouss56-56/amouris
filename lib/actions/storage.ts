@@ -3,7 +3,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 
-export async function uploadImage(file: { name: string, type: string, buffer: ArrayBuffer }, bucket: 'products' | 'brands' | 'invoices' | 'collections') {
+export async function uploadImage(file: { name: string, type: string, buffer: ArrayBuffer }, bucket: 'products' | 'brands' | 'invoices' | 'collections' | 'categories') {
   const supabase = createAdminClient();
   
   const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
@@ -22,7 +22,7 @@ export async function uploadImage(file: { name: string, type: string, buffer: Ar
   return publicUrl;
 }
 
-export async function deleteImage(url: string, bucket: 'products' | 'brands' | 'invoices' | 'collections') {
+export async function deleteImage(url: string, bucket: 'products' | 'brands' | 'invoices' | 'collections' | 'categories') {
   const supabase = createAdminClient();
   
   // Extract filename from URL

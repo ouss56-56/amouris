@@ -159,6 +159,7 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
         collection={editingCollection} 
+        onSave={() => router.refresh()}
       />
     </div>
   )

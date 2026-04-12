@@ -26,31 +26,27 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
 
   // Header Background Bar
   doc.setFillColor(...EMERALD_DARK as [number, number, number])
-  doc.rect(0, 0, 210, 50, 'F')
+  doc.rect(0, 0, 210, 45, 'F')
   
-  // Header Content
-  doc.setFontSize(28)
-  doc.setTextColor(255, 255, 255)
-  doc.text('AMOURIS', 14, 25)
-  
-  // Store Name & Slogan
+  // Store Name & Logo Text
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(18)
+  doc.setFontSize(24)
   doc.setTextColor(255, 255, 255)
-  doc.text('AMOURIS PARFUMS', 50, 22)
+  doc.text('AMOURIS PARFUMS', 14, 25)
   
+  // Slogan
   doc.setFont('helvetica', 'italic')
-  doc.setFontSize(9)
+  doc.setFontSize(10)
   doc.setTextColor(...GOLD as [number, number, number])
-  doc.text(safeSettings.sloganFR || "L'essence du luxe — Huiles et flacons d'exception", 50, 29)
+  doc.text(safeSettings.sloganFR || "L'essence du luxe — Huiles et flacons d'exception", 14, 33)
   
   // Invoice Banner
   doc.setFillColor(...GOLD as [number, number, number])
   doc.rect(140, 15, 56, 12, 'F')
   doc.setTextColor(255, 255, 255)
-  doc.setFontSize(12)
+  doc.setFontSize(14)
   doc.setFont('helvetica', 'bold')
-  doc.text('FACTURE', 168, 23, { align: 'center' })
+  doc.text('FACTURE', 168, 23.5, { align: 'center' })
 
   // Document Details Area
   doc.setTextColor(...TEXT_DARK as [number, number, number])

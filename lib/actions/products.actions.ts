@@ -55,16 +55,19 @@ export async function createProductAction(formData: any) {
 
     // Insérer les variantes (flacons et accessoires)
     if (formData.variants && formData.variants.length > 0) {
-      await supabase.from('flacon_variants').insert(
-        formData.variants.map((v: any) => {
-          const { id, isNew, ...variantData } = v;
-          return {
-            ...variantData,
-            product_id: product.id,
-            id: (id && !id.startsWith('new_') && !id.startsWith('v_')) ? id : `var-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
-          };
-        })
-      )
+      const variantsToInsert = formData.variants.map((v: any) => {
+        const { id, isNew, ...variantData } = v;
+        const payload: any = {
+          ...variantData,
+          product_id: product.id
+        };
+        // Only include id if it's a valid UUID
+        if (id && !id.startsWith('new_') && !id.startsWith('v_')) {
+          payload.id = id;
+        }
+        return payload;
+      });
+      await supabase.from('flacon_variants').insert(variantsToInsert);
     }
 
     revalidatePath('/shop')
@@ -145,8 +148,7 @@ export async function updateProductAction(id: string, formData: any) {
           const { id: _, ...insertData } = vData;
           await supabase.from('flacon_variants').insert({
             ...insertData,
-            product_id: id,
-            id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
+            product_id: id
           });
         } else {
           await supabase.from('flacon_variants').update(vData).eq('id', v.id);

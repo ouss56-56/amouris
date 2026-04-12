@@ -14,9 +14,10 @@ interface BrandModalProps {
   brand?: any | null;
   isOpen: boolean;
   onClose: () => void;
+  onSave: () => void;
 }
 
-export function BrandModal({ brand, isOpen, onClose }: BrandModalProps) {
+export function BrandModal({ brand, isOpen, onClose, onSave }: BrandModalProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -112,6 +113,7 @@ export function BrandModal({ brand, isOpen, onClose }: BrandModalProps) {
     
     if (result.success) {
       toast.success(brand?.id ? 'Informations de la maison mises à jour' : 'Nouvelle Maison de Parfum établie');
+      onSave();
       onClose();
     } else {
       toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));

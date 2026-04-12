@@ -154,6 +154,7 @@ export default function BrandsClient({ initialBrands }: BrandsClientProps) {
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
         brand={editingBrand} 
+        onSave={() => router.refresh()}
       />
     </div>
   )

@@ -14,9 +14,10 @@ interface CollectionModalProps {
   collection?: any | null;
   isOpen: boolean;
   onClose: () => void;
+  onSave: () => void;
 }
 
-export function CollectionModal({ collection, isOpen, onClose }: CollectionModalProps) {
+export function CollectionModal({ collection, isOpen, onClose, onSave }: CollectionModalProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -111,6 +112,7 @@ export function CollectionModal({ collection, isOpen, onClose }: CollectionModal
     
     if (result.success) {
       toast.success(collection?.id ? 'Collection mise à jour' : 'Nouvelle Collection créée');
+      onSave();
       onClose();
     } else {
       toast.error('Erreur: ' + (result.error || 'Erreur inconnue'));

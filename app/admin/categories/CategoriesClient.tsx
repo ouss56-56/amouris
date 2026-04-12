@@ -168,6 +168,7 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
         category={editingCategory} 
+        onSave={() => router.refresh()}
       />
     </div>
   );
