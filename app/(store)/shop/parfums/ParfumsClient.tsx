@@ -23,7 +23,7 @@ export default function ParfumsClient({
   const { language } = useI18n();
   const products = useMemo(() => initialProducts.map(p => ({
     ...p,
-    tag_ids: p.product_tags?.map((pt: any) => pt.tag_id) || []
+    tag_ids: p.product_tags?.map((pt: any) => pt.tag_id || pt.tags?.id) || []
   })), [initialProducts]);
   const categories = initialCategories;
   const brands = initialBrands;

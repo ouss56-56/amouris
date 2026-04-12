@@ -205,7 +205,7 @@ export function ProductModal({
       } else {
         await apiAddProduct(payload);
       }
-
+      toast.success(product ? 'Produit mis à jour avec succès' : 'Produit créé avec succès');
       onSave();
       onClose();
     } catch (err: any) {

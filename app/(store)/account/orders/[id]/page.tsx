@@ -1,4 +1,5 @@
 import { fetchOrderById } from '@/lib/api/orders';
+import { fetchSettings } from '@/lib/api/settings';
 import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import OrderDetailClient from './OrderDetailClient';
@@ -24,18 +25,23 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   }
 
   try {
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        items:order_items(*),
-        status_history:order_status_history(*),
-        customer:profiles(*)
-      `)
-      .eq('id', id)
-      .single();
+    const [orderRes, settings] = await Promise.all([
+      supabase
+        .from('orders')
+        .select(`
+          *,
+          items:order_items(*),
+          status_history:order_status_history(*),
+          customer:profiles(*)
+        `)
+        .eq('id', id)
+        .single(),
+      fetchSettings(supabase)
+    ]);
 
-    if (orderError || !order) {
+    const order = orderRes.data;
+
+    if (orderRes.error || !order) {
       notFound();
     }
 
@@ -44,7 +50,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       notFound();
     }
 
-    return <OrderDetailClient order={order} />;
+    return <OrderDetailClient order={order} settings={settings} />;
   } catch (err) {
     console.error('Error fetching order:', err);
     notFound();

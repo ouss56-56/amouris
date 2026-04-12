@@ -4,16 +4,17 @@ import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, FileText, CheckCircle2, ChevronRight, Package, Receipt, CreditCard, XCircle } from 'lucide-react';
-import { generateInvoicePDF } from '@/lib/generate-invoice';
+import { generateInvoicePDF } from '@/lib/utils/invoice-generator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import OrderInvoice from '@/components/store/OrderInvoice';
 
 interface OrderDetailClientProps {
   order: any;
+  settings: any;
 }
 
-export default function OrderDetailClient({ order }: OrderDetailClientProps) {
+export default function OrderDetailClient({ order, settings }: OrderDetailClientProps) {
   const { language } = useI18n();
   const [showInvoice, setShowInvoice] = useState(false);
   const isAr = language === 'ar';
@@ -53,7 +54,7 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
           </div>
         </div>
 
-        {order.invoice_generated && order.invoice_data && (
+        {order.invoice_generated && (
           <div className="flex gap-4">
             <Button 
               variant="outline" 
@@ -66,7 +67,7 @@ export default function OrderDetailClient({ order }: OrderDetailClientProps) {
             <Button 
               variant="outline" 
               className="rounded-2xl border-emerald-950/10 text-emerald-900 hover:bg-[#0a3d2e] hover:text-white uppercase tracking-widest text-[10px] font-black px-8 py-6 h-auto"
-              onClick={() => generateInvoicePDF(order.invoice_data!)}
+              onClick={() => generateInvoicePDF(order, settings)}
             >
               <FileText className="w-4 h-4 mr-3 rtl:ml-3 rtl:mr-0" />
               {isAr ? 'تحميل (PDF)' : 'Télécharger PDF'}

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 
 interface InvoicesClientProps {
   initialOrders: any[]
+  settings: any
 }
 
 const container = {
@@ -25,7 +26,7 @@ const item = {
   show: { opacity: 1, y: 0 }
 }
 
-export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
+export default function InvoicesClient({ initialOrders, settings }: InvoicesClientProps) {
   const [search, setSearch] = useState('');
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
   const handleDownload = async (order: any) => {
     const toastId = toast.loading('Génération de la facture...');
     try {
-      const doc = await generateInvoicePDF(order, {} as any);
+      const doc = await generateInvoicePDF(order, settings);
       doc.save(`Facture_Amouris_${order.order_number}.pdf`);
       toast.success('Facture générée avec succès', { id: toastId });
     } catch (err: any) {
@@ -97,10 +98,10 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-neutral-50/50">
-                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Désignation</th>
-                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Référence Commande</th>
-                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Partenaire</th>
-                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Montant Total</th>
+                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Facture</th>
+                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Client</th>
+                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Paiement</th>
+                <th className="px-12 py-10 text-left text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Situation</th>
                 <th className="px-12 py-10 text-right text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/30">Actions</th>
               </tr>
             </thead>
@@ -114,6 +115,10 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
                 {filtered.map((order) => {
                   const customerName = order.guest_first_name ? `${order.guest_first_name} ${order.guest_last_name}` : (order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : `Client Partenaire`);
                   const invoiceNumber = `FAC-${order.id.slice(0, 6).toUpperCase()}`;
+                  const remaining = (order.total_amount || 0) - (order.amount_paid || 0);
+                  const isPaid = order.payment_status === 'paid';
+                  const isPartial = order.payment_status === 'partial';
+
                   return (
                     <motion.tr 
                       layout
@@ -129,43 +134,60 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
                            <div>
                              <p className="font-mono font-bold text-emerald-950 text-base">{invoiceNumber}</p>
                              <p className="text-[10px] font-black tracking-widest text-emerald-950/30 uppercase mt-1">
-                               {new Date(order.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                               REF: {order.order_number}
                              </p>
                            </div>
                         </div>
                       </td>
                       <td className="px-12 py-12">
-                        <div className="flex items-center gap-2">
-                           <span className="text-sm font-black text-amber-600 uppercase tracking-widest">{order.order_number}</span>
-                           <ArrowRight size={12} className="text-neutral-200" />
-                        </div>
-                      </td>
-                      <td className="px-12 py-12">
                         <div className="space-y-1">
                           <p className="text-sm font-bold text-emerald-950">{customerName}</p>
-                          <p className="text-[10px] text-emerald-950/40 font-black uppercase tracking-widest">{order.guest_wilaya || order.customer?.wilaya || 'Algérie'}</p>
+                          <p className="text-[10px] text-emerald-950/40 font-black uppercase tracking-widest">
+                            {new Date(order.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} • {order.guest_wilaya || 'Algérie'}
+                          </p>
                         </div>
                       </td>
                       <td className="px-12 py-12">
-                        <div className="flex items-end gap-2 text-emerald-950">
-                           <span className="font-serif text-3xl font-bold">{(order.total_amount || 0).toLocaleString()}</span>
-                           <span className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 mb-2 italic">DZD</span>
+                        <div className="flex flex-col gap-1">
+                           <div className="flex items-center gap-2">
+                              <span className="text-lg font-bold text-emerald-950">{(order.total_amount || 0).toLocaleString()}</span>
+                              <span className="text-[9px] font-black text-emerald-950/30">DZD</span>
+                           </div>
+                           <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit ${
+                             isPaid ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                             isPartial ? 'bg-amber-50 text-amber-600 border-amber-100' : 
+                             'bg-rose-50 text-rose-600 border-rose-100'
+                           }`}>
+                             {isPaid ? 'Réglée' : isPartial ? 'Partiel' : 'Non réglée'}
+                           </div>
+                        </div>
+                      </td>
+                      <td className="px-12 py-12">
+                        <div className="space-y-2">
+                           <div className="flex justify-between items-center w-full max-w-[150px]">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-950/30">Réglé:</span>
+                              <span className="text-xs font-bold text-emerald-600">{(order.amount_paid || 0).toLocaleString()}</span>
+                           </div>
+                           <div className="flex justify-between items-center w-full max-w-[150px]">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-950/30">Reste:</span>
+                              <span className={`text-xs font-bold ${remaining > 0 ? 'text-amber-600' : 'text-emerald-950/20'}`}>{remaining.toLocaleString()}</span>
+                           </div>
                         </div>
                       </td>
                        <td className="px-12 py-12 text-right">
                           <div className="flex justify-end gap-4">
                              <button 
-                               onClick={() => handleDownload(order)}
-                               className="w-14 h-14 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/30 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm hover:shadow-xl group/btn"
-                               title="Télécharger la facture"
+                                onClick={() => handleDownload(order)}
+                                className="w-14 h-14 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/30 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm hover:shadow-xl group/btn"
+                                title="Télécharger la facture"
                              >
                                 <Download size={20} className="group-hover/btn:scale-110 transition-transform" />
                              </button>
                              <button 
-                               onClick={() => handleDelete(order)}
-                               disabled={isDeleting === order.id}
-                               className="w-14 h-14 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-rose-200 hover:text-rose-600 hover:border-rose-100 transition-all shadow-sm hover:shadow-xl group/del"
-                               title="Supprimer la facture"
+                                onClick={() => handleDelete(order)}
+                                disabled={isDeleting === order.id}
+                                className="w-14 h-14 rounded-2xl bg-white border border-emerald-950/5 flex items-center justify-center text-rose-200 hover:text-rose-600 hover:border-rose-100 transition-all shadow-sm hover:shadow-xl group/del"
+                                title="Supprimer la facture"
                              >
                                 {isDeleting === order.id ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={20} className="group-del/del:scale-110 transition-transform" />}
                              </button>
@@ -192,6 +214,10 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+v>
     </div>
   );
 }

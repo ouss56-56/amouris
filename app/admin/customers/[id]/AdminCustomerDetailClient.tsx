@@ -138,7 +138,7 @@ export default function AdminCustomerDetailClient({ initialCustomer }: AdminCust
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-emerald-950/30 uppercase tracking-widest">Téléphone</p>
-                    <a href={`tel:${customer.phone_number}`} className="text-sm font-bold text-emerald-950 hover:text-emerald-700 transition-colors">{customer.phone_number}</a>
+                    <a href={`tel:${customer.phone}`} className="text-sm font-bold text-emerald-950 hover:text-emerald-700 transition-colors">{customer.phone}</a>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">

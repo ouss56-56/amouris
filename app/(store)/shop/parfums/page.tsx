@@ -32,12 +32,16 @@ export default async function ParfumsPage() {
     .from('brands')
     .select('id, name, name_ar')
 
+  const { data: tags } = await supabase
+    .from('tags')
+    .select('id, name_fr, name_ar')
+
   return (
     <ParfumsClient
       initialProducts={parfums as any ?? []}
       initialCategories={categories as any ?? []}
       initialBrands={brands as any ?? []}
-      initialTags={[]} // Added so build doesn't break if props expect it
+      initialTags={tags as any ?? []}
     />
   )
 }

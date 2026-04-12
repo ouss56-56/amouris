@@ -30,7 +30,7 @@ import { StoreSettings } from '@/store/settings.store'
 import { OrderStatus } from '@/store/orders.store'
 import { useI18n } from '@/i18n/i18n-context'
 import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/status-helpers'
-import { generateInvoicePDF } from '@/lib/generate-invoice'
+import { generateInvoicePDF } from '@/lib/utils/invoice-generator'
 
 const STATUSES: OrderStatus[] = ['pending', 'confirmed', 'preparing', 'shipped', 'delivered']
 
@@ -148,9 +148,9 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
         </div>
 
         <div className="flex items-center gap-3">
-          {order.invoice_generated && order.invoice_data && (
+          {order.invoice_generated && (
             <button 
-              onClick={() => generateInvoicePDF(order.invoice_data!)}
+              onClick={() => generateInvoicePDF(order, settings)}
               className="h-12 px-6 bg-white border border-emerald-950/10 text-emerald-950 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-50 transition-all shadow-sm"
             >
               <Download size={14} /> {t('admin.orders.print_invoice')}
