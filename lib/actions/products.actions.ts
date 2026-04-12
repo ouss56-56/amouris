@@ -159,6 +159,9 @@ export async function updateProductAction(id: string, formData: any) {
     revalidatePath('/admin/products')
     revalidatePath('/')
     revalidatePath('/shop')
+    revalidatePath('/shop/parfums')
+    revalidatePath('/shop/flacons')
+    revalidatePath('/shop/accessoires')
 
     return { success: true, data: result }
   } catch (e: any) {
@@ -180,6 +183,9 @@ export async function deleteProductAction(id: string) {
     revalidatePath('/admin/products')
     revalidatePath('/')
     revalidatePath('/shop')
+    revalidatePath('/shop/parfums')
+    revalidatePath('/shop/flacons')
+    revalidatePath('/shop/accessoires')
 
     return { success: true }
   } catch (e: any) {

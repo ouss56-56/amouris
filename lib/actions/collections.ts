@@ -46,6 +46,7 @@ export async function createCollectionAction(collection: any) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/collections');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true, data };
   } catch (e: any) {
     return { success: false, error: e.message };
@@ -71,6 +72,7 @@ export async function updateCollectionAction(id: string, collection: any) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/collections');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true, data };
   } catch (e: any) {
     return { success: false, error: e.message };
@@ -85,6 +87,7 @@ export async function deleteCollectionAction(id: string) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/collections');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message };

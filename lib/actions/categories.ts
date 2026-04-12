@@ -48,6 +48,7 @@ export async function createCategoryAction(category: any) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/categories');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true, data };
   } catch (e: any) {
     return { success: false, error: e.message };
@@ -74,6 +75,7 @@ export async function updateCategoryAction(id: string, category: any) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/categories');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true, data };
   } catch (e: any) {
     return { success: false, error: e.message };
@@ -88,6 +90,7 @@ export async function deleteCategoryAction(id: string) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/categories');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message };

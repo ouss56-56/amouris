@@ -46,6 +46,7 @@ export async function createBrand(brand: any) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/brands');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true, data };
   } catch (e: any) {
     return { success: false, error: e.message };
@@ -71,6 +72,7 @@ export async function updateBrand(id: string, brand: any) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/brands');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true, data };
   } catch (e: any) {
     return { success: false, error: e.message };
@@ -85,6 +87,7 @@ export async function deleteBrand(id: string) {
     if (error) return { success: false, error: error.message };
     revalidatePath('/admin/brands');
     revalidatePath('/shop');
+    revalidatePath('/');
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message };
