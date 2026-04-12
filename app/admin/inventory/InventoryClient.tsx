@@ -10,7 +10,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { updateStockGrams as apiUpdateStockGrams, updateVariantStock as apiUpdateVariantStock } from '@/lib/api/products'
+import { 
+  updateStockGrams as apiUpdateStockGrams, 
+  updateVariantStock as apiUpdateVariantStock,
+  setProductStockGrams as apiSetStockGrams,
+  setVariantStockUnits as apiSetVariantStock
+} from '@/lib/api/products'
 
 interface InventoryClientProps {
   initialProducts: any[]
@@ -27,6 +32,26 @@ export default function InventoryClient({ initialProducts, settings, categories 
 
   const thresholdPerfume = settings.alertStockPerfume || 500
   const thresholdFlacon = settings.alertStockFlacon || 10
+
+  const handleSetStock = async (id: string, value: string, type: 'perfume' | 'variant') => {
+    const amount = parseFloat(value)
+    if (isNaN(amount)) return
+
+    setIsSaving(id)
+    try {
+      if (type === 'perfume') {
+        await apiSetStockGrams(id, amount)
+      } else {
+        await apiSetVariantStock(id, amount)
+      }
+      router.refresh()
+      toast.success('Stock mis à jour')
+    } catch (err: any) {
+      toast.error('Erreur: ' + err.message)
+    } finally {
+      setIsSaving(null)
+    }
+  }
 
   const handleUpdatePerfumeStock = async (id: string, current: number, delta: number) => {
     setIsSaving(id)
@@ -171,10 +196,35 @@ export default function InventoryClient({ initialProducts, settings, categories 
                         </td>
                         <td className="px-10 py-8 text-right">
                            <div className="flex justify-end items-center gap-4">
-                              <div className="flex items-center bg-neutral-100 rounded-xl p-1">
-                                 <button onClick={() => handleUpdatePerfumeStock(product.id, current, -100)} className="w-8 h-8 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-emerald-950 flex items-center justify-center"><Minus size={14} /></button>
-                                 <div className="w-20 text-center font-mono font-bold text-emerald-950">{current}</div>
-                                 <button onClick={() => handleUpdatePerfumeStock(product.id, current, 100)} className="w-8 h-8 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-emerald-950 flex items-center justify-center"><Plus size={14} /></button>
+                              <div className="flex items-center bg-neutral-100 rounded-xl p-1 shadow-inner">
+                                 <button 
+                                   onClick={() => handleUpdatePerfumeStock(product.id, current, -100)} 
+                                   className="w-10 h-10 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-rose-500 flex items-center justify-center"
+                                 >
+                                   <Minus size={14} />
+                                 </button>
+                                 <input 
+                                   type="number"
+                                   defaultValue={current}
+                                   onBlur={(e) => {
+                                     if (parseFloat(e.target.value) !== current) {
+                                       handleSetStock(product.id, e.target.value, 'perfume')
+                                     }
+                                   }}
+                                   onKeyDown={(e) => {
+                                     if (e.key === 'Enter') {
+                                       handleSetStock(product.id, (e.target as HTMLInputElement).value, 'perfume')
+                                       ;(e.target as HTMLInputElement).blur()
+                                     }
+                                   }}
+                                   className="w-24 text-center bg-transparent font-mono font-bold text-lg text-emerald-950 outline-none"
+                                 />
+                                 <button 
+                                   onClick={() => handleUpdatePerfumeStock(product.id, current, 100)} 
+                                   className="w-10 h-10 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-emerald-950 flex items-center justify-center"
+                                 >
+                                   <Plus size={14} />
+                                 </button>
                               </div>
                               {isSaving === product.id && <Loader2 size={16} className="animate-spin text-amber-500" />}
                            </div>
@@ -215,10 +265,35 @@ export default function InventoryClient({ initialProducts, settings, categories 
                                </td>
                                <td className="px-10 py-5 text-right">
                                   <div className="flex justify-end items-center gap-4">
-                                     <div className="flex items-center bg-neutral-100 rounded-xl p-1">
-                                        <button onClick={() => handleUpdateVariantStock(product.id, v.id, v.stock_units || 0, -1)} className="w-8 h-8 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-emerald-950 flex items-center justify-center"><Minus size={14} /></button>
-                                        <div className="w-16 text-center font-mono font-bold text-emerald-950">{v.stock_units || 0}</div>
-                                        <button onClick={() => handleUpdateVariantStock(product.id, v.id, v.stock_units || 0, 1)} className="w-8 h-8 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-emerald-950 flex items-center justify-center"><Plus size={14} /></button>
+                                     <div className="flex items-center bg-neutral-100 rounded-xl p-1 shadow-inner">
+                                        <button 
+                                          onClick={() => handleUpdateVariantStock(product.id, v.id, v.stock_units || 0, -1)} 
+                                          className="w-10 h-10 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-rose-500 flex items-center justify-center"
+                                        >
+                                          <Minus size={14} />
+                                        </button>
+                                        <input 
+                                          type="number"
+                                          defaultValue={v.stock_units || 0}
+                                          onBlur={(e) => {
+                                            if (parseFloat(e.target.value) !== (v.stock_units || 0)) {
+                                              handleSetStock(v.id, e.target.value, 'variant')
+                                            }
+                                          }}
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                              handleSetStock(v.id, (e.target as HTMLInputElement).value, 'variant')
+                                              ;(e.target as HTMLInputElement).blur()
+                                            }
+                                          }}
+                                          className="w-20 text-center bg-transparent font-mono font-bold text-sm text-emerald-950 outline-none"
+                                        />
+                                        <button 
+                                          onClick={() => handleUpdateVariantStock(product.id, v.id, v.stock_units || 0, 1)} 
+                                          className="w-10 h-10 rounded-lg hover:bg-white transition-all text-emerald-950/40 hover:text-emerald-950 flex items-center justify-center"
+                                        >
+                                          <Plus size={14} />
+                                        </button>
                                      </div>
                                      {isSaving === v.id && <Loader2 size={16} className="animate-spin text-amber-500" />}
                                   </div>

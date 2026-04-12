@@ -22,10 +22,10 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { 
-  freezeCustomer as apiFreezeCustomer, 
-  deleteCustomer as apiDeleteCustomer, 
-  resetCustomerPassword as apiResetCustomerPassword 
-} from '@/lib/api/customers'
+  freezeCustomerAction, 
+  deleteCustomerAction, 
+  resetCustomerPasswordAction 
+} from '@/lib/actions/customers'
 
 interface AdminCustomerDetailClientProps {
   initialCustomer: any
@@ -45,7 +45,7 @@ export default function AdminCustomerDetailClient({ initialCustomer }: AdminCust
 
   const handleToggleFreeze = async () => {
     try {
-      await apiFreezeCustomer(customer.id, !isFrozen)
+      await freezeCustomerAction(customer.id, !isFrozen)
       router.refresh()
       toast.success(isFrozen ? 'Compte réactivé' : 'Compte suspendu')
     } catch (err: any) {
@@ -56,7 +56,7 @@ export default function AdminCustomerDetailClient({ initialCustomer }: AdminCust
   const handleDelete = async () => {
     if (confirm('Voulez-vous vraiment supprimer ce client ? Cette action est irréversible.')) {
       try {
-        await apiDeleteCustomer(customer.id)
+        await deleteCustomerAction(customer.id)
         router.push('/admin/customers')
         toast.success('Client supprimé')
       } catch (err: any) {
@@ -73,7 +73,7 @@ export default function AdminCustomerDetailClient({ initialCustomer }: AdminCust
     if (confirm('Voulez-vous réinitialiser le mot de passe de ce client ?')) {
       setIsResetting(true)
       try {
-        await apiResetCustomerPassword(customer.id, newPassword)
+        const res = await resetCustomerPasswordAction(customer.id, newPassword)
         toast.success(`Mot de passe réinitialisé. Nouveau: ${newPassword}`)
         setNewPassword('')
       } catch (err: any) {

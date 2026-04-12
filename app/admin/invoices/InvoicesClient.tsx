@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useMemo } from 'react';
-import { FileText, Search, Download } from 'lucide-react';
+import { FileText, Search, Download, Trash2, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { generateInvoicePDF } from '@/lib/utils/invoice-generator';
+import { deleteInvoiceAction } from '@/lib/actions/invoices';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface InvoicesClientProps {
   initialOrders: any[]
@@ -21,57 +23,33 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
     });
   }, [initialOrders, search]);
 
-  const generatePDF = (order: any) => {
-    const doc = new jsPDF();
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const handleDownload = async (order: any) => {
+    try {
+      // Data enrichment if needed (settings usually needed but generator has defaults)
+      const doc = await generateInvoicePDF(order, {} as any);
+      doc.save(`Facture_Amouris_${order.order_number}.pdf`);
+      toast.success('Facture générée avec succès');
+    } catch (err: any) {
+      toast.error('Erreur lors de la génération: ' + err.message);
+    }
+  };
+
+  const handleDelete = async (order: any) => {
+    if (!confirm(`Voulez-vous supprimer l'enregistrement de la facture pour la commande ${order.order_number} ?`)) return;
     
-    // Header
-    doc.setFontSize(22);
-    doc.setTextColor(10, 61, 46); // Emerald 950
-    doc.text('AMOURIS PARFUMS', 14, 20);
-    
-    doc.setFontSize(10);
-    doc.setTextColor(150, 150, 150);
-    doc.text('FACTURE OFFICIELLE', 14, 28);
-    doc.text(`N° Facture: INV-${order.order_number.split('-')[1]}`, 140, 28);
-    doc.text(`Date: ${new Date(order.created_at).toLocaleDateString()}`, 140, 33);
-
-    // Client Info
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    doc.text('DESTINATAIRE:', 14, 50);
-    doc.setFontSize(10);
-    const name = order.guest_first_name ? `${order.guest_first_name} ${order.guest_last_name}` : `Client ID: ${order.customer_id}`;
-    doc.text(name, 14, 57);
-    doc.text(`Tél: ${order.guest_phone || 'N/A'}`, 14, 62);
-    doc.text(`Wilaya: ${order.guest_wilaya || 'N/A'}`, 14, 67);
-
-    // Items Table
-    autoTable(doc, {
-      startY: 80,
-      head: [['Produit', 'Détails', 'Prix Unitaire', 'Total']],
-      body: order.items.map((item: any) => [
-        item.product_name_fr,
-        item.quantity_grams ? `${item.quantity_grams}g` : `${item.quantity_units} unités`,
-        `${item.unit_price} DZD`,
-        `${item.total_price} DZD`
-      ]),
-      headStyles: { fillColor: [10, 61, 46], textColor: [255, 255, 255] },
-      margin: { top: 80 }
-    });
-
-    // Total
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-    doc.setFontSize(14);
-    doc.setTextColor(201, 168, 76); // Gold #C9A84C
-    doc.text(`TOTAL À PAYER: ${order.total_amount.toLocaleString()} DZD`, 120, finalY + 10);
-
-    // Footer
-    doc.setFontSize(10);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Merci pour votre commande chez Amouris.', 14, finalY + 30);
-    doc.text('Cette facture est générée électroniquement.', 14, finalY + 35);
-
-    doc.save(`Facture_Amouris_${order.order_number}.pdf`);
+    setIsDeleting(order.id);
+    try {
+      await deleteInvoiceAction(order.id);
+      router.refresh();
+      toast.success('Facture supprimée');
+    } catch (err: any) {
+      toast.error('Erreur: ' + err.message);
+    } finally {
+      setIsDeleting(null);
+    }
   };
 
   return (
@@ -142,17 +120,25 @@ export default function InvoicesClient({ initialOrders }: InvoicesClientProps) {
                       <td className="px-10 py-8">
                         <p className="font-serif text-xl text-emerald-950 font-bold">{order.total_amount.toLocaleString()} <span className="text-xs font-normal">DZD</span></p>
                       </td>
-                      <td className="px-10 py-8 text-right">
-                         <div className="flex justify-end gap-3 transition-opacity">
-                            <button 
-                              onClick={() => generatePDF(order)}
-                              className="w-12 h-12 rounded-xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/40 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm"
-                              title="Télécharger la facture"
-                            >
-                               <Download size={16} />
-                            </button>
-                         </div>
-                      </td>
+                       <td className="px-10 py-8 text-right">
+                          <div className="flex justify-end gap-3 transition-opacity">
+                             <button 
+                               onClick={() => handleDownload(order)}
+                               className="w-12 h-12 rounded-xl bg-white border border-emerald-950/5 flex items-center justify-center text-emerald-950/40 hover:text-emerald-950 hover:border-emerald-950/20 transition-all shadow-sm"
+                               title="Télécharger la facture"
+                             >
+                                <Download size={16} />
+                             </button>
+                             <button 
+                               onClick={() => handleDelete(order)}
+                               disabled={isDeleting === order.id}
+                               className="w-12 h-12 rounded-xl bg-white border border-emerald-950/5 flex items-center justify-center text-rose-300 hover:text-rose-600 hover:border-rose-100 transition-all shadow-sm"
+                               title="Supprimer la facture"
+                             >
+                                {isDeleting === order.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                             </button>
+                          </div>
+                       </td>
                     </motion.tr>
                   );
                 })}

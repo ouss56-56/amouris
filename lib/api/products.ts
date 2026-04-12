@@ -114,14 +114,16 @@ export const fetchProductById = async (id: string, options?: { isAdmin?: boolean
 };
 
 export const createProduct = async (productData: any) => {
-  // Always use browser client if called from client
   const supabase = createClient();
   
   const { tag_ids, variants, ...baseProduct } = productData;
 
+  // Cleanup null values
   if (baseProduct.brand_id === '') baseProduct.brand_id = null;
   if (baseProduct.collection_id === '') baseProduct.collection_id = null;
+  if (baseProduct.category_id === '') baseProduct.category_id = null;
 
+  // 1. Insert base product
   const { data: newProduct, error } = await supabase
     .from('products')
     .insert([baseProduct])
@@ -130,6 +132,7 @@ export const createProduct = async (productData: any) => {
 
   if (error) throw error;
 
+  // 2. Insert tags
   if (tag_ids && tag_ids.length > 0) {
     const tagsToInsert = tag_ids.map((tagId: string) => ({
       product_id: newProduct.id,
@@ -138,7 +141,21 @@ export const createProduct = async (productData: any) => {
     await supabase.from('product_tags').insert(tagsToInsert);
   }
 
-  return fetchProductById(newProduct.id);
+  // 3. Insert variants if applicable
+  if (baseProduct.product_type !== 'perfume' && variants && variants.length > 0) {
+    const variantsToInsert = variants.map((v: any) => {
+      const { id, isNew, ...variantData } = v;
+      return {
+        ...variantData,
+        product_id: newProduct.id,
+        // If it's a temp ID like 'new_' or 'v_', let Supabase generate one or transform it
+        id: (id && !id.startsWith('new_') && !id.startsWith('v_')) ? id : `var-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
+      };
+    });
+    await supabase.from('flacon_variants').insert(variantsToInsert);
+  }
+
+  return fetchProductById(newProduct.id, { isAdmin: true });
 };
 
 export const updateProduct = async (id: string, updates: any) => {
@@ -147,7 +164,9 @@ export const updateProduct = async (id: string, updates: any) => {
 
   if (baseData.brand_id === '') baseData.brand_id = null;
   if (baseData.collection_id === '') baseData.collection_id = null;
+  if (baseData.category_id === '') baseData.category_id = null;
 
+  // 1. Update base product
   if (Object.keys(baseData).length > 0) {
     const { error: updateError } = await supabase
       .from('products')
@@ -157,15 +176,46 @@ export const updateProduct = async (id: string, updates: any) => {
     if (updateError) throw updateError;
   }
 
+  // 2. Sync Tags
   if (tag_ids !== undefined) {
     await supabase.from('product_tags').delete().eq('product_id', id);
-    if (tag_ids.length > 0) {
+    if (tag_ids && tag_ids.length > 0) {
       const newTags = tag_ids.map((tagId: string) => ({
         product_id: id,
         tag_id: tagId,
       }));
       const { error: tagError } = await supabase.from('product_tags').insert(newTags);
       if (tagError) throw tagError;
+    }
+  }
+
+  // 3. Sync Variants
+  if (variants !== undefined) {
+    const currentProduct = await fetchProductById(id, { isAdmin: true });
+    const existingVariantIds = currentProduct.variants?.map((v: any) => v.id) || [];
+    const incomingVariantIds = variants.filter((v: any) => v.id && !v.id.startsWith('new_') && !v.id.startsWith('v_')).map((v: any) => v.id);
+
+    // Deletions
+    const toDelete = existingVariantIds.filter(vId => !incomingVariantIds.includes(vId));
+    if (toDelete.length > 0) {
+      await supabase.from('flacon_variants').delete().in('id', toDelete);
+    }
+
+    // Upsertions
+    for (const v of variants) {
+      const { isNew, ...vData } = v;
+      if (!v.id || v.id.startsWith('new_') || v.id.startsWith('v_')) {
+        // Insertion
+        const { id: _, ...insertData } = vData;
+        await supabase.from('flacon_variants').insert({
+          ...insertData,
+          product_id: id,
+          id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
+        });
+      } else {
+        // Update
+        await supabase.from('flacon_variants').update(vData).eq('id', v.id);
+      }
     }
   }
 
@@ -220,6 +270,28 @@ export const updateVariantStock = async (variantId: string, delta: number) => {
 
   if (error) throw error;
   return newStock;
+};
+
+export const setProductStockGrams = async (id: string, amount: number) => {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('products')
+    .update({ stock_grams: Math.max(0, amount) })
+    .eq('id', id);
+
+  if (error) throw error;
+  return true;
+};
+
+export const setVariantStockUnits = async (variantId: string, amount: number) => {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('flacon_variants')
+    .update({ stock_units: Math.max(0, amount) })
+    .eq('id', variantId);
+
+  if (error) throw error;
+  return true;
 };
 
 export const fetchWishlistProducts = async (ids: string[]) => {

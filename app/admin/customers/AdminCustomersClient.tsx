@@ -217,7 +217,7 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                           <p className="font-serif text-2xl font-bold text-emerald-950 group-hover:text-emerald-800 transition-colors tracking-tight">
                             {customer.first_name} {customer.last_name}
                           </p>
-                          <div className="flex items-center gap-3 text-[10px] text-emerald-950/30 font-black uppercase tracking-[0.2em]">
+                          <div className="flex items-center gap-3 text-[10px] text-emerald-950/60 font-black uppercase tracking-[0.2em]">
                              <span className="flex items-center gap-1.5"><Phone size={10} className="text-[#C9A84C]" /> {customer.phone_number}</span>
                              {customer.email && (
                                <span className="flex items-center gap-1.5"><Mail size={10} /> {customer.email}</span>
@@ -233,7 +233,7 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                          </div>
                          <div className="space-y-1">
                            <p className="text-sm font-bold text-emerald-950">{customer.wilaya}</p>
-                           <p className="text-[10px] text-emerald-950/40 font-black uppercase tracking-[0.2em]">{customer.commune || t('common.center')}</p>
+                           <p className="text-[10px] text-emerald-950/60 font-black uppercase tracking-[0.2em]">{customer.commune || t('common.center')}</p>
                          </div>
                       </div>
                     </td>
@@ -241,7 +241,7 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                        <div className="inline-flex flex-col gap-1.5 p-4 rounded-2xl bg-neutral-50/50 group-hover:bg-white transition-colors border border-transparent group-hover:border-emerald-950/5">
                            <div className="flex items-center gap-2 font-serif text-lg font-bold text-emerald-950">
                               {customer.order_count || 0} 
-                              <span className="text-[10px] font-sans font-black uppercase tracking-widest opacity-20 italic">Commandes</span>
+                              <span className="text-[10px] font-sans font-black uppercase tracking-widest opacity-40 italic">Commandes</span>
                            </div>
                            <div className="flex items-center gap-2 text-[11px] font-black text-emerald-700/80 uppercase tracking-widest">
                               <TrendingUp size={10} className="text-emerald-500" />

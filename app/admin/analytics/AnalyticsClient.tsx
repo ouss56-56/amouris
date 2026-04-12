@@ -132,8 +132,28 @@ export default function AnalyticsClient({ initialOrders, initialCustomers, initi
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const newCustomersThisMonth = customers.filter(c => new Date(c.created_at) >= startOfThisMonth).length;
 
-    const topCustomersBySpent = [...customers].sort((a, b) => (b.total_spent || 0) - (a.total_spent || 0)).slice(0, 5);
-    const topCustomersByActivity = [...customers].sort((a, b) => (b.order_count || 0) - (a.order_count || 0)).slice(0, 5);
+    // Calculate actual spent per customer from orders
+    const customerSpentMap = new Map<string, { id: string, name: string, spent: number, count: number, wilaya: string }>();
+    orders.forEach(o => {
+      const cid = o.customer_id;
+      if (!cid) return;
+      const existing = customerSpentMap.get(cid) || { 
+        id: cid, 
+        name: o.guest_first_name ? `${o.guest_first_name} ${o.guest_last_name}` : 'Client', 
+        spent: 0, 
+        count: 0, 
+        wilaya: o.guest_wilaya || '' 
+      };
+      customerSpentMap.set(cid, {
+        ...existing,
+        spent: existing.spent + (o.total_amount || 0),
+        count: existing.count + 1
+      });
+    });
+
+    const enrichedCustomers = Array.from(customerSpentMap.values());
+    const topCustomersBySpent = enrichedCustomers.sort((a, b) => b.spent - a.spent).slice(0, 5);
+    const topCustomersByActivity = enrichedCustomers.sort((a, b) => b.count - a.count).slice(0, 5);
 
     // Wilaya Distribution
     const wilayaMap = new Map<string, number>();

@@ -13,7 +13,12 @@ export const fetchAllCustomers = async (client?: any) => {
 
 export const fetchCustomerById = async (id: string, client?: any) => {
   const supabase = client || createClient();
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, orders(*)')
+    .eq('id', id)
+    .single();
+    
   if (error) {
     console.error(`Error fetching customer ${id}:`, error);
     return null;
