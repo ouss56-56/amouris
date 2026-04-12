@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
 import { ProductCard } from '@/components/store/product-card';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,8 +27,9 @@ export default function AccessoiresClient({
   const categories = initialCategories;
   const tags = initialTags;
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedTag, setSelectedTag] = useState<string>('all');
+  const searchParams = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'all');
+  const [selectedTag, setSelectedTag] = useState<string>(searchParams.get('tag') || 'all');
   const [sortBy, setSortBy] = useState<string>('newest');
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

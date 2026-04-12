@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useI18n } from '@/i18n/i18n-context';
 import { ProductCard } from '@/components/store/product-card';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,9 +30,10 @@ export default function ParfumsClient({
   const brands = initialBrands;
   const tags = initialTags;
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedBrand, setSelectedBrand] = useState<string>('all');
-  const [selectedTag, setSelectedTag] = useState<string>('all');
+  const searchParams = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'all');
+  const [selectedBrand, setSelectedBrand] = useState<string>(searchParams.get('brand') || 'all');
+  const [selectedTag, setSelectedTag] = useState<string>(searchParams.get('tag') || 'all');
   const [maxPrice, setMaxPrice] = useState<number>(5000);
   const [sortBy, setSortBy] = useState<string>('newest');
   const [showFilters, setShowFilters] = useState(false);

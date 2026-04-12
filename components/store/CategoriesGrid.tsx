@@ -61,7 +61,7 @@ export function CategoriesGrid({ categories }: { categories: any[] }) {
               className={getBentoClass(idx)}
             >
               <Link 
-                href={`/shop?category=${cat.id}`}
+                href={`/shop/parfums?category=${cat.id}`}
                 className={`group relative h-full block p-8 rounded-[2rem] bg-gradient-to-br ${getGradient(cat.id)} border border-emerald-950/5 hover:border-amber-500/30 transition-all duration-700 overflow-hidden shadow-luxury hover:shadow-2xl`}
               >
                 {/* Visual texture */}

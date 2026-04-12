@@ -157,23 +157,6 @@ export default function AdminSettingsClient({ initialSettings, initialAnnounceme
                 <div className="space-y-10">
                   <section className="space-y-6">
                     <div className="flex items-center gap-4 border-b border-emerald-950/5 pb-4">
-                       <Globe size={18} className="text-[#C9A84C]" />
-                       <h3 className="font-serif text-xl font-bold text-emerald-950">Identité Boutique</h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-2">
-                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-950/30">Nom Boutique (FR)</label>
-                         <input type="text" name="storeNameFR" value={formData.storeNameFR} onChange={handleChange} className="w-full h-12 px-5 bg-neutral-50 border border-emerald-950/5 rounded-xl text-emerald-950 outline-none focus:border-[#C9A84C] transition-all" />
-                       </div>
-                       <div className="space-y-2">
-                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-950/30 text-right block">اسم المتجر (AR)</label>
-                         <input type="text" name="storeNameAR" value={formData.storeNameAR} onChange={handleChange} dir="rtl" className="w-full h-12 px-5 bg-neutral-50 border border-emerald-950/5 rounded-xl font-arabic text-emerald-950 outline-none focus:border-[#C9A84C] transition-all" />
-                       </div>
-                    </div>
-                  </section>
-
-                  <section className="space-y-6">
-                    <div className="flex items-center gap-4 border-b border-emerald-950/5 pb-4">
                        <Mail size={18} className="text-[#C9A84C]" />
                        <h3 className="font-serif text-xl font-bold text-emerald-950">Contact & Adresse</h3>
                     </div>

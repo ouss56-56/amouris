@@ -132,18 +132,36 @@ export default function AnalyticsClient({ initialOrders, initialCustomers, initi
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const newCustomersThisMonth = customers.filter(c => new Date(c.created_at) >= startOfThisMonth).length;
 
+    const customerMap = new Map<string, any>();
+    customers.forEach(c => {
+      if (c.id) customerMap.set(c.id, c);
+    });
+
     // Calculate actual spent per customer from orders
-    const customerSpentMap = new Map<string, { id: string, name: string, spent: number, count: number, wilaya: string }>();
+    const customerSpentMap = new Map<string, any>();
     orders.forEach(o => {
-      const cid = o.customer_id;
-      if (!cid) return;
+      const cid = o.customer_id || o.guest_email || o.guest_phone || `guest-${o.id}`;
+      
+      const realCustomer = o.customer_id ? customerMap.get(o.customer_id) : null;
+
+      const firstName = realCustomer?.first_name || o.guest_first_name || 'Client';
+      const lastName = realCustomer?.last_name || o.guest_last_name || '';
+      const shopName = realCustomer?.shop_name || '';
+      const wilaya = realCustomer?.wilaya || o.guest_wilaya || 'Inconnue';
+
+      const fullName = `${firstName} ${lastName}`.trim();
+
       const existing = customerSpentMap.get(cid) || { 
         id: cid, 
-        name: o.guest_first_name ? `${o.guest_first_name} ${o.guest_last_name}` : 'Client', 
+        name: fullName,
+        first_name: firstName,
+        last_name: lastName,
+        shop_name: shopName,
+        wilaya: wilaya, 
         spent: 0, 
-        count: 0, 
-        wilaya: o.guest_wilaya || '' 
+        count: 0
       };
+
       customerSpentMap.set(cid, {
         ...existing,
         spent: existing.spent + (o.total_amount || 0),
@@ -152,8 +170,8 @@ export default function AnalyticsClient({ initialOrders, initialCustomers, initi
     });
 
     const enrichedCustomers = Array.from(customerSpentMap.values());
-    const topCustomersBySpent = enrichedCustomers.sort((a, b) => b.spent - a.spent).slice(0, 5);
-    const topCustomersByActivity = enrichedCustomers.sort((a, b) => b.count - a.count).slice(0, 5);
+    const topCustomersBySpent = [...enrichedCustomers].sort((a, b) => b.spent - a.spent).slice(0, 5);
+    const topCustomersByActivity = [...enrichedCustomers].sort((a, b) => b.count - a.count).slice(0, 5);
 
     // Wilaya Distribution
     const wilayaMap = new Map<string, number>();
@@ -433,11 +451,11 @@ export default function AnalyticsClient({ initialOrders, initialCustomers, initi
                    {stats.customers.topActivity.map((c, i) => (
                      <div key={i} className="flex items-center justify-between">
                         <div className="flex flex-col">
-                           <span className="text-xs font-bold text-emerald-950 uppercase">{c.first_name} {c.last_name}</span>
+                           <span className="text-xs font-bold text-emerald-950 uppercase">{c.name}</span>
                            <span className="text-[8px] font-black text-emerald-950/30 uppercase">{c.shop_name || 'Sans boutique'}</span>
                         </div>
                         <div className="bg-emerald-50 text-emerald-900 px-3 py-1 rounded-lg text-[10px] font-black">
-                           {c.order_count || 0} CMDS
+                           {c.count || 0} CMDS
                         </div>
                      </div>
                    ))}

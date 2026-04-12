@@ -11,6 +11,7 @@ export default async function ParfumsPage() {
     .select(`
       id, name_fr, name_ar, slug, product_type,
       price_per_gram, images, stock_grams,
+      category_id, brand_id, collection_id,
       categories ( id, name_fr, name_ar ),
       brands ( id, name, name_ar ),
       product_tags ( tags ( id, name_fr, name_ar ) )
