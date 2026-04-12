@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { createClient } from '@/lib/supabase/client';
 import { createProductAction, updateProductAction } from '@/lib/actions/products.actions';
+import { uploadImage, deleteImage } from '@/lib/actions/storage';
 import { 
   Upload, X, Plus, Trash2, Loader2, Sparkles, 
   Box, Droplets, Pipette, Eye, EyeOff, 
@@ -38,7 +38,6 @@ export function ProductModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClient();
 
   // Unified Form Data
   const [formData, setFormData] = useState<any>({
@@ -132,29 +131,20 @@ export function ProductModal({
 
     setIsUploadingImage(true);
     try {
-      const ext = file.name.split('.').pop();
-      const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-      const { data, error: uploadError } = await supabase.storage
-        .from('products')
-        .upload(filename, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('products')
-        .getPublicUrl(filename);
+      const buffer = await file.arrayBuffer();
+      const publicUrl = await uploadImage({
+        name: file.name,
+        type: file.type,
+        buffer
+      }, 'products');
 
       setFormData(f => ({
         ...f,
-        images: [...f.images, urlData.publicUrl]
+        images: [...f.images, publicUrl]
       }));
     } catch (err: any) {
       console.error('Upload error:', err);
-      alert('Erreur lors de l\'upload : ' + err.message);
+      alert('Erreur lors de l\'upload : ' + (err.message || 'Erreur inconnue'));
     } finally {
       setIsUploadingImage(false);
       e.target.value = '';
@@ -163,11 +153,7 @@ export function ProductModal({
 
   const handleDeleteImage = async (url: string, index: number) => {
     try {
-      const urlObj = new URL(url);
-      const path = urlObj.pathname.split('/storage/v1/object/public/products/')[1];
-      if (path) {
-        await supabase.storage.from('products').remove([path]);
-      }
+      await deleteImage(url, 'products');
     } catch (e) {
       console.error("Failed to delete from storage", e);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useI18n } from '@/i18n/i18n-context';
 import { ProductCard } from '@/components/store/product-card';
@@ -235,11 +236,21 @@ export default function HomeClient({ categories, brands, tagSections }: HomeClie
               const gradients = ['from-amber-950 to-amber-900', 'from-rose-950 to-rose-900', 'from-emerald-950 to-emerald-900', 'from-sky-950 to-sky-900', 'from-stone-800 to-stone-900'];
               return (
                 <div key={category.id} className="snap-start flex-shrink-0 w-[200px]">
-                   <Link href={`/shop?category=${category.id}`} className="block relative h-64 overflow-hidden group">
-                     <div className={`absolute inset-0 bg-gradient-to-br ${gradients[i % gradients.length]}`} />
+                   <Link href={`/shop?category=${category.id}`} className="block relative h-64 overflow-hidden group rounded-2xl">
+                     {category.image ? (
+                       <Image 
+                         src={category.image} 
+                         alt={category.nameFR}
+                         fill
+                         className="object-cover transition-transform duration-700 group-hover:scale-110"
+                       />
+                     ) : (
+                       <div className={`absolute inset-0 bg-gradient-to-br ${gradients[i % gradients.length]}`} />
+                     )}
+                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
                      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
                         <h3 className="text-lg font-serif text-white">{language === 'ar' ? category.nameAR : category.nameFR}</h3>
-                        <p className="text-white/40 text-[10px] uppercase tracking-widest mt-2">Visiter</p>
+                        <p className="text-white/40 text-[10px] uppercase tracking-widest mt-2">{language === 'ar' ? 'اكتشف' : 'Visiter'}</p>
                      </div>
                    </Link>
                 </div>
@@ -258,10 +269,22 @@ export default function HomeClient({ categories, brands, tagSections }: HomeClie
                   whileInView="show"
                   viewport={{ once: true }}
                 >
-                  <Link href={`/shop?category=${category.id}`} className="group block relative h-72 overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${gradients[i % gradients.length]} transition-transform duration-700 group-hover:scale-110`} />
+                  <Link href={`/shop?category=${category.id}`} className="group block relative h-72 overflow-hidden rounded-3xl">
+                    {category.image ? (
+                      <Image 
+                        src={category.image} 
+                        alt={category.nameFR}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className={`absolute inset-0 bg-gradient-to-br ${gradients[i % gradients.length]} transition-transform duration-700 group-hover:scale-110`} />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-500" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 border border-white/5 group-hover:border-white/20 transition-all duration-500">
-                      <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase mb-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 tracking-widest font-light">Découvrir</span>
+                      <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase mb-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 tracking-widest font-light">
+                        {language === 'ar' ? 'اكتشف' : 'Découvrir'}
+                      </span>
                       <h3 className="text-xl font-serif text-white group-hover:text-amber-400 transition-colors duration-500">
                         {language === 'ar' ? category.nameAR : category.nameFR}
                       </h3>

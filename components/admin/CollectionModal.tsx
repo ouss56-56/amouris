@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { createClient } from '@/lib/supabase/client';
 import { createCollectionAction, updateCollectionAction } from '@/lib/actions/collections';
+import { uploadImage, deleteImage } from '@/lib/actions/storage';
 import { 
   X, Loader2, Sparkles, ChevronRight, Info, Type, Globe, ImageIcon, Upload, Trash2
 } from 'lucide-react';
@@ -21,7 +21,6 @@ export function CollectionModal({ collection, isOpen, onClose, onSave }: Collect
   const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const supabase = createClient();
   
   const [formData, setFormData] = useState({
     name_fr: '',
@@ -62,23 +61,18 @@ export function CollectionModal({ collection, isOpen, onClose, onSave }: Collect
 
     setIsUploading(true);
     try {
-      const ext = file.name.split('.').pop();
-      const filename = `collections/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const buffer = await file.arrayBuffer();
+      const publicUrl = await uploadImage({
+        name: file.name,
+        type: file.type,
+        buffer
+      }, 'collections');
 
-      const { data, error: uploadError } = await supabase.storage
-        .from('collections')
-        .upload(filename, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('collections')
-        .getPublicUrl(filename);
-
-      setFormData(prev => ({ ...prev, cover_image: urlData.publicUrl }));
+      setFormData(prev => ({ ...prev, cover_image: publicUrl }));
       toast.success('Image de couverture prête');
     } catch (err: any) {
-      toast.error("Échec du transfert: " + err.message);
+      console.error('Upload error:', err);
+      toast.error("Échec du transfert: " + (err.message || 'Erreur inconnue'));
     } finally {
       setIsUploading(false);
       e.target.value = '';
@@ -88,11 +82,7 @@ export function CollectionModal({ collection, isOpen, onClose, onSave }: Collect
   const handleDeleteImage = async () => {
     if (!formData.cover_image) return;
     try {
-      const urlObj = new URL(formData.cover_image);
-      const path = urlObj.pathname.split('/storage/v1/object/public/collections/')[1];
-      if (path) {
-        await supabase.storage.from('collections').remove([path]);
-      }
+      await deleteImage(formData.cover_image, 'collections');
     } catch (e) {
       console.error("Failed to delete from storage", e);
     }

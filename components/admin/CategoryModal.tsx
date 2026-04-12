@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { createCategoryAction, updateCategoryAction } from '@/lib/actions/categories';
-import { createClient } from '@/lib/supabase/client';
+import { uploadImage, deleteImage } from '@/lib/actions/storage';
 import { 
   X, Loader2, Sparkles, ChevronRight, Info, Type, Globe, Hash, ImageIcon, Upload, Trash2
 } from 'lucide-react';
@@ -21,7 +21,6 @@ export function CategoryModal({ category, isOpen, onClose, onSave }: CategoryMod
   const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const supabase = createClient();
   
   const [formData, setFormData] = useState({
     name_fr: '',
@@ -76,23 +75,18 @@ export function CategoryModal({ category, isOpen, onClose, onSave }: CategoryMod
 
     setIsUploading(true);
     try {
-      const ext = file.name.split('.').pop();
-      const filename = `categories/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const buffer = await file.arrayBuffer();
+      const publicUrl = await uploadImage({
+        name: file.name,
+        type: file.type,
+        buffer
+      }, 'categories');
 
-      const { data, error: uploadError } = await supabase.storage
-        .from('categories')
-        .upload(filename, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('categories')
-        .getPublicUrl(filename);
-
-      setFormData(prev => ({ ...prev, image_url: urlData.publicUrl }));
+      setFormData(prev => ({ ...prev, image_url: publicUrl }));
       toast.success('Image de la catégorie chargée');
     } catch (err: any) {
-      toast.error("Échec du transfert: " + err.message);
+      console.error('Upload error:', err);
+      toast.error("Échec du transfert: " + (err.message || 'Erreur inconnue'));
     } finally {
       setIsUploading(false);
       e.target.value = '';
@@ -102,11 +96,7 @@ export function CategoryModal({ category, isOpen, onClose, onSave }: CategoryMod
   const handleDeleteImage = async () => {
     if (!formData.image_url) return;
     try {
-      const urlObj = new URL(formData.image_url);
-      const path = urlObj.pathname.split('/storage/v1/object/public/categories/')[1];
-      if (path) {
-        await supabase.storage.from('categories').remove([path]);
-      }
+      await deleteImage(formData.image_url, 'categories');
     } catch (e) {
       console.error("Failed to delete from storage", e);
     }

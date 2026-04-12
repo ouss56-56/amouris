@@ -25,6 +25,7 @@ export async function getCategories() {
     nameAR: c.name_ar,
     nameFR: c.name_fr,
     slug: c.slug,
+    image: c.image_url,
   }));
 }
 

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { createClient } from '@/lib/supabase/client';
-import { updateBrand, createBrand } from '@/lib/api/catalogue';
+import { updateBrand, createBrand } from '@/lib/actions/brands';
+import { uploadImage, deleteImage } from '@/lib/actions/storage';
 import { 
   X, Loader2, Sparkles, ChevronRight, Info, Type, Globe, Store, Upload, Trash2, Image as ImageIcon
 } from 'lucide-react';
@@ -21,7 +21,6 @@ export function BrandModal({ brand, isOpen, onClose, onSave }: BrandModalProps) 
   const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const supabase = createClient();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -63,23 +62,18 @@ export function BrandModal({ brand, isOpen, onClose, onSave }: BrandModalProps) 
 
     setIsUploading(true);
     try {
-      const ext = file.name.split('.').pop();
-      const filename = `brands/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const buffer = await file.arrayBuffer();
+      const publicUrl = await uploadImage({
+        name: file.name,
+        type: file.type,
+        buffer
+      }, 'brands');
 
-      const { data, error: uploadError } = await supabase.storage
-        .from('brands')
-        .upload(filename, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('brands')
-        .getPublicUrl(filename);
-
-      setFormData(prev => ({ ...prev, logo_url: urlData.publicUrl }));
+      setFormData(prev => ({ ...prev, logo_url: publicUrl }));
       toast.success('Logo de la maison enregistré');
     } catch (err: any) {
-      toast.error("Échec du transfert: " + err.message);
+      console.error('Upload error:', err);
+      toast.error("Échec du transfert: " + (err.message || 'Erreur inconnue'));
     } finally {
       setIsUploading(false);
       e.target.value = '';
@@ -89,11 +83,7 @@ export function BrandModal({ brand, isOpen, onClose, onSave }: BrandModalProps) 
   const handleDeleteImage = async () => {
     if (!formData.logo_url) return;
     try {
-      const urlObj = new URL(formData.logo_url);
-      const path = urlObj.pathname.split('/storage/v1/object/public/brands/')[1];
-      if (path) {
-        await supabase.storage.from('brands').remove([path]);
-      }
+      await deleteImage(formData.logo_url, 'brands');
     } catch (e) {
       console.error("Failed to delete from storage", e);
     }
