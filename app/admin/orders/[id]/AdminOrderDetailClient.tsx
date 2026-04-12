@@ -118,6 +118,19 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
     }
   }
 
+  const handleDownload = async () => {
+    const toastId = toast.loading(t('admin.orders.detail.invoice_generating') || 'Génération de la facture...')
+    try {
+      const doc = await generateInvoicePDF(order, settings)
+      const filename = language === 'ar' ? `فاتورة_${order.order_number}.pdf` : `Facture_${order.order_number}.pdf`
+      doc.save(filename)
+      toast.success(t('admin.orders.detail.invoice_ready') || 'Facture prête', { id: toastId })
+    } catch (err: any) {
+      console.error(err)
+      toast.error('Erreur: ' + err.message, { id: toastId })
+    }
+  }
+
   return (
     <div className="space-y-8 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -150,7 +163,7 @@ export default function AdminOrderDetailClient({ initialOrder, settings }: Admin
         <div className="flex items-center gap-3">
           {order.invoice_generated && (
             <button 
-              onClick={() => generateInvoicePDF(order, settings)}
+              onClick={handleDownload}
               className="h-12 px-6 bg-white border border-emerald-950/10 text-emerald-950 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-50 transition-all shadow-sm"
             >
               <Download size={14} /> {t('admin.orders.print_invoice')}

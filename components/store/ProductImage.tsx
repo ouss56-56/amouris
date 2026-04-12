@@ -35,7 +35,14 @@ export function ProductImage({
   className,
   priority = false
 }: ProductImageProps) {
-  const hasImage = images && images.length > 0 && (images[0].startsWith('http') || images[0].startsWith('data:image'))
+  const [error, setError] = React.useState(false)
+  
+  const hasImage = !error && images && images.length > 0 && (
+    images[0].startsWith('http') || 
+    images[0].startsWith('data:image') || 
+    images[0].startsWith('/')
+  )
+
   const gradient = categoryId ? (CATEGORY_GRADIENTS[categoryId] || 'from-emerald-900 to-emerald-800') : 'from-emerald-900 to-emerald-800'
   
   if (hasImage) {
@@ -48,6 +55,7 @@ export function ProductImage({
           priority={priority}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-1000 group-hover:scale-110"
+          onError={() => setError(true)}
         />
       </div>
     )

@@ -32,11 +32,13 @@ export default function InvoicesClient({ initialOrders, settings }: InvoicesClie
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return initialOrders.filter(o => {
-      const name = o.guest_first_name ? `${o.guest_first_name} ${o.guest_last_name}` : (o.customer?.first_name ? `${o.customer.first_name} ${o.customer.last_name}` : 'Client Enregistré');
-      const s = search.toLowerCase();
-      return o.order_number.toLowerCase().includes(s) || name.toLowerCase().includes(s);
-    });
+    return initialOrders
+      .filter(o => o.invoice_generated) // Only show generated invoices
+      .filter(o => {
+        const name = o.guest_first_name ? `${o.guest_first_name} ${o.guest_last_name}` : (o.customer?.first_name ? `${o.customer.first_name} ${o.customer.last_name}` : 'Client Enregistré');
+        const s = search.toLowerCase();
+        return o.order_number.toLowerCase().includes(s) || name.toLowerCase().includes(s);
+      });
   }, [initialOrders, search]);
 
   const handleDownload = async (order: any) => {

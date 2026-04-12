@@ -113,3 +113,24 @@ export async function updateOrderPaymentAction(id: string, amountPaid: number) {
   revalidatePath('/admin/orders')
   return { success: true }
 }
+
+export async function deleteOrderAction(id: string) {
+  const supabase = createAdminClient()
+  
+  // 1. Delete order (Cascade deletes handled in DB: order_items, status_history)
+  const { error } = await supabase
+    .from('orders')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Error deleting order:', error)
+    throw new Error(`Échec de la suppression de la commande: ${error.message}`)
+  }
+
+  revalidatePath('/admin/orders')
+  revalidatePath('/admin/invoices')
+  revalidatePath('/admin')
+  
+  return { success: true }
+}

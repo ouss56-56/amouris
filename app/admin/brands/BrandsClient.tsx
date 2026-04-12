@@ -15,11 +15,12 @@ interface BrandsClientProps {
 
 export default function BrandsClient({ initialBrands }: BrandsClientProps) {
   const router = useRouter()
-  const brands = initialBrands
-  
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
+
+  const brands = initialBrands
 
   const filtered = useMemo(() => {
     return brands.filter(b => 
@@ -97,8 +98,13 @@ export default function BrandsClient({ initialBrands }: BrandsClientProps) {
 
               <div className="flex items-center gap-6 mb-8 relative z-10">
                 <div className="w-24 h-24 bg-neutral-50 rounded-[2.5rem] flex items-center justify-center text-emerald-950/20 group-hover:bg-emerald-50 group-hover:text-amber-600 transition-all overflow-hidden border border-emerald-950/5 p-4 mix-blend-multiply shadow-inner">
-                  {brand.logo_url ? (
-                    <img src={brand.logo_url} alt={brand.name} className="w-full h-full object-contain" />
+                  {brand.logo_url && !imageErrors[brand.id] ? (
+                    <img 
+                      src={brand.logo_url} 
+                      alt={brand.name} 
+                      className="w-full h-full object-contain" 
+                      onError={() => setImageErrors(prev => ({ ...prev, [brand.id]: true }))}
+                    />
                   ) : (
                     <Store size={40} />
                   )}

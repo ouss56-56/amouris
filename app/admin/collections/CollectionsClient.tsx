@@ -19,6 +19,7 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
   const filtered = useMemo(() => {
     return collections.filter(c => 
@@ -97,8 +98,13 @@ export default function CollectionsClient({ initialCollections }: CollectionsCli
                 className="group luxury-card overflow-hidden"
               >
                 <div className="aspect-[21/9] relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-700">
-                  {collection.cover_url ? (
-                    <img src={collection.cover_url} alt={collection.name_fr} className="w-full h-full object-cover" />
+                  {collection.cover_url && !imageErrors[collection.id] ? (
+                    <img 
+                      src={collection.cover_url} 
+                      alt={collection.name_fr} 
+                      className="w-full h-full object-cover" 
+                      onError={() => setImageErrors(prev => ({ ...prev, [collection.id]: true }))}
+                    />
                   ) : (
                     <div className="w-full h-full bg-neutral-100 flex items-center justify-center text-emerald-950/10">
                       <Layers size={64} />

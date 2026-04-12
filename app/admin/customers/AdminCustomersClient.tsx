@@ -49,6 +49,7 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
   const [wilayaFilter, setWilayaFilter] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [isUpdating, setIsUpdating] = useState<string | null>(null)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
   const customers = initialCustomers
 
@@ -237,8 +238,13 @@ export default function AdminCustomersClient({ initialCustomers }: AdminCustomer
                       <div className="flex items-center gap-10">
                         <div className="relative">
                           <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center text-3xl font-serif shadow-2xl transition-all duration-700 overflow-hidden ${isFrozen ? 'bg-rose-50 text-rose-300' : 'bg-emerald-50 text-emerald-900 group-hover:scale-110 group-hover:rotate-3'}`}>
-                             {customer.images?.[0] ? (
-                               <img src={customer.images[0]} alt="" className="w-full h-full object-cover" />
+                             {customer.images?.[0] && !imageErrors[customer.id] ? (
+                               <img 
+                                 src={customer.images[0]} 
+                                 alt="" 
+                                 className="w-full h-full object-cover" 
+                                 onError={() => setImageErrors(prev => ({ ...prev, [customer.id]: true }))}
+                               />
                              ) : (
                                (customer.first_name || 'C').charAt(0)
                              )}

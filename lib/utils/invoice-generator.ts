@@ -1,14 +1,7 @@
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 import { Order } from '@/store/orders.store'
 import { StoreSettings } from '@/store/settings.store'
-
-// Extend jsPDF for autotable
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF
-  }
-}
 
 export const generateInvoicePDF = async (order: Order, settings: StoreSettings) => {
   if (!order) throw new Error("Order data is missing");
@@ -24,8 +17,6 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
     email: 'contact@amouris-parfums.com'
   };
 
-  const { jsPDF } = await import('jspdf')
-  await import('jspdf-autotable')
   const doc = new jsPDF()
   
   // Design Colors
@@ -36,13 +27,12 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   const TEXT_DARK = [30, 30, 30]
 
   // Header Background Bar
-  doc.setFillColor(...EMERALD_DARK)
+  doc.setFillColor(...EMERALD_DARK as [number, number, number])
   doc.rect(0, 0, 210, 50, 'F')
   
   // Logo placeholder or Image
   try {
     // Attempt to add logo if it exists in public
-    // In client-side, we can use the URL
     doc.addImage('/logo.png', 'PNG', 14, 10, 30, 30)
   } catch (e) {
     // Fallback to text logo
@@ -56,7 +46,7 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.setTextColor(255, 255, 255)
   doc.text('AMOURIS PARFUMS', 50, 22)
   doc.setFontSize(14)
-  doc.setTextColor(...GOLD)
+  doc.setTextColor(...GOLD as [number, number, number])
   doc.text('أموريس للعطور', 50, 29)
   
   doc.setFontSize(9)
@@ -64,7 +54,7 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.text(safeSettings.sloganFR || "L'essence du luxe — Huiles et flacons d'exception", 50, 37)
   
   // Invoice Banner
-  doc.setFillColor(...GOLD)
+  doc.setFillColor(...GOLD as [number, number, number])
   doc.rect(140, 15, 56, 12, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(12)
@@ -72,7 +62,7 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.text('FACTURE / فاتورة', 168, 23, { align: 'center' })
 
   // Document Details
-  doc.setTextColor(...TEXT_DARK)
+  doc.setTextColor(...TEXT_DARK as [number, number, number])
   doc.setFontSize(9)
   doc.setFont('helvetica', 'bold')
   doc.text('DÉTAILS DOCUMENT / تفاصيل الوثيقة', 14, 65)
@@ -80,19 +70,19 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.line(14, 67, 85, 67)
   
   doc.setFont('helvetica', 'normal')
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.text(`N° Facture:`, 14, 75)
   doc.setTextColor(0, 0, 0)
   const invoiceNo = order.order_number?.replace('AM-', 'FAC-') || `FAC-${order.id?.slice(0, 8).toUpperCase()}`
   doc.text(`${invoiceNo}`, 45, 75)
   
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.text(`Date Emission:`, 14, 81)
   doc.setTextColor(0, 0, 0)
   doc.text(`${new Date(order.created_at || Date.now()).toLocaleDateString('fr-FR')}`, 45, 81)
 
   // From / To columns
-  doc.setTextColor(...TEXT_DARK)
+  doc.setTextColor(...TEXT_DARK as [number, number, number])
   doc.setFontSize(9)
   doc.setFont('helvetica', 'bold')
   doc.text('ÉMETTEUR / المرسل', 110, 65)
@@ -103,7 +93,7 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.setFontSize(10)
   doc.text('AMOURIS PARFUMS', 110, 75)
   
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.setFontSize(8)
   const storeInfo = [
     safeSettings.address || 'Quartier El Yasmine, Alger',
@@ -114,14 +104,19 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   ]
   doc.text(storeInfo, 110, 80)
 
-  // Client info
+  // Client info extraction
+  const customer = (order as any).customer;
   const customerName = order.guest_first_name 
     ? `${order.guest_first_name} ${order.guest_last_name}` 
-    : (order.customer_id ? 'Client Partenaire' : 'Client Amouris')
+    : (customer ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || 'Client Partenaire' : 'Client Amouris');
   
+  const customerPhone = order.guest_phone || customer?.phone || 'N/A';
+  const customerWilaya = order.guest_wilaya || customer?.wilaya || 'N/A';
+  const customerAddress = order.shipping_address || customer?.address || 'Non spécifiée';
+
   doc.setFontSize(9)
   doc.setFont('helvetica', 'bold')
-  doc.setTextColor(...TEXT_DARK)
+  doc.setTextColor(...TEXT_DARK as [number, number, number])
   doc.text('DESTINATAIRE / المرسل إليه', 14, 105)
   doc.line(14, 107, 100, 107)
   
@@ -130,14 +125,15 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.setFontSize(10)
   doc.text(customerName.toUpperCase(), 14, 115)
   
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.setFontSize(8)
-  const customerInfo = [
-    `Tél: ${order.guest_phone || 'N/A'}`,
-    `Wilaya: ${order.guest_wilaya || 'N/A'}`,
-    `Adresse: ${order.shipping_address || 'Non spécifiée'}`
+  const customerInfoList = [
+    `Tél: ${customerPhone}`,
+    `Wilaya: ${customerWilaya}`,
+    `Adresse: ${customerAddress}`
   ]
-  doc.text(customerInfo, 14, 120)
+  doc.text(customerInfoList, 14, 120)
+
 
   // Status Badge
   const status = (order.payment_status || 'unpaid').toUpperCase()
@@ -169,12 +165,12 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
     `${(item.total_price || 0).toLocaleString()} DZD`
   ])
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: 140,
     head: [['DÉSIGNATION / الوصف', 'QTE / الكمية', 'P.U / السعر', 'TOTAL / المجموع']],
     body: tableData,
     headStyles: { 
-      fillColor: EMERALD_DARK, 
+      fillColor: EMERALD_DARK as [number, number, number], 
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 9,
@@ -190,7 +186,7 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
       fontSize: 8,
       cellPadding: 4
     },
-    alternateRowStyles: { fillColor: LIGHT_GRAY },
+    alternateRowStyles: { fillColor: LIGHT_GRAY as [number, number, number] },
     margin: { left: 14, right: 14 },
     theme: 'grid'
   })
@@ -200,12 +196,12 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   const summaryX = 130
   
   doc.setFontSize(9)
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.text('Sous-total:', summaryX, finalY + 15)
   doc.setTextColor(0, 0, 0)
   doc.text(`${(order.total_amount || 0).toLocaleString()} DZD`, 196, finalY + 15, { align: 'right' })
   
-  doc.setFillColor(...EMERALD_DARK)
+  doc.setFillColor(...EMERALD_DARK as [number, number, number])
   doc.rect(summaryX, finalY + 20, 66, 10, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
@@ -214,24 +210,24 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
 
   // Paid & Remaining
   doc.setFont('helvetica', 'normal')
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.text('Montant payé / المدفوع:', summaryX, finalY + 38)
   doc.setTextColor(0, 0, 0)
   doc.text(`${(order.amount_paid || 0).toLocaleString()} DZD`, 196, finalY + 38, { align: 'right' })
-
+  
   const reste = (order.total_amount || 0) - (order.amount_paid || 0)
   doc.setFont('helvetica', 'bold')
-  doc.setTextColor(reste > 0 ? [185, 28, 28] : EMERALD_DARK)
+  doc.setTextColor(...(reste > 0 ? [185, 28, 28] : EMERALD_DARK) as [number, number, number])
   doc.text('RESTE À PAYER / الباقي:', summaryX, finalY + 45)
   doc.text(`${reste.toLocaleString()} DZD`, 196, finalY + 45, { align: 'right' })
-
+  
   // Bank Info
-  doc.setTextColor(...TEXT_DARK)
+  doc.setTextColor(...TEXT_DARK as [number, number, number])
   doc.setFontSize(8)
   doc.setFont('helvetica', 'bold')
   doc.text('COORDONNÉES BANCAIRES / معلومات البنك', 14, finalY + 15)
   doc.setFont('helvetica', 'normal')
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.text(`RIB: 007 99999 0000000000 00`, 14, finalY + 20)
   doc.text(`Banque: BNA - Alger Central`, 14, finalY + 24)
 
@@ -240,7 +236,7 @@ export const generateInvoicePDF = async (order: Order, settings: StoreSettings) 
   doc.line(14, finalY + 60, 196, finalY + 60)
   
   doc.setFontSize(8)
-  doc.setTextColor(...TEXT_GRAY)
+  doc.setTextColor(...TEXT_GRAY as [number, number, number])
   doc.text('Cachet et Signature / الختم والتوقيع', 14, finalY + 70)
   doc.rect(14, finalY + 74, 50, 25)
   

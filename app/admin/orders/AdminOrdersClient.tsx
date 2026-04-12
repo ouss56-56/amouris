@@ -14,8 +14,11 @@ import Link from 'next/link';
 import { useI18n } from '@/i18n/i18n-context';
 import { OrderStatus, PaymentStatus } from '@/store/orders.store';
 import { updateOrderStatus as apiUpdateOrderStatus, updateOrderPayment as apiUpdateOrderPayment } from '@/lib/api/orders';
+import { deleteOrderAction } from '@/lib/actions/orders.actions';
 import { useRouter } from 'next/navigation';
 import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/status-helpers';
+import { Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const STATUS_ORDER: OrderStatus[] = ['pending', 'confirmed', 'preparing', 'shipped', 'delivered', 'cancelled'];
 
@@ -48,6 +51,7 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [wilayaFilter, setWilayaFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const orders = initialOrders;
 
@@ -91,6 +95,22 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
       router.refresh();
     } catch (err) {
       alert('Erreur lors de la mise à jour du statut');
+    }
+  };
+
+  const handleDeleteOrder = async (order: any) => {
+    if (!confirm(language === 'ar' ? `هل أنت متأكد من حذف الطلب ${order.order_number}؟` : `Voulez-vous supprimer définitivement la commande ${order.order_number} ?`)) return;
+    
+    setIsDeleting(order.id);
+    const toastId = toast.loading(language === 'ar' ? 'جاري الحذف...' : 'Suppression en cours...');
+    try {
+      await deleteOrderAction(order.id);
+      router.refresh();
+      toast.success(language === 'ar' ? 'تم حذف الطلب بنجاح' : 'Commande supprimée avec succès', { id: toastId });
+    } catch (err: any) {
+      toast.error('Erreur: ' + err.message, { id: toastId });
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -248,6 +268,14 @@ export default function AdminOrdersClient({ initialOrders, settings }: AdminOrde
                               title={t('admin.orders.print_invoice')}
                             >
                                <Printer size={18} />
+                            </button>
+                            <button 
+                               onClick={() => handleDeleteOrder(order)}
+                               disabled={isDeleting === order.id}
+                               className="w-12 h-12 rounded-2xl bg-white border border-rose-100 flex items-center justify-center text-rose-300 hover:text-rose-600 hover:border-rose-200 transition-all shadow-sm group/del"
+                               title={t('common.delete')}
+                            >
+                               {isDeleting === order.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />}
                             </button>
                          </div>
                       </td>
